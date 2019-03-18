@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include playfunction *.css
+recursive-include playfunction *.csv
+recursive-include playfunction *.html
+recursive-include playfunction *.ico
+recursive-include playfunction *.js
+recursive-include playfunction *.json
+recursive-include playfunction *.md
+recursive-include playfunction *.png
+recursive-include playfunction *.py
+recursive-include playfunction *.svg
+recursive-include playfunction *.txt
+recursive-exclude playfunction *.pyc
