@@ -1,0 +1,92 @@
+
+#topbar {
+	height: 50px;
+	padding-right: 15px;
+	padding-left: 15px;
+	margin-right: auto;
+	margin-left: auto;
+	border: none!important;
+	border-radius: 0;
+	box-sizing: border-box;
+	height: inherit;
+	width: 100%;
+	padding: 10px 30px;
+	background-color: #fff;
+	color: #444;
+	position: fixed;
+	z-index: 1001;
+}
+
+.navImgLogo {
+	height: 30px;
+    max-width: 150px;
+}
+
+#navImgLogo{
+	opacity: 1;
+    cursor: default;
+}
+
+.profile_dropdown {
+	height: 30px;
+    width: 30px;
+    list-style: none;
+}
+
+#a_drop {
+	height: 30px;
+    width: 30px;
+    text-align: center;
+    line-height: 2;
+}
+
+.profile-icon {
+	text-align: center;
+    height: 30px;
+    width: 30px;
+    font-size: 24px;
+    padding: 3px 0;
+}
+
+#btnSignOut {
+	padding: 0!important;
+    height: auto;
+    color: rgb(45, 41, 38);
+}
+
+.signout {
+	    max-width: 200px;
+	        text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    line-height: 34px;
+}
+
+.main_cont{
+	flex-grow: 1;
+    min-height: 100%;
+}
+
+#homePageMainCont {
+	height: 590px;
+	width: 100%;
+	padding: 0;
+}
+
+.home_img{
+	display: block;
+    max-height: 590px;
+    height: -webkit-fill-available;
+    width: -webkit-fill-available;
+    position: relative;
+    max-width: 100%;
+    background-size: cover;
+    object-fit: cover;
+}
+
+.footer {
+	position: absolute;
+    bottom: 0;
+    width: 100%;
+    margin-bottom: 30px;
+}
