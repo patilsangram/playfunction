@@ -1,0 +1,23 @@
+{
+ "content": null, 
+ "creation": "2019-03-20 19:59:24.347593", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "modified": "2019-03-20 19:59:24.347593", 
+ "modified_by": "Administrator", 
+ "module": "PlayFunction", 
+ "name": "pepperi", 
+ "owner": "Administrator", 
+ "page_name": "Pepperi", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "system_page": 0, 
+ "title": "Pepperi"
+}
