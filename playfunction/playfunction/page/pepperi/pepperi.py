@@ -8,5 +8,11 @@ def get_item_groups():
 	return item_groups
 
 @frappe.whitelist()
-def get_items():
-	return "success"
+def get_items_and_categories(item_group):
+	# return item categories/Sub categories along with item list
+	# return items of given item group
+	fields = ["name", "item_name", "image", "stock_balance", "price"]
+	items = []
+	# items = frappe.db.sql()
+	return items
+

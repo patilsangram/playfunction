@@ -73,6 +73,7 @@ frappe.pepperi = Class.extend({
 	},
 
 	render_item_catalog: function() {
+		var me = this;
 		// fetch & render item group
 		frappe.call({
 			method: "playfunction.playfunction.page.pepperi.pepperi.get_item_groups",
@@ -80,8 +81,34 @@ frappe.pepperi = Class.extend({
 			freeze: true,
 			freeze_message: __("Please wait ..."),
 			callback: function(r) {
+				me.$main.empty()
+				me.$main.append(frappe.render_template("item_catalog", {"data":r.message}))
+				me.item_catalog_trigger();
 				console.log(r.message, "<---- item groupssss")
 			}
 		})
+	},
+
+	item_catalog_trigger: function() {
+		//item group/catalog trigger
+		var me = this;
+		$('.item_catlog').click(function() {
+			var item_group = $(this).attr("data-item-cat")
+			console.log('item_group', item_group)
+			frappe.call({
+				method: "playfunction.playfunction.page.pepperi.pepperi.get_items_and_categories",
+				args: {"item_group": item_group},
+				callback: function(r) {
+					// render categories (in sidebar) and item list
+					var data = r.message
+					me.render_item_grid(data)
+				}
+			})
+		})
+	},
+
+	render_item_grid: function(data) {
+		//pass
+		console.log(data, "--------------")
 	}
 })
