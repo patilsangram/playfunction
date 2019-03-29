@@ -42,6 +42,9 @@ app_license = "MIT"
 #	"Role": "home_page"
 # }
 
+# fixtures
+fixtures = ['Custom Field', 'Property Setter']
+
 # Website user home page (by function)
 # get_website_user_home_page = "playfunction.utils.get_home_page"
 
