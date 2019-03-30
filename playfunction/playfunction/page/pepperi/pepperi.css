@@ -135,3 +135,29 @@
 	text-align: center;
 	font-size: 1.5em;
 }
+
+/*-------------------Item Catalog ------------------------*/
+
+.catlog_header {
+	background-color: #f3f3f3;
+    height: auto;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    line-height: 40px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    display: block;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.headerTitle {
+	padding: 0 15px;
+    height: 30px;
+}
+
+.list-id {
+	text-decoration: none !important;
+}
