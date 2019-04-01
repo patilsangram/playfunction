@@ -135,3 +135,151 @@
 	text-align: center;
 	font-size: 1.5em;
 }
+
+/*-------------------Item Catalog ------------------------*/
+
+.catlog_header {
+	background-color: #f3f3f3;
+    height: auto;
+    height: -webkit-fit-content;
+    height: -moz-fit-content;
+    height: fit-content;
+    line-height: 40px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    display: block;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.headerTitle {
+	padding: 0 15px;
+    height: 30px;
+}
+
+.list-id {
+	text-decoration: none !important;
+}
+
+/*-----------------------item-listview ----------------------*/
+
+.pepperi-sidebar {
+	margin-bottom: 24px;
+	z-index: 497;
+	height: 100%;
+	border-right: 1px solid #bababa;
+	background-color: #fff;
+	position: fixed;
+	padding: 0 0 0 15px;
+	top: inherit;
+}
+
+.pepperi-sidebar a {
+	padding: 6px 8px 6px 16px;
+	text-decoration: none;
+	color: #818181;
+	display: block;
+}
+
+.pepperi-content {
+	padding-right: 15px;
+	padding-left: 15px;
+	margin-right: auto;
+	margin-left: 220px;
+}
+
+/*--- */
+.pep-ul {
+	list-style-type:none;
+}
+
+.rectangle {
+	width: 2px;
+	height: 20px;
+	opacity: .16;
+	border-radius: 1px;
+	background-color: grey;
+	float: left;
+}
+
+.tree-li {
+	max-width: 95%;
+	font-family: segoeuib,sans-serif;
+	font-size: 14px;
+	letter-spacing: .6px;
+	list-style-type: none;
+	cursor: pointer;
+}
+
+.tree-li.selected {
+	color: #78aa00;
+	background-color: #fff;
+	font-weight: 600;
+	opacity: 1;
+}
+
+.mat-tree {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	overflow: hidden;
+	word-wrap: break-word;
+	min-height: 28px;
+}
+
+.item_group_fil {
+	padding-left: 8px;
+}
+
+.item-img {
+	height: 34px;
+    max-width: 34px;
+    display: block;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.minus, .plus {
+	color: #ccc;
+	height: 21px;
+	line-height: 17px;
+	cursor: pointer;
+}
+
+.gQs {
+	position: relative;
+	line-height: 34px;
+	text-align: center;
+}
+
+.custom-qs-field {
+	height: 32px;
+	font-size: 14px;
+	cursor: pointer;
+	text-align: center;
+	background-color: transparent;
+	font-size: 24px;
+	border: 0;
+	color: #888;
+	box-sizing: border-box;
+	border-radius: 5px;
+	width: 120px;
+	width: calc(99% - 80px)!important;
+	max-width: 120px;
+	min-width: 30px;
+	padding: 0 5px;
+	margin: 0 7px;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+.item-list-tb tbody tr:hover{
+	background: #FAE0C0 !important;
+}
+
+#dvSmSearchHeader {
+	padding: 0 0 0 15px;
+}

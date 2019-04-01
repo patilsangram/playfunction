@@ -1,5 +1,9 @@
 <div>
-	<div _ngcontent-c8="" class="pull-left flip">Select Catalog</div><br>
+	<div class="modal-header catlog_header">
+		<div class="headerTitle ng-star-inserted">
+			<div class="pull-left flip">Select Catalog</div>
+		</div>
+	</div>
 	<div class="app-listing item-list image-view-container item-selector">
 	{% for (var i=0; i < data.length; i++) { var item = data[i]; %}
 		{% if (i % 4 === 0) { %}<div class="image-view-row">{% } %}

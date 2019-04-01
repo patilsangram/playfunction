@@ -1,0 +1,92 @@
+<div class="row mainDiv">
+	<div class="row content-nav"></div>
+	<div class="row">
+		<div class="col-xs-2 pepperi-sidebar">
+			<div class="item-group-ul">
+				<ul class="pep-ul">
+					{% $.each(data.item_group, function(i, group){ %}
+						<div class="mat-tree">
+							{% if (i==0) { %}
+								<li class="tree-li selected">
+							{% } else { %}
+								<li class="tree-li">
+							{% } %}
+								<span class="rectangle"></span>
+								<span class="item_group_fil">{{ group.name }}</span>
+							</li>
+						</div>
+					{% }); %}
+				</ul>
+
+			</div>
+			<div  id="dvSmSearchHeader" class="row ng-star-inserted">
+				<div  class="col-xs-8 ellipsis zp">
+					<label  class="pull-left flip" title="Smart search">Smart search
+					</label>
+				</div>
+				<div  class="col-xs-4 ellipsis zp text-right flip"></div>
+			</div>
+			<div class="item-category-ul">
+				<ul class="pep-ul">
+					{% $.each(data.category, function(i, cat_){ %}
+						<div class="mat-tree">
+							{% if (i==0) { %}
+								<li class="tree-li selected">
+							{% } else { %}
+								<li class="tree-li">
+							{% } %}
+								<span class="rectangle"></span>
+								<span class="item_group_fil">{{ cat_.name }}</span>
+								<span class="pull-right flip">
+									<i aria-hidden="true" class="fa fa-angle-right"></i>
+								</span>
+							</li>
+						</div>
+					{% }); %}
+				</ul>
+			</div>
+		</div>
+		<div class="col-xs-10 pepperi-content">
+			<table class="table table-hover item-list-tb">
+				<thead>
+				<tr>
+					<th>Menu</th>
+					<th>Image</th>
+					<th>Item Code</th>
+					<th>Name</th>
+					<th>Inventory</th>
+					<th>Price</th>
+					<th>3M QTY</th>
+					<th>Unit Quantity</th>
+				</tr>
+				</thead>
+				<tbody>
+					{% $.each(data.items, function(i, item){ %}
+						<tr>
+							<td>
+								<i aria-hidden="true" class="fa fa-ellipsis-h fa-lg"></i>
+							</td>
+							<td><img class="item-img" src="{{item.image}}"></td>
+							<td>{{ item.name }}</td>
+							<td>{{ item.item_name }}</td>
+							<td>102</td>
+							<td>$89.00</td>
+							<td>3</td>
+							<td>
+								<div class="gQs">
+									<span  class="minus">
+										<i class="fa fa-minus"></i>
+									</span>
+									<input  autocomplete="off" class="ellipsis custom-qs-field ng-pristine ng-valid ng-touched" name="UnitsQuantity" id="UnitsQuantity" title="0">
+									<span  class="plus">
+										<i  aria-hidden="true" class="fa fa-plus"></i>
+									</span>
+								</div>
+							</td>
+						</tr>
+					{% }); %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

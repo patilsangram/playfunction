@@ -15,8 +15,6 @@ frappe.pepperi = Class.extend({
 		this.$wrapper.append(frappe.render_template("pepperi_layout"));
 		this.$header = this.$wrapper.find(".pepperi-header");
 		this.$main = this.$wrapper.find(".pepperi-main");
-		this.$sidebar = this.$wrapper.find(".pepperi-sidebar");
-		this.$content = this.$wrapper.find(".pepperi-content");
 		this.home();
 		this.bind_events();
 	},
@@ -26,6 +24,7 @@ frappe.pepperi = Class.extend({
 		this.$main.empty()
 		this.$header.append(frappe.render_template("pep_header"))
 		this.$main.append(frappe.render_template("pepperi_home"))
+		this.bind_events();
 	},
 
 	bind_events: function() {
@@ -84,7 +83,6 @@ frappe.pepperi = Class.extend({
 				me.$main.empty()
 				me.$main.append(frappe.render_template("item_catalog", {"data":r.message}))
 				me.item_catalog_trigger();
-				console.log(r.message, "<---- item groupssss")
 			}
 		})
 	},
@@ -94,21 +92,19 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('.item_catlog').click(function() {
 			var item_group = $(this).attr("data-item-cat")
-			console.log('item_group', item_group)
-			frappe.call({
-				method: "playfunction.playfunction.page.pepperi.pepperi.get_items_and_categories",
-				args: {"item_group": item_group},
-				callback: function(r) {
-					// render categories (in sidebar) and item list
-					var data = r.message
-					me.render_item_grid(data)
-				}
-			})
+			me.render_item_grid({'item_group': item_group})
 		})
 	},
 
-	render_item_grid: function(data) {
-		//pass
-		console.log(data, "--------------")
+	render_item_grid: function(filters) {
+		var me = this;
+		frappe.call({
+			method: "playfunction.playfunction.page.pepperi.pepperi.get_items_and_categories",
+			args: filters,
+			callback: function(r) {
+				me.$main.empty()
+				me.$main.append(frappe.render_template("pepperi_item_list", {"data": r.message}))
+			}
+		})
 	}
 })
