@@ -7,4 +7,8 @@ import frappe
 from frappe.model.document import Document
 
 class ItemSubcategory(Document):
-	pass
+	def validate(self):
+		data=frappe.db.count('Item Subcategory', filters={'category': self.category, 'subcategory': self.subcategory})
+		if data>0:
+			frappe.throw("This pair is already exists")
+
