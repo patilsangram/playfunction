@@ -1,14 +1,13 @@
 frappe.ui.form.on("Item", {
 	validate: function(frm) {
-			var modules_data = frm.doc.category_list
-			var module_data_list = []
-			modules_data.forEach(function(e){
-				module_data_list.push(e.subcategory)
+			var sub_cat_list = []
+			frm.doc.category_list.forEach(function(e){
+				sub_cat_list.push(e.subcategory)
 			})
-			var data_set=new Set(module_data_list)
-			if(data_set.size < module_data_list.length)
+			var sub_cat_set=new Set(sub_cat_list)
+			if(sub_cat_set.size < sub_cat_list.length)
 			{
-				frappe.throw("In Category List field duplicates are found, please try with another")
+				frappe.throw("Duplicates found in category list section, please remove it")
 			}
 			
 
@@ -16,8 +15,8 @@ frappe.ui.form.on("Item", {
 });
 
 cur_frm.fields_dict['category_list'].grid.get_field('subcategory').get_query =function(frm,cdt,cdn){
-				var d=locals[cdt][cdn]
-				return {
-					"filters": {'category': d.category}
-				}
+	var d=locals[cdt][cdn]
+	return {
+		"filters": {'category': d.category}
+	}
 }
