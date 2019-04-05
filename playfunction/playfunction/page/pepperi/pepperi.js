@@ -92,6 +92,7 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('.item_catlog').click(function() {
 			var item_group = $(this).attr("data-item-cat")
+			localStorage.setItem('item_group', JSON.stringify(item_group));
 			me.render_item_grid({'item_group': item_group})
 		})
 	},
@@ -103,7 +104,8 @@ frappe.pepperi = Class.extend({
 			args: filters,
 			callback: function(r) {
 				me.$main.empty()
-				me.$main.append(frappe.render_template("pepperi_item_list", {"data": r.message}))
+				me.$main.append(frappe.render_template("pepperi_item_list", {
+					"data": r.message, "item_group": filters["item_group"]}))
 			}
 		})
 	}
