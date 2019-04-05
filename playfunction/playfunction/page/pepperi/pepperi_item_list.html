@@ -1,5 +1,31 @@
 <div class="row mainDiv">
-	<div class="row content-nav"></div>
+	<div class="content-nav container-fluid" id="topBarContainer">
+		<div class="row" >
+			<div class="col-xs-4 pull-left container-fluid">
+				<span class="ellipsis">{{item_group}}</span>
+			</div>
+			<div class="col-xs-8 pull-right">
+				<div class="pull-right flip">
+					<span>Total: 0</span>
+					<span>
+						<button type="button" class="allButtons grnbtn ellipsis"
+							id="goToCartBtn">
+						<span class="fa fa-shopping-cart fa-lg">&nbsp;</span>Cart
+						</button>
+					</span>
+				</div>
+				<div class="pull-right flip search-div">
+					<a class="topBarIcon pull-right flip activeIcon">
+						<span class="fa fa-search fa-lg"></span>
+					</a>
+					<input class="pull-right search_ip" results="5" type="search" placeholder="Search...">
+					<a class="topBarIcon pull-right flip">
+						<span class="fa fa-close fa-lg"></span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
 	<div class="row">
 		<div class="col-xs-2 pepperi-sidebar">
 			<div class="item-group-ul">
@@ -30,11 +56,7 @@
 				<ul class="pep-ul">
 					{% $.each(data.category, function(i, cat_){ %}
 						<div class="mat-tree">
-							{% if (i==0) { %}
-								<li class="tree-li selected">
-							{% } else { %}
-								<li class="tree-li">
-							{% } %}
+							<li class="tree-li">
 								<span class="rectangle"></span>
 								<span class="item_group_fil">{{ cat_.name }}</span>
 								<span class="pull-right flip">

@@ -164,6 +164,69 @@
 
 /*-----------------------item-listview ----------------------*/
 
+/*header*/
+#topBarContainer {
+	background-color: #fff;
+	width: 100%;
+	line-height: 30px;
+	padding-top: 0;
+}
+
+.container-fluid {
+	padding-right: 15px;
+	padding-left: 15px;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.topBarIcon {
+	border: 1px solid #ccc;
+	background-color: #78aa00;
+	color: #fff;
+	box-sizing: border-box;
+	line-height: 27px;
+	height: 30px;
+	line-height: 28px;
+	width: 30px;
+	cursor: pointer;
+}
+
+.search-div {
+	padding-left: 15px;
+	padding-right: 8px;
+}
+.search_ip {
+	width: 200px;
+	max-width: 35vw;
+	padding: 0px 10px;
+	border-top: 1px solid rgb(204, 204, 204);
+	border-bottom: 1px solid rgb(204, 204, 204);
+	border-right: none;
+	border-left: none;
+}
+
+#goToCartBtn {
+	min-width: 120px;
+	background-color: #78aa00;
+	border: 0;
+	color: #fff;
+}
+
+.allButtons {
+	text-align: center;
+	border-width: 1px;
+	border-style: solid;
+	font-size: 14px!important;
+	height: 30px;
+	line-height: 29px;
+	padding: 0 10px;
+	width: auto!important;
+	display: inline-block;
+	margin: 0 5px;
+	box-sizing: border-box;
+}
+/*header*/
+
 .pepperi-sidebar {
 	margin-bottom: 24px;
 	z-index: 497;
