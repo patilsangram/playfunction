@@ -170,6 +170,7 @@
 	width: 100%;
 	line-height: 30px;
 	padding-top: 0;
+	padding-bottom: 8px;
 }
 
 .container-fluid {
@@ -179,7 +180,12 @@
 	margin-left: auto;
 }
 
+.item-grp-nav {
+	padding-left: 15px;
+}
+
 .topBarIcon {
+	text-align: center;
 	border: 1px solid #ccc;
 	background-color: #78aa00;
 	color: #fff;
@@ -189,6 +195,25 @@
 	line-height: 28px;
 	width: 30px;
 	cursor: pointer;
+}
+
+.topBarIcon:hover {
+	color: #fff;
+}
+
+.backbtn {
+	padding: 0;
+	margin: 5px 15px 0 10px;
+	height: 24px;
+	line-height: 24px;
+	min-width: 35px;
+	font-size: 12px!important;
+}
+
+.grnbtn {
+	background-color: #78aa00;
+	border: 0;
+	color: #fff;
 }
 
 .search-div {
@@ -250,6 +275,7 @@
 	padding-left: 15px;
 	margin-right: auto;
 	margin-left: 220px;
+	margin-top: -5px;
 }
 
 .pep-ul {
@@ -263,6 +289,10 @@
 	border-radius: 1px;
 	background-color: grey;
 	float: left;
+}
+
+#dvSmSearchHeader {
+	padding-left:25px;
 }
 
 .tree-li {
@@ -323,7 +353,7 @@
 	margin-left: auto;
 }
 
-.minus, .plus {
+.qty-minus, .qty-plus {
 	color: #ccc;
 	height: 21px;
 	line-height: 17px;
@@ -375,6 +405,14 @@
 	background: #ffc !important;
 }
 
-#dvSmSearchHeader {
-	padding: 0 0 0 15px;
+.item-tbl-body {
+	margin-top: -20px;
+	max-height: 400px;
+	overflow-y: auto;
+	padding-bottom: 5px;
+	overflow-x: hidden;
+}
+
+.item-list-body tr:first-child td {
+	border-top: none;
 }
