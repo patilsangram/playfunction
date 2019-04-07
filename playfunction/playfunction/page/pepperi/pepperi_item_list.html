@@ -22,11 +22,11 @@
 					</span>
 				</div>
 				<div class="pull-right flip search-div">
-					<a class="topBarIcon pull-right flip activeIcon">
+					<a class="topBarIcon pull-right flip search-btn">
 						<span class="fa fa-search fa-lg"></span>
 					</a>
 					<input class="pull-right search_ip" results="5" type="search" placeholder="Search...">
-					<a class="topBarIcon pull-right flip">
+					<a class="topBarIcon pull-right flip search-clr">
 						<span class="fa fa-close fa-lg"></span>
 					</a>
 				</div>
@@ -76,55 +76,7 @@
 			</div>
 		</div>
 		<div class="col-xs-10 pepperi-content">
-			<table class="table item-list-head">
-				<thead>
-				<tr>
-					<th style="width:101px;">Menu</th>
-					<th style="width:101px;">Image</th>
-					<th style="width:122px;">Item Code</th>
-					<th style="width:203px;">Name</th>
-					<th style="width:101px;">Inventory</th>
-					<th style="width:122px;">Price</th>
-					<th style="width:101px;">3M QTY</th>
-					<th style="width:calc(100%- 851px);">Unit Quantity</th>
-				</tr>
-				</thead>
-			</table>
-			<div class="item-tbl-body">
-				<table class="table table-hover item-list-body">
-					<tbody>
-						{% $.each(data.items, function(i, item){ %}
-							<tr>
-								<td class="ObjectMenu" title="ObjectMenu"
-								style="width:101px;" data-item="{{ item.name }}">
-									<i aria-hidden="true" class="fa fa-ellipsis-h fa-lg menu-dot"></i>
-								</td>
-								<td style="width:101px;" class="img-view"
-									data-img="{{ item.image }}">
-									<img class="item-img center-block" src="{{item.image}}"
-									title="Click to enlarge">
-								</td>
-								<td style="width:122px;">{{ item.name }}</td>
-								<td style="width:203px;">{{ item.item_name }}</td>
-								<td style="width:101px;">102</td>
-								<td style="width:122px;">$89.00</td>
-								<td style="width:101px;">3</td>
-								<td style="width:calc(100%- 851px);">
-									<div class="gQs">
-										<span  class="qty-minus">
-											<i class="fa fa-minus"></i>
-										</span>
-										<input  autocomplete="off" class="ellipsis custom-qs-field ng-pristine ng-valid ng-touched" name="UnitsQuantity" id="UnitsQuantity" title="0" value="0" type="number">
-										<span  class="qty-plus">
-											<i  aria-hidden="true" class="fa fa-plus"></i>
-										</span>
-									</div>
-								</td>
-							</tr>
-						{% }); %}
-					</tbody>
-				</table>
-			</div>
+			<!-- item table -->
 		</div>
 	</div>
 </div>

@@ -221,6 +221,7 @@
 	padding-right: 8px;
 }
 .search_ip {
+	height:30px;
 	width: 200px;
 	max-width: 35vw;
 	padding: 0px 10px;
