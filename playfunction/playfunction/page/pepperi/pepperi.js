@@ -100,15 +100,19 @@ frappe.pepperi = Class.extend({
 		})
 	},
 
-	render_item_grid: function(filters) {
+	render_item_grid: function(filters, update_grid=false) {
+		// TODO: store filters in localStorage, pass it as filters e.g. item_group, categories
 		var me = this;
 		frappe.call({
 			method: "playfunction.playfunction.page.pepperi.pepperi.get_items_and_categories",
 			args: filters,
 			callback: function(r) {
-				me.$main.empty()
-				me.$main.append(frappe.render_template("pepperi_item_list", {
-					"data": r.message, "item_group": filters["item_group"], "total": 0}))
+				if(!update_grid) {
+					me.$main.empty()
+					me.$main.append(frappe.render_template("pepperi_item_list", {
+						"data": r.message, "item_group": filters["item_group"], "total": 0}))
+				}
+				// TODO consider selected values. applied filters, send localstorage data as parameter
 				$('.pepperi-content').html(frappe.render_template('scope_items', {"data": r.message}))
 				me.search_item();
 				me.show_item_details();
@@ -119,6 +123,7 @@ frappe.pepperi = Class.extend({
 	},
 
 	search_item: function() {
+		//TODO - update item grid, check current page
 		var me = this;
 		$('.search-btn').click(function() {
 			var search_txt = $('.search_ip').val();
@@ -139,7 +144,30 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('.ObjectMenu').click(function() {
 			let item_code = $(this).attr("data-item")
+			$('.backbtn').removeClass('hide');
+			me.render_item_details(item_code);
 			frappe.msgprint(item_code)
+		})
+	},
+
+	render_item_details: function(item_code) {
+		var me = this;
+		frappe.call({
+			method: "playfunction.playfunction.page.pepperi.pepperi.get_item_details",
+			args: {"item_code": item_code},
+			callback: function(r) {
+				$('.pepperi-content').html(frappe.render_template('item_details', {"data": r.message[0]}))
+				me.back_to_item_grid();
+			}
+		})
+	},
+
+	back_to_item_grid: function() {
+		var me = this;
+		$('.backbtn').click(function() {
+			var item_group = JSON.parse(localStorage.getItem('item_group'));
+			$('.backbtn').addClass('hide');
+			me.render_item_grid({"item_group": item_group})
 		})
 	},
 

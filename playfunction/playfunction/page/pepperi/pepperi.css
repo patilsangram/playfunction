@@ -417,3 +417,16 @@
 .item-list-body tr:first-child td {
 	border-top: none;
 }
+
+/*------------------Item Details-------------------------*/
+
+.item-img-dv {
+	padding-bottom: 20px;
+	padding-top: 20px;
+}
+
+.item_data {
+	max-height: 500px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
