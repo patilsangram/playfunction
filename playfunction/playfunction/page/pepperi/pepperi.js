@@ -175,7 +175,22 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('.img-view').click(function() {
 			let image =  $(this).attr("data-img")
-			frappe.msgprint(image)
+	        let dialog = new frappe.ui.Dialog({
+            title: __('Image'),
+            fields: [
+                {
+                    fieldtype: 'HTML',
+                    fieldname: image,
+                    label: __(''),
+                    reqd: false,
+                    description: __(""),
+                    options: '<img width= "100%" height= "100%" align="center" src="' + image + '"' + '/>'
+
+                }
+            ]
+        });
+   		dialog.show();
+
 		})
 	},
 
