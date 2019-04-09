@@ -175,22 +175,21 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('.img-view').click(function() {
 			let image =  $(this).attr("data-img")
-	        let dialog = new frappe.ui.Dialog({
-            title: __('Image'),
-            fields: [
-                {
-                    fieldtype: 'HTML',
-                    fieldname: image,
-                    label: __(''),
-                    reqd: false,
-                    description: __(""),
-                    options: '<img width= "100%" height= "100%" align="center" src="' + image + '"' + '/>'
-
-                }
-            ]
-        });
-   		dialog.show();
-
+			let dialog = new frappe.ui.Dialog({
+				title: __("Image"),
+				fields: [{
+					fieldtype:"HTML",
+					fieldname: "image_view",
+				}]
+			});
+			var html_field = dialog.fields_dict.image_view.$wrapper;
+			html_field.empty();
+			html = repl("<div class='img-view' style='text-align:center'>\
+				<img src=%(img)s>\
+				</div>", {"img": image})
+			html_field.append(html)
+			dialog.$wrapper.find('.modal-dialog').css({"width":"750px", "height": "550px"});
+			dialog.show();
 		})
 	},
 
