@@ -1,0 +1,54 @@
+
+<div class="cart-main">
+	<div class="row cart-row total-row">
+		<div class="col-xs-4 cart-remark">
+			<span class="cart-label">Remark</span>
+		</div>
+		<div class="col-xs-8">
+			<div class="row">
+				<span class="cart-label">Sub Total:</span>{{ data.total }}
+			</div>
+			<div class="row">
+				<span class="cart-label">Discount 0%: </span>0.00
+			</div>
+			<div class="row">
+				<span class="cart-label">Tax 0%: </span>0.00
+			</div>
+			<div class="row">
+				<span class="cart-label">Total: </span>{{ data.total }}
+			</div>
+		</div>
+	</div><hr>
+	{% if (data.items.length) { %}
+		{% $.each(data.items, function(i, item){ %}
+			<div class="row cart-row cart-item">
+				<div class="col-xs-4 cart-item-img">
+					<img src="{{ item.img }}">
+				</div>
+				<div class="col-xs-6 cart-item-data">
+					<div class="row">
+						<span class="cart-label">Desc: </span>{{ item.item_code }}
+					</div>
+					<div class="row">
+						<span class="cart-label">Unit Price: </span>{{ item.price }}
+					</div>
+					<div class="row">
+						<span class="cart-label">Item Discount: </span>0%
+					</div>
+					<div class="row">
+						<span class="cart-label">Total Price After Discount: </span>{{ item.price * item.qty }}
+					</div>
+					<div class="row">
+						<span class="cart-label">Qty: </span>{{ item.qty }}
+					</div>
+				</div>
+				<div class="col-xs-2">
+					<i aria-hidden="true" class="fa fa-ellipsis-h fa-lg"></i>
+				</div>
+			</div><hr>
+		{% }); %}
+
+	{% } else { %}
+		<div class="no-data">Items not found</div>
+	{% } %}
+</div>

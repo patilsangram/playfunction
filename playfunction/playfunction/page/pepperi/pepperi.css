@@ -430,3 +430,47 @@
 	overflow-y: auto;
 	overflow-x: hidden;
 }
+
+/*------- cart -------------------------*/
+
+.cart-label {
+	font-weight: 700;
+    color: #888;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-right: 40px;
+}
+
+.cart-item-img {
+	height: 135px;
+    max-width: 130px;
+    margin-left: 25px;
+}
+
+.cart-item-data {
+	margin-left:210px;
+}
+
+.cart-main {
+	margin-top: 20px;
+	max-height: 450px;
+	overflow-y: auto;
+	padding-bottom: 5px;
+	overflow-x: hidden;
+}
+
+.cart-remark {
+	padding-left: 50px;
+}
+
+.pepCheckout {
+	min-width: 120px;
+    border: 0;
+}
+.no-data {
+	font: 27px "Segoe UI",arial,serif;
+    text-align: center;
+    margin-top: 100px;
+}

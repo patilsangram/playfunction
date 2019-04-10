@@ -20,6 +20,9 @@
 							id="goToCartBtn">
 						<span class="fa fa-shopping-cart fa-lg">&nbsp;</span>Cart
 						</button>
+						<button class="pepCheckout allButtons grnbtn hide" type="button">
+							<span>Checkout</span>
+						</button>
 					</span>
 				</div>
 				<div class="pull-right flip search-div">
@@ -40,7 +43,7 @@
 				<ul class="pep-ul">
 					{% $.each(data.item_group, function(i, group){ %}
 						<div class="mat-tree">
-							{% if (i==0) { %}
+							{% if (item_group == group.name) { %}
 								<li class="tree-li-grp selected" data-group="{{group.name}}">
 							{% } else { %}
 								<li class="tree-li-grp" data-group="{{group.name}}">

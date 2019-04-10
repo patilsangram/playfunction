@@ -17,8 +17,8 @@
 		<div class="panel-heading">Pricing & Inventory</div>
 		<div class="panel-body">
 			<ul style="list-style-type:none;">
-				<li><label>Price($)</label>: 0</li>
-				<li><label>Inventory</label>: {{data.qty }}</li>
+				<li><label>Price($)</label>: {{ data.price || 0 }}</li>
+				<li><label>Inventory</label>: {{data.qty || 0 }}</li>
 			</ul>
 		</div>
 	</div>
