@@ -15,7 +15,7 @@ def get_items_and_categories(filters):
 	filters = json.loads(filters)
 	price_list = "Standard Selling"
 
-	item_group = frappe.get_all("Item Group")
+	item_group = get_item_groups()
 
 	cat_subcat = frappe.db.sql("select group_concat(name) as subcategory, category \
 		from `tabItem Subcategory` group by category", as_dict=True)
