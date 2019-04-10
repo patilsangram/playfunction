@@ -118,18 +118,18 @@ frappe.pepperi = Class.extend({
 					me.cur_page = "Grid View"
 					me.$main.append(frappe.render_template("pepperi_item_list", {
 						"data": r.message, "item_group": filters["item_group"], "total": 0}))
+					me.search_item();
+					me.gotocart();
+					me.show_item_details();
+					me.image_view();
+					me.unit_qty_change();
+
+					me.item_group_trigger();
+					me.category_trigger();
+					me.back_to_item_grid();
 				}
 				// TODO consider selected values. applied filters, send localstorage data as parameter
 				$('.pepperi-content').html(frappe.render_template('scope_items', {"data": r.message}))
-				me.search_item();
-				me.gotocart();
-				me.show_item_details();
-				me.image_view();
-				me.unit_qty_change();
-
-				me.item_group_trigger();
-				me.category_trigger();
-				me.back_to_item_grid();
 			}
 		})
 	},
@@ -139,24 +139,30 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('.search-btn').click(function() {
 			var search_txt = $('.search_ip').val();
-			if(search_txt) {
-				localStorage.setItem("search_txt", search_txt)
-				me.render_item_grid(true)
+			if(me.cur_page == "Grid View") {
+				if(search_txt) {
+					localStorage.setItem("search_txt", search_txt)
+					me.render_item_grid(true)
+				}
 			}
 		})
 
 		$('.search-clr').click(function() {
 			var search_txt = $('.search_ip').val();
-			if(search_txt) {
-				$('.search_ip').val("");
-				localStorage.removeItem("search_txt");
-				me.render_item_grid(true)
+			if(me.cur_page == "Grid View") {
+				if(search_txt) {
+					$('.search_ip').val("");
+					localStorage.removeItem("search_txt");
+					me.render_item_grid(true)
+				}
 			}
 		})
 	},
 
 	gotocart: function() {
+		var me = this;
 		$('#goToCartBtn').click(function() {
+			me.cur_page = "Cart"
 			$('.backbtn').removeClass('hide');
 			$('.pepperi-content').html(frappe.render_template("pepperi_cart"))
 		})
@@ -165,10 +171,10 @@ frappe.pepperi = Class.extend({
 	show_item_details: function() {
 		var me = this;
 		$('.ObjectMenu').click(function() {
+			me.cur_page = "Item Details"
 			let item_code = $(this).attr("data-item")
 			$('.backbtn').removeClass('hide');
 			me.render_item_details(item_code);
-			frappe.msgprint(item_code)
 		})
 	},
 
@@ -186,8 +192,8 @@ frappe.pepperi = Class.extend({
 	back_to_item_grid: function() {
 		var me = this;
 		$('.backbtn').click(function() {
-			var item_group = JSON.parse(localStorage.getItem('item_group'));
 			$('.backbtn').addClass('hide');
+			me.cur_page = "Grid View"
 			me.render_item_grid(true)
 		})
 	},
@@ -247,10 +253,15 @@ frappe.pepperi = Class.extend({
 	item_group_trigger: function() {
 		var me = this;
 		$('.tree-li-grp').click(function() {
-			$('.tree-li-grp').removeClass("selected");
-			$(this).addClass("selected");
-			localStorage.setItem('item_group', $(this).attr("data-group"))
-			me.render_item_grid(true);
+			console.log("Hellooo")
+			if(me.cur_page == "Grid View") {
+				let item_group = $(this).attr("data-group")
+				$('.tree-li-grp').removeClass("selected");
+				$(this).addClass("selected");
+				localStorage.setItem('item_group', item_group)
+				$('.item-grp-nav').text(item_group)
+				me.render_item_grid(true);
+			}
 		})
 	},
 

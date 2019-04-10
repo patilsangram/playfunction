@@ -46,7 +46,7 @@ def get_items_and_categories(filters):
 			`tabBin` b on b.item_code = i.item_code and d.default_warehouse = b.warehouse
 		{}
 		group by i.name
-	""".format(company, cond), as_dict=True, debug=1)
+	""".format(company, cond), as_dict=True)
 
 	data = {"item_group": item_group, "category": categories, "items": item_details}
 	return data
@@ -70,4 +70,5 @@ def get_item_details(item_code):
 			i.name = '{}'
 		group by i.name
 	""".format(company, item_code), as_dict=True)
+	print "__________________________________________", item_details
 	return item_details
