@@ -41,9 +41,9 @@
 					{% $.each(data.item_group, function(i, group){ %}
 						<div class="mat-tree">
 							{% if (i==0) { %}
-								<li class="tree-li selected">
+								<li class="tree-li-grp selected">
 							{% } else { %}
-								<li class="tree-li">
+								<li class="tree-li-grp">
 							{% } %}
 								<span class="rectangle"></span>
 								<span class="item_group_fil">{{ group.name }}</span>
@@ -62,11 +62,11 @@
 			</div>
 			<div class="item-category-ul">
 				<ul class="pep-ul">
-					{% $.each(data.category, function(i, cat_){ %}
+					{% $.each(data.category, function(cat, subcat){ %}
 						<div class="mat-tree">
-							<li class="tree-li">
+							<li class="tree-li-cat" data-subcat="{{ subcat }}">
 								<span class="rectangle"></span>
-								<span class="item_group_fil">{{ cat_.name }}</span>
+								<span class="item_group_fil">{{ cat }}</span>
 								<span class="pull-right flip">
 									<i aria-hidden="true" class="fa fa-angle-right"></i>
 								</span>

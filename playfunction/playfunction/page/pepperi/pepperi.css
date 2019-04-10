@@ -296,7 +296,7 @@
 	padding-left:25px;
 }
 
-.tree-li {
+.tree-li-grp, .tree-li-cat {
 	max-width: 95%;
 	font-family: segoeuib,sans-serif;
 	font-size: 14px;
@@ -305,7 +305,7 @@
 	cursor: pointer;
 }
 
-.tree-li.selected {
+.tree-li-grp.selected, .tree-li-cat.selected {
 	color: #78aa00;
 	background-color: #fff;
 	font-weight: 600;
@@ -398,7 +398,7 @@
 	border-color: #78aa00 !important;
 	background-color: #fff;
 }
-.tree-li:hover{
+.tree-li-grp:hover,.tree-li-cat:hover{
 	color: #78aa00;
 }
 
