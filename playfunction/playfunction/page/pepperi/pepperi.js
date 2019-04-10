@@ -30,6 +30,7 @@ frappe.pepperi = Class.extend({
 
 		localStorage.removeItem("items");
 		localStorage.removeItem("filters");
+		localStorage.removeItem("search_txt");
 	},
 
 	bind_events: function() {
@@ -112,12 +113,12 @@ frappe.pepperi = Class.extend({
 			method: "playfunction.playfunction.page.pepperi.pepperi.get_items_and_categories",
 			args: {"filters": filters},
 			callback: function(r) {
-				console.log("----", r.message)
 				if(!update_grid) {
 					me.$main.empty()
 					me.cur_page = "Grid View"
 					me.$main.append(frappe.render_template("pepperi_item_list", {
 						"data": r.message, "item_group": filters["item_group"], "total": 0}))
+					$('.pepperi-content').html(frappe.render_template('scope_items', {"data": r.message}))
 					me.search_item();
 					me.gotocart();
 					me.show_item_details();
@@ -128,8 +129,13 @@ frappe.pepperi = Class.extend({
 					me.category_trigger();
 					me.back_to_item_grid();
 				}
-				// TODO consider selected values. applied filters, send localstorage data as parameter
-				$('.pepperi-content').html(frappe.render_template('scope_items', {"data": r.message}))
+				else {
+					$('.pepperi-content').html(frappe.render_template('scope_items', {"data": r.message}))
+					me.show_item_details();
+					me.image_view();
+					me.unit_qty_change();
+					me.back_to_item_grid();
+				}
 			}
 		})
 	},
@@ -163,8 +169,10 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('#goToCartBtn').click(function() {
 			me.cur_page = "Cart"
+			let data = me.prepare_cart_data();
 			$('.backbtn').removeClass('hide');
-			$('.pepperi-content').html(frappe.render_template("pepperi_cart"))
+			$('.pepCheckout').removeClass('hide');
+			$('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data}))
 		})
 	},
 
@@ -193,6 +201,7 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('.backbtn').click(function() {
 			$('.backbtn').addClass('hide');
+			$('.pepCheckout').addClass('hide');
 			me.cur_page = "Grid View"
 			me.render_item_grid(true)
 		})
@@ -227,9 +236,11 @@ frappe.pepperi = Class.extend({
 			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
 			if (qty && parseInt(qty) > 0) {
 				var item_code = $(this).closest("div.gQs").attr("data-item");
+				var price = parseFloat($(this).closest("div.gQs").attr("data-price"));
+				var img = $(this).closest("div.gQs").attr("data-img");
 				qty = parseInt(qty) - 1
 				$(this).closest("div.gQs").find("input[name='UnitsQty']").val(qty);
-				me.update_cart(item_code, qty);
+				me.update_cart(item_code, qty, price, img);
 			}
 		})
 		// increase-qty
@@ -237,23 +248,25 @@ frappe.pepperi = Class.extend({
 			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
 			qty = parseInt(qty) + 1
 			var item_code = $(this).closest("div.gQs").attr("data-item");
+			var price = parseFloat($(this).closest("div.gQs").attr("data-price"));
+			var img = $(this).closest("div.gQs").attr("data-img");
 			$(this).closest("div.gQs").find("input[name='UnitsQty']").val(qty);
-
-			me.update_cart(item_code, qty);
+			me.update_cart(item_code, qty, price, img);
 		})
 		// qty-change
 		$('.unitqty').change(function() {
 			var qty = parseInt($(this).val()) || 0;
 			var item_code = $(this).closest("div.gQs").attr("data-item");
+			var price = parseFloat($(this).closest("div.gQs").attr("data-price"));
+			var img = $(this).closest("div.gQs").attr("data-img");
 			$(this).closest("div.gQs").find("input[name='UnitsQty']").val(qty);
-			me.update_cart(item_code, qty)
+			me.update_cart(item_code, qty, price, img);
 		})
 	},
 
 	item_group_trigger: function() {
 		var me = this;
 		$('.tree-li-grp').click(function() {
-			console.log("Hellooo")
 			if(me.cur_page == "Grid View") {
 				let item_group = $(this).attr("data-group")
 				$('.tree-li-grp').removeClass("selected");
@@ -273,24 +286,41 @@ frappe.pepperi = Class.extend({
 		})
 	},
 
-	update_cart: function(item_code, qty) {
+	update_cart: function(item_code, qty, price, img) {
 		var items = JSON.parse(localStorage.getItem('items')) || {};
 		if (qty == 0) {
 			delete items[item_code]
 		}
 		else {
-			items[item_code] = qty
+			items[item_code] = [qty, price, img]
 		}
 		localStorage.setItem('items', JSON.stringify(items));
-		console.log(JSON.parse(localStorage.getItem('items')))
-		//frappe.msgprint(repl("%(item)s - %(qty)s", {"item": item_code, "qty": qty}))
 	},
 
-	get_localstorage_data: function() {
+	get_localstorage_data: function(key=false) {
 		data = {}
-		for (let key of ["item_group", "search_txt", "items", "category"]) {
-			data[key] = localStorage.getItem(key) || ""
+		let keys = key ? [key]:["item_group", "search_txt", "items", "category"]
+		for (let key of keys) {
+			if(key == "items") {
+				data[key] = JSON.parse(localStorage.getItem(key)) || {}
+			}
+			else {
+				data[key] = localStorage.getItem(key) || ""
+			}
 		}
 		return data
+	},
+
+	prepare_cart_data: function() {
+		var me = this;
+		var data = []
+		var total = 0
+		var cart_data = me.get_localstorage_data("items");
+		$.each(cart_data.items || [], function(k,v) {
+			let row = {"item_code": k, "qty": v[0], "price": v[1], "img": v[2]}
+			total += parseFloat(v[1] || 0) > 0 ? parseFloat(v[1]) * parseInt(v[0]) : 0.00
+			data.push(row)
+		})
+		return {"items": data, "total": total}
 	}
 })
