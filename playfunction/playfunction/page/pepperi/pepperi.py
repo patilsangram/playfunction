@@ -4,7 +4,8 @@ import frappe, json, erpnext
 @frappe.whitelist()
 def get_item_groups():
 	fields = ["name", "parent_item_group", "is_group", "image"]
-	item_groups = frappe.db.get_all("Item Group", fields)
+	erp_item_group = ['All Item Groups','Sub Assemblies','Services','Raw Material','Products','Consumable']
+	item_groups = frappe.db.get_all("Item Group", {"name": ("not in", erp_item_group)}, fields)
 	return item_groups
 
 @frappe.whitelist()
