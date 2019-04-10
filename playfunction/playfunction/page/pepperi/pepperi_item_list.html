@@ -41,9 +41,9 @@
 					{% $.each(data.item_group, function(i, group){ %}
 						<div class="mat-tree">
 							{% if (i==0) { %}
-								<li class="tree-li-grp selected">
+								<li class="tree-li-grp selected" data-group="{{group.name}}">
 							{% } else { %}
-								<li class="tree-li-grp">
+								<li class="tree-li-grp" data-group="{{group.name}}">
 							{% } %}
 								<span class="rectangle"></span>
 								<span class="item_group_fil">{{ group.name }}</span>
