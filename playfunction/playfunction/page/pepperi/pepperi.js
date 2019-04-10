@@ -106,19 +106,22 @@ frappe.pepperi = Class.extend({
 
 	render_item_grid: function(update_grid=false) {
 		// TODO: store filters in localStorage, pass it as filters e.g. item_group, categories
-		var me = this;
 		//filters = {"item_group": "Products", "category": {"Collection": ["Vintage"]}, "search_txt": "ada"}
+		var me = this;
 		filters = me.get_localstorage_data()
 		frappe.call({
 			method: "playfunction.playfunction.page.pepperi.pepperi.get_items_and_categories",
 			args: {"filters": filters},
 			callback: function(r) {
+				let localdata = JSON.parse(localStorage.getItem("items")) || {}
 				if(!update_grid) {
 					me.$main.empty()
 					me.cur_page = "Grid View"
 					me.$main.append(frappe.render_template("pepperi_item_list", {
 						"data": r.message, "item_group": filters["item_group"], "total": 0}))
-					$('.pepperi-content').html(frappe.render_template('scope_items', {"data": r.message}))
+					$('.pepperi-content').html(frappe.render_template('scope_items', 
+						{"data": r.message, "local": localdata})
+					)
 					me.search_item();
 					me.gotocart();
 					me.show_item_details();
@@ -130,7 +133,9 @@ frappe.pepperi = Class.extend({
 					me.back_to_item_grid();
 				}
 				else {
-					$('.pepperi-content').html(frappe.render_template('scope_items', {"data": r.message}))
+					$('.pepperi-content').html(frappe.render_template('scope_items', 
+						{"data": r.message, "local": localdata})
+					)
 					me.show_item_details();
 					me.image_view();
 					me.unit_qty_change();
@@ -173,6 +178,23 @@ frappe.pepperi = Class.extend({
 			$('.backbtn').removeClass('hide');
 			$('.pepCheckout').removeClass('hide');
 			$('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data}))
+			me.checkout()
+		})
+	},
+
+	checkout: function() {
+		var me = this;
+		var data = me.get_localstorage_data();
+		$('.pepCheckout').click(function() {
+			frappe.call({
+				method: "playfunction.playfunction.page.pepperi.pepperi.checkout",
+				args: {"data": data},
+				callback: function(r) {
+					if(r.message) {
+						frappe.set_route("Form", "Quotation", r.message);
+					}
+				}
+			})
 		})
 	},
 

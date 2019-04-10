@@ -469,3 +469,8 @@
 	min-width: 120px;
     border: 0;
 }
+.no-data {
+	font: 27px "Segoe UI",arial,serif;
+    text-align: center;
+    margin-top: 100px;
+}

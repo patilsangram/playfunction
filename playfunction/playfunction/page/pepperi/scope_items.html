@@ -1,50 +1,58 @@
-<table class="table item-list-head">
-	<thead>
-	<tr>
-		<th style="width:101px;">Menu</th>
-		<th style="width:101px;">Image</th>
-		<th style="width:122px;">Item Code</th>
-		<th style="width:203px;">Name</th>
-		<th style="width:101px;">Inventory</th>
-		<th style="width:122px;">Price</th>
-		<th style="width:101px;">3M QTY</th>
-		<th style="width:calc(100%- 851px);">Unit Quantity</th>
-	</tr>
-	</thead>
-</table>
-<div class="item-tbl-body">
-	<table class="table table-hover item-list-body">
-		<tbody>
-			{% $.each(data.items, function(i, item){ %}
-				<tr>
-					<td class="ObjectMenu" title="ObjectMenu"
-					style="width:101px;" data-item="{{ item.item_code }}">
-						<i aria-hidden="true" class="fa fa-ellipsis-h fa-lg menu-dot"></i>
-					</td>
-					<td style="width:101px;" class="img-view"
-						data-img="{{ item.image }}">
-						<img class="item-img center-block" src="{{item.image}}"
-						title="Click to enlarge">
-					</td>
-					<td style="width:122px;">{{ item.item_code }}</td>
-					<td style="width:203px;">{{ item.item_name }}</td>
-					<td style="width:101px;">{{ item.qty || 0 }}</td>
-					<td style="width:122px;">{{ item.price || 0 }}</td>
-					<td style="width:101px;">-</td>
-					<td style="width:calc(100%- 851px);">
-						<div class="gQs" data-item="{{ item.item_code }}" data-price="{{ item.price || 0}}"
-						data-img="{{ item.image }}">
-							<span  class="qty-minus">
-								<i class="fa fa-minus"></i>
-							</span>
-							<input  autocomplete="off" class="ellipsis custom-qs-field unitqty" name="UnitsQty" title="0" value="0" type="number">
-							<span  class="qty-plus">
-								<i  aria-hidden="true" class="fa fa-plus"></i>
-							</span>
-						</div>
-					</td>
-				</tr>
-			{% }); %}
-		</tbody>
+{% if (data.items.length) { %}
+	<table class="table item-list-head">
+		<thead>
+		<tr>
+			<th style="width:101px;">Menu</th>
+			<th style="width:101px;">Image</th>
+			<th style="width:122px;">Item Code</th>
+			<th style="width:203px;">Name</th>
+			<th style="width:101px;">Inventory</th>
+			<th style="width:122px;">Price</th>
+			<th style="width:101px;">3M QTY</th>
+			<th style="width:calc(100%- 851px);">Unit Quantity</th>
+		</tr>
+		</thead>
 	</table>
-</div>
+	<div class="item-tbl-body">
+		<table class="table table-hover item-list-body">
+			<tbody>
+				{% $.each(data.items, function(i, item){ %}
+					<tr>
+						<td class="ObjectMenu" title="ObjectMenu"
+						style="width:101px;" data-item="{{ item.item_code }}">
+							<i aria-hidden="true" class="fa fa-ellipsis-h fa-lg menu-dot"></i>
+						</td>
+						<td style="width:101px;" class="img-view"
+							data-img="{{ item.image }}">
+							<img class="item-img center-block" src="{{item.image}}"
+							title="Click to enlarge">
+						</td>
+						<td style="width:122px;">{{ item.item_code }}</td>
+						<td style="width:203px;">{{ item.item_name }}</td>
+						<td style="width:101px;">{{ item.qty || 0 }}</td>
+						<td style="width:122px;">{{ item.price || 0 }}</td>
+						<td style="width:101px;">-</td>
+						<td style="width:calc(100%- 851px);">
+							<div class="gQs" data-item="{{ item.item_code }}" data-price="{{ item.price || 0}}"
+							data-img="{{ item.image }}">
+								<span  class="qty-minus">
+									<i class="fa fa-minus"></i>
+								</span>
+								{% if (item.item_code in local) { %}
+									<input  autocomplete="off" class="ellipsis custom-qs-field unitqty" name="UnitsQty" title="{{ local[item.item_code][0] }}" value="{{ local[item.item_code][0] }}" type="number">
+								{% } else { %}
+									<input  autocomplete="off" class="ellipsis custom-qs-field unitqty" name="UnitsQty" title="0" value="0" type="number">
+								{% } %}
+								<span  class="qty-plus">
+									<i  aria-hidden="true" class="fa fa-plus"></i>
+								</span>
+							</div>
+						</td>
+					</tr>
+				{% }); %}
+			</tbody>
+		</table>
+	</div>
+{% } else { %}
+	<div class="no-data">Items not found</div>
+{% } %}
