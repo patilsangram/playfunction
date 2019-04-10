@@ -15,6 +15,7 @@ frappe.pepperi = Class.extend({
 		this.$wrapper.append(frappe.render_template("pepperi_layout"));
 		this.$header = this.$wrapper.find(".pepperi-header");
 		this.$main = this.$wrapper.find(".pepperi-main");
+		this.cur_page = ""
 		this.home();
 		this.bind_events();
 	},
@@ -24,6 +25,7 @@ frappe.pepperi = Class.extend({
 		this.$main.empty()
 		this.$header.append(frappe.render_template("pep_header"))
 		this.$main.append(frappe.render_template("pepperi_home"))
+		this.cur_page = "pepperi_home"
 		this.bind_events();
 
 		localStorage.removeItem("items");
@@ -84,6 +86,7 @@ frappe.pepperi = Class.extend({
 			freeze_message: __("Please wait ..."),
 			callback: function(r) {
 				me.$main.empty()
+				me.cur_page = "Item Catalog"
 				me.$main.append(frappe.render_template("item_catalog", {"data":r.message}))
 				me.item_catalog_trigger();
 			}
@@ -95,29 +98,38 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('.item_catlog').click(function() {
 			var item_group = $(this).attr("data-item-cat")
-			localStorage.setItem('item_group', JSON.stringify(item_group));
-			me.render_item_grid({'item_group': item_group})
+			localStorage.setItem('item_group', item_group);
+			me.render_item_grid()
 		})
 	},
 
-	render_item_grid: function(filters, update_grid=false) {
+	render_item_grid: function(update_grid=false) {
 		// TODO: store filters in localStorage, pass it as filters e.g. item_group, categories
 		var me = this;
+		//filters = {"item_group": "Products", "category": {"Collection": ["Vintage"]}, "search_txt": "ada"}
+		filters = me.get_localstorage_data()
 		frappe.call({
 			method: "playfunction.playfunction.page.pepperi.pepperi.get_items_and_categories",
-			args: filters,
+			args: {"filters": filters},
 			callback: function(r) {
+				console.log("----", r.message)
 				if(!update_grid) {
 					me.$main.empty()
+					me.cur_page = "Grid View"
 					me.$main.append(frappe.render_template("pepperi_item_list", {
 						"data": r.message, "item_group": filters["item_group"], "total": 0}))
+					me.search_item();
+					me.gotocart();
+					me.show_item_details();
+					me.image_view();
+					me.unit_qty_change();
+
+					me.item_group_trigger();
+					me.category_trigger();
+					me.back_to_item_grid();
 				}
 				// TODO consider selected values. applied filters, send localstorage data as parameter
 				$('.pepperi-content').html(frappe.render_template('scope_items', {"data": r.message}))
-				me.search_item();
-				me.show_item_details();
-				me.image_view();
-				me.unit_qty_change();
 			}
 		})
 	},
@@ -127,26 +139,42 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('.search-btn').click(function() {
 			var search_txt = $('.search_ip').val();
-			if(search_txt) {
-				frappe.msgprint(search_txt)
+			if(me.cur_page == "Grid View") {
+				if(search_txt) {
+					localStorage.setItem("search_txt", search_txt)
+					me.render_item_grid(true)
+				}
 			}
 		})
 
 		$('.search-clr').click(function() {
 			var search_txt = $('.search_ip').val();
-			if(search_txt) {
-				$('.search_ip').val("");
+			if(me.cur_page == "Grid View") {
+				if(search_txt) {
+					$('.search_ip').val("");
+					localStorage.removeItem("search_txt");
+					me.render_item_grid(true)
+				}
 			}
+		})
+	},
+
+	gotocart: function() {
+		var me = this;
+		$('#goToCartBtn').click(function() {
+			me.cur_page = "Cart"
+			$('.backbtn').removeClass('hide');
+			$('.pepperi-content').html(frappe.render_template("pepperi_cart"))
 		})
 	},
 
 	show_item_details: function() {
 		var me = this;
 		$('.ObjectMenu').click(function() {
+			me.cur_page = "Item Details"
 			let item_code = $(this).attr("data-item")
 			$('.backbtn').removeClass('hide');
 			me.render_item_details(item_code);
-			frappe.msgprint(item_code)
 		})
 	},
 
@@ -157,7 +185,6 @@ frappe.pepperi = Class.extend({
 			args: {"item_code": item_code},
 			callback: function(r) {
 				$('.pepperi-content').html(frappe.render_template('item_details', {"data": r.message[0]}))
-				me.back_to_item_grid();
 			}
 		})
 	},
@@ -165,9 +192,9 @@ frappe.pepperi = Class.extend({
 	back_to_item_grid: function() {
 		var me = this;
 		$('.backbtn').click(function() {
-			var item_group = JSON.parse(localStorage.getItem('item_group'));
 			$('.backbtn').addClass('hide');
-			me.render_item_grid({"item_group": item_group})
+			me.cur_page = "Grid View"
+			me.render_item_grid(true)
 		})
 	},
 
@@ -223,6 +250,29 @@ frappe.pepperi = Class.extend({
 		})
 	},
 
+	item_group_trigger: function() {
+		var me = this;
+		$('.tree-li-grp').click(function() {
+			console.log("Hellooo")
+			if(me.cur_page == "Grid View") {
+				let item_group = $(this).attr("data-group")
+				$('.tree-li-grp').removeClass("selected");
+				$(this).addClass("selected");
+				localStorage.setItem('item_group', item_group)
+				$('.item-grp-nav').text(item_group)
+				me.render_item_grid(true);
+			}
+		})
+	},
+
+	category_trigger: function() {
+		var me = this;
+		$('.tree-li-cat').click(function() {
+			let sub_cat = $(this).attr('data-subcat').split(",")
+			me.render_item_grid(true)
+		})
+	},
+
 	update_cart: function(item_code, qty) {
 		var items = JSON.parse(localStorage.getItem('items')) || {};
 		if (qty == 0) {
@@ -234,5 +284,13 @@ frappe.pepperi = Class.extend({
 		localStorage.setItem('items', JSON.stringify(items));
 		console.log(JSON.parse(localStorage.getItem('items')))
 		//frappe.msgprint(repl("%(item)s - %(qty)s", {"item": item_code, "qty": qty}))
+	},
+
+	get_localstorage_data: function() {
+		data = {}
+		for (let key of ["item_group", "search_txt", "items", "category"]) {
+			data[key] = localStorage.getItem(key) || ""
+		}
+		return data
 	}
 })
