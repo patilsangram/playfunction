@@ -187,7 +187,7 @@ frappe.pepperi = Class.extend({
 		var data = me.get_localstorage_data();
 		$('.pepCheckout').click(function() {
 			frappe.call({
-				method: "playfunction.playfunction.page.pepperi.pepperi.checkout",
+				method: "playfunction.playfunction.custom_script.quotation.checkout",
 				args: {"data": data},
 				callback: function(r) {
 					if(r.message) {
@@ -254,13 +254,11 @@ frappe.pepperi = Class.extend({
 	        
 			html_field.append(html)
 			dialog.fields_dict.plus.input.onclick = function() {
-			 	count++;
-				$('img').css({"zoom":count});
+				$('img').css({"zoom":++count});
 
 			}
 			dialog.fields_dict.minus.input.onclick = function() {
-			 	count--;
-				$('img').css({"zoom":count});
+				$('img').css({"zoom":--count});
 			}
 
    			dialog.$wrapper.find('.modal-dialog').css({"width":"1200px", "height": "600px", "overflow":"auto"});
