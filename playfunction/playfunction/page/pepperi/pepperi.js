@@ -187,7 +187,7 @@ frappe.pepperi = Class.extend({
 		var data = me.get_localstorage_data();
 		$('.pepCheckout').click(function() {
 			frappe.call({
-				method: "playfunction.playfunction.custom_script.quotation.checkout",
+				method: "playfunction.playfunction.custom_script.quotation.quotation.checkout_order",
 				args: {"data": data},
 				callback: function(r) {
 					if(r.message) {
