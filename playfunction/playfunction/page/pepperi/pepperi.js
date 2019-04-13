@@ -322,7 +322,7 @@ frappe.pepperi = Class.extend({
 			console.log("top", search_pos)
 			let sub_cat = $(this).attr('data-subcat').split(",")
 			//me.render_item_grid(true)
-			$('.subcat_menu').removeClass('hide')
+			//$('.subcat_menu').removeClass('hide')
 			$('.subcat_menu').css({
 				"top": search_pos,
 				"left": "218.328px",
@@ -335,7 +335,7 @@ frappe.pepperi = Class.extend({
 				"z-index": 1100,
 				"max-width": "88%!important",
 			});
-			$('.subcat_menu').show();
+			//$('.subcat_menu').show();
 
 		})
 	},
