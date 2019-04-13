@@ -187,7 +187,7 @@ frappe.pepperi = Class.extend({
 		var data = me.get_localstorage_data();
 		$('.pepCheckout').click(function() {
 			frappe.call({
-				method: "playfunction.playfunction.custom_script.quotation.checkout",
+				method: "playfunction.playfunction.custom_script.quotation.quotation.checkout_order",
 				args: {"data": data},
 				callback: function(r) {
 					if(r.message) {
@@ -317,9 +317,26 @@ frappe.pepperi = Class.extend({
 
 	category_trigger: function() {
 		var me = this;
-		$('.tree-li-cat').click(function() {
+		$('.tree-li-cat').click(function(e) {
+			var search_pos = $("#dvSmSearchHeader").position();
+			console.log("top", search_pos)
 			let sub_cat = $(this).attr('data-subcat').split(",")
-			me.render_item_grid(true)
+			//me.render_item_grid(true)
+			//$('.subcat_menu').removeClass('hide')
+			$('.subcat_menu').css({
+				"top": search_pos,
+				"left": "218.328px",
+				"bottom": e.pageX,
+				"display": "block",
+				"position": "fixed",
+				"height": "auto!important",
+				"width": '331px',
+				"overflow": "auto",
+				"z-index": 1100,
+				"max-width": "88%!important",
+			});
+			//$('.subcat_menu').show();
+
 		})
 	},
 

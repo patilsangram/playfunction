@@ -467,10 +467,25 @@
 
 .pepCheckout {
 	min-width: 120px;
-    border: 0;
+	border: 0;
 }
 .no-data {
 	font: 27px "Segoe UI",arial,serif;
-    text-align: center;
-    margin-top: 100px;
+	text-align: center;
+	margin-top: 100px;
+}
+
+/*---------sidebar category filter--------*/
+.subcat_menu {
+	left: 218.328px;
+	bottom: 10px;
+	display: block;
+	position: fixed;
+	height: auto!important;
+	width: 331px;
+	overflow: auto;
+	border: 1px solid #bababa;
+	z-index: 1100;
+	max-width: 88%!important;
+	background-color: #fff;
 }

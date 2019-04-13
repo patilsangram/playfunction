@@ -1,8 +1,8 @@
-import frappe, json, erpnext
+import frappe, json
 
 
 @frappe.whitelist()
-def checkout(data):
+def checkout_order(data):
 	try:
 		data = json.loads(data)
 		cart_items = data.get("items")
