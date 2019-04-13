@@ -187,7 +187,7 @@ frappe.pepperi = Class.extend({
 		var data = me.get_localstorage_data();
 		$('.pepCheckout').click(function() {
 			frappe.call({
-				method: "playfunction.playfunction.page.pepperi.pepperi.checkout",
+				method: "playfunction.playfunction.custom_script.quotation.checkout",
 				args: {"data": data},
 				callback: function(r) {
 					if(r.message) {
@@ -231,22 +231,37 @@ frappe.pepperi = Class.extend({
 
 	image_view: function() {
 		var me = this;
+		var count=1;
 		$('.img-view').click(function() {
 			let image =  $(this).attr("data-img")
 			let dialog = new frappe.ui.Dialog({
 				title: __("Image"),
-				fields: [{
+				fields: [
+				{"fieldtype": "Button", "label": __("+"), "fieldname": "plus"},
+				{"fieldtype": "Button", "label": __("-"), "fieldname": "minus"},
+				{
 					fieldtype:"HTML",
 					fieldname: "image_view",
-				}]
+				}
+
+				]
 			});
 			var html_field = dialog.fields_dict.image_view.$wrapper;
 			html_field.empty();
 			html = repl("<div class='img-view' style='text-align:center'>\
-				<img src=%(img)s>\
+				<img src=%(img)s >\
 				</div>", {"img": image})
+	        
 			html_field.append(html)
-			dialog.$wrapper.find('.modal-dialog').css({"width":"750px", "height": "550px"});
+			dialog.fields_dict.plus.input.onclick = function() {
+				$('img').css({"zoom":++count});
+
+			}
+			dialog.fields_dict.minus.input.onclick = function() {
+				$('img').css({"zoom":--count});
+			}
+
+   			dialog.$wrapper.find('.modal-dialog').css({"width":"1200px", "height": "600px", "overflow":"auto"});
 			dialog.show();
 		})
 	},
