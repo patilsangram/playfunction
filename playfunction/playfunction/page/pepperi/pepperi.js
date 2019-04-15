@@ -190,19 +190,26 @@ frappe.pepperi = Class.extend({
 
 	checkout: function() {
 		var me = this;
-		var data = me.get_localstorage_data();
-		$('.pepCheckout').click(function() {
+
+		 $(".dropdown-menu li a").click(function(){
+			var data = me.get_localstorage_data();
+			var get_child=$(this).data('value');
 			frappe.call({
-				method: "playfunction.playfunction.custom_script.quotation.quotation.checkout_order",
-				args: {"data": data},
-				callback: function(r) {
-					if(r.message) {
-						frappe.set_route("Form", "Quotation", r.message);
-					}
-				}
-			})
-		})
+				 	method: "playfunction.playfunction.custom_script.quotation.quotation.checkout_order",
+				 	args: {
+				 		"data" : data, 
+				 		"doc_type" : get_child
+				 	},
+				 	callback: function(r) {
+				 					 		
+				 		 if(r.message) {
+				 		 	frappe.set_route("Form", get_child, r.message);
+				 		 }
+				 	}
+				})
+		});
 	},
+
 
 	show_item_details: function() {
 		var me = this;
