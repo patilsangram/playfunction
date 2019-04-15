@@ -31,6 +31,7 @@ frappe.pepperi = Class.extend({
 		localStorage.removeItem("items");
 		localStorage.removeItem("filters");
 		localStorage.removeItem("search_txt");
+		localStorage.removeItem("category");
 	},
 
 	bind_events: function() {
@@ -130,6 +131,8 @@ frappe.pepperi = Class.extend({
 
 					me.item_group_trigger();
 					me.category_trigger();
+					me.all_sbcat_check();
+					me.apply_sbcat_filter();
 					me.back_to_item_grid();
 				}
 				else {
@@ -139,6 +142,9 @@ frappe.pepperi = Class.extend({
 					me.show_item_details();
 					me.image_view();
 					me.unit_qty_change();
+					me.category_trigger();
+					me.all_sbcat_check();
+					me.apply_sbcat_filter();
 					me.back_to_item_grid();
 				}
 			}
@@ -201,7 +207,6 @@ frappe.pepperi = Class.extend({
 	show_item_details: function() {
 		var me = this;
 		$('.ObjectMenu').click(function() {
-			me.cur_page = "Item Details"
 			let item_code = $(this).attr("data-item")
 			$('.backbtn').removeClass('hide');
 			me.render_item_details(item_code);
@@ -214,6 +219,7 @@ frappe.pepperi = Class.extend({
 			method: "playfunction.playfunction.page.pepperi.pepperi.get_item_details",
 			args: {"item_code": item_code},
 			callback: function(r) {
+				me.cur_page = "Item Details"
 				$('.pepperi-content').html(frappe.render_template('item_details', {"data": r.message[0]}))
 			}
 		})
@@ -317,26 +323,86 @@ frappe.pepperi = Class.extend({
 
 	category_trigger: function() {
 		var me = this;
-		$('.tree-li-cat').click(function(e) {
-			var search_pos = $("#dvSmSearchHeader").position();
-			console.log("top", search_pos)
-			let sub_cat = $(this).attr('data-subcat').split(",")
-			//me.render_item_grid(true)
-			//$('.subcat_menu').removeClass('hide')
-			$('.subcat_menu').css({
-				"top": search_pos,
-				"left": "218.328px",
-				"bottom": e.pageX,
-				"display": "block",
-				"position": "fixed",
-				"height": "auto!important",
-				"width": '331px',
-				"overflow": "auto",
-				"z-index": 1100,
-				"max-width": "88%!important",
-			});
-			//$('.subcat_menu').show();
+		if(me.cur_page == "Grid View") {
+			$('.tree-li-cat').click(function(e) {
+				var search_pos = $("#dvSmSearchHeader").position();
+				let cat = $(this).text().trim()
+				let sub_cat = $(this).attr('data-subcat').split(",")
 
+				//all checkbox
+				sub_cat_html = "\
+				<ul class='sb_checkbox' style='list-style-type:none;'>\
+					<li>\
+						<input class='sb_check' value='All' type='checkbox' id='all_check'>\
+						<label for='all_check' class='check_lb' title='All'>All</label>\
+					</li>"
+				//sub catgory checkbox
+				$.each(sub_cat, function(i,sc) {
+					sub_cat_html += repl("<li>\
+						<input class='sb_check' type='checkbox' value=%(sc)s id=%(sc_id)s>\
+						<label class='check_lb' for=%(sc_id)s title=%(sc)s>%(sc)s</label>\
+					</li>", {"sc": sc, "sc_id": sc.replace(/ /g,'_')})
+				})
+				sub_cat_html += "</ul>"
+
+				$('.smBody').html(sub_cat_html)
+				$('.subcat_menu').removeClass('hide')
+				$('.subcat_menu').css({
+					"top": search_pos.top+130,
+					"left": "190px",
+					"display": "block",
+					"position": "fixed",
+					"height": "auto!important",
+					"width": '331px',
+					"overflow": "auto",
+					"z-index": 1100,
+					"max-width": "88%!important",
+				});
+				$('.cat_label').text(cat)
+				$('.sbfil_btn').attr("data-cat", cat)
+				$('.subcat_menu').show();
+			})
+		}
+	},
+
+	all_sbcat_check: function() {
+		var me = this;
+		$('#all_check').click(function() {
+			$(".sb_check").prop('checked', $(this).prop('checked'));
+		})
+	},
+
+	apply_sbcat_filter: function() {
+		//TODO: show applied category filter
+		// change py side query - sbcat in (sb1, sb2)
+		// methods get called multiple times
+		var me = this;
+
+		update_sbcat_filter = function(category, sb_cat) {
+			var category_data = me.get_localstorage_data("category")["category"] || {}
+			if (sb_cat.length) {
+				category_data[category] = sb_cat
+			}
+			else {
+				delete category_data[category]
+			}
+			localStorage.setItem('category', JSON.stringify(category_data));
+			me.render_item_grid(true)
+		}
+		$('.pep-clear').click(function() {
+			var category = $(this).attr("data-cat")
+			$('.subcat_menu').hide();
+			update_sbcat_filter(category, [])
+		})
+		$('.pep-done').click(function() {
+			var sb_cat = [];
+			var category = $(this).attr("data-cat")
+			$('.sb_check').each(function () {
+				var sb_category = this.checked ? $(this).val().trim() : "";
+				if(sb_category) { sb_cat.push(sb_category) }
+			});
+			$('.subcat_menu').hide();
+			update_sbcat_filter(category, sb_cat)
 		})
 	},
 
@@ -355,7 +421,7 @@ frappe.pepperi = Class.extend({
 		data = {}
 		let keys = key ? [key]:["item_group", "search_txt", "items", "category"]
 		for (let key of keys) {
-			if(key == "items") {
+			if(has_common(["items", "category"],[key])) {
 				data[key] = JSON.parse(localStorage.getItem(key)) || {}
 			}
 			else {

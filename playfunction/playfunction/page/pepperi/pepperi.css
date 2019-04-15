@@ -267,7 +267,7 @@
 .pepperi-sidebar a {
 	padding: 6px 8px 6px 16px;
 	text-decoration: none;
-	color: #818181;
+	color: #88be23;;
 	display: block;
 }
 
@@ -478,14 +478,44 @@
 /*---------sidebar category filter--------*/
 .subcat_menu {
 	left: 218.328px;
-	bottom: 10px;
 	display: block;
 	position: fixed;
 	height: auto!important;
-	width: 331px;
+	width: 300px;
 	overflow: auto;
 	border: 1px solid #bababa;
 	z-index: 1100;
 	max-width: 88%!important;
 	background-color: #fff;
+}
+
+.smHeader {
+	height: 35px;
+    padding: 0 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: center;
+    line-height: 35px;
+}
+
+.sb_checkbox {
+	clear: both;
+	list-style: none;
+	background-color: #fff;
+	padding: 4px 0;
+	margin-left: 16px;
+	margin-right: 16px;
+}
+
+.check_lb {
+	max-width: calc(100% - 15px);
+	margin-bottom: 0;
+	font-weight: 400;
+	cursor: pointer;
+}
+.check_lb:hover {
+	color: #88be23;
+}
+
+.pep-clear, .pep-done {
+	color: #88be23;
 }
