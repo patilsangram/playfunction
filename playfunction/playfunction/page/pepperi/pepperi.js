@@ -200,9 +200,6 @@ frappe.pepperi = Class.extend({
 				 		"doc_type" : dt
 				 	},
 				 	callback: function(r) {
-				 		alert(r.message)
-				 		alert(dt)
-
 			 		 	frappe.set_route("Form",dt,r.message);
 				 	}
 				})
