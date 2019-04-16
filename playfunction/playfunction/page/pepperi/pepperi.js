@@ -190,21 +190,20 @@ frappe.pepperi = Class.extend({
 
 	checkout: function() {
 		var me = this;
-
-		 $(".dropdown-menu li a").click(function(){
+		$("#grp_order li a").click(function(){
 			var data = me.get_localstorage_data();
-			var get_child=$(this).data('value');
+			var dt=$(this).data('value');
 			frappe.call({
 				 	method: "playfunction.playfunction.custom_script.quotation.quotation.checkout_order",
 				 	args: {
 				 		"data" : data, 
-				 		"doc_type" : get_child
+				 		"doc_type" : dt
 				 	},
 				 	callback: function(r) {
-				 					 		
-				 		 if(r.message) {
-				 		 	frappe.set_route("Form", get_child, r.message);
-				 		 }
+				 		alert(r.message)
+				 		alert(dt)
+
+			 		 	frappe.set_route("Form",dt,r.message);
 				 	}
 				})
 		});

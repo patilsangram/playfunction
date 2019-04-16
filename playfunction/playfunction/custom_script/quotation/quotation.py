@@ -11,11 +11,14 @@ def checkout_order(data,doc_type):
 			doc = frappe.new_doc(doc_type)
 			doc.selling_price_list = "Standard Selling"
 			doc.customer = frappe.get_value("Customer", {}, "name")
-			#doc.company = erpnext.get_default_company() or frappe.db.get_all("Company")[0].get("name")
+			doc.company = frappe.get_value("Company",{},"name")
 
 			for k, v in cart_items.items():
 				row = {"item_code": k, "qty": v[0]}
 				doc.append("items",row)
+			doc.flags.ignore_permissions = True
+			doc.set_missing_values()
+			doc.insert()
 			doc.save()
 			return doc.name
 		else:
