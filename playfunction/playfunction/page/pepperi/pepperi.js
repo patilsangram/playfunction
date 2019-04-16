@@ -190,19 +190,22 @@ frappe.pepperi = Class.extend({
 
 	checkout: function() {
 		var me = this;
-		var data = me.get_localstorage_data();
-		$('.pepCheckout').click(function() {
+		$("#grp_order li a").click(function(){
+			var data = me.get_localstorage_data();
+			var dt=$(this).data('value');
 			frappe.call({
-				method: "playfunction.playfunction.custom_script.quotation.quotation.checkout_order",
-				args: {"data": data},
-				callback: function(r) {
-					if(r.message) {
-						frappe.set_route("Form", "Quotation", r.message);
-					}
-				}
-			})
-		})
+				 	method: "playfunction.playfunction.custom_script.quotation.quotation.checkout_order",
+				 	args: {
+				 		"data" : data, 
+				 		"doc_type" : dt
+				 	},
+				 	callback: function(r) {
+			 		 	frappe.set_route("Form",dt,r.message);
+				 	}
+				})
+		});
 	},
+
 
 	show_item_details: function() {
 		var me = this;
@@ -255,19 +258,19 @@ frappe.pepperi = Class.extend({
 			var html_field = dialog.fields_dict.image_view.$wrapper;
 			html_field.empty();
 			html = repl("<div class='img-view' style='text-align:center'>\
-				<img src=%(img)s >\
+				<img id='zoom-view' src=%(img)s >\
 				</div>", {"img": image})
 	        
 			html_field.append(html)
 			dialog.fields_dict.plus.input.onclick = function() {
-				$('img').css({"zoom":++count});
+				$('#zoom-view').css({"zoom":++count});
 
 			}
 			dialog.fields_dict.minus.input.onclick = function() {
-				$('img').css({"zoom":--count});
+				$('#zoom-view').css({"zoom":--count});
 			}
-
-   			dialog.$wrapper.find('.modal-dialog').css({"width":"1200px", "height": "600px", "overflow":"auto"});
+   			dialog.$wrapper.find('.modal-dialog').css({"width":"1200px", "overflow":"auto"});
+   			dialog.$wrapper.find('.modal-content').css({"height": "600px"});
 			dialog.show();
 		})
 	},
