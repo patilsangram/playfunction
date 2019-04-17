@@ -14,7 +14,8 @@ def checkout_order(data,doctype):
 			if doctype == "Sales Order":
 				doc.delivery_date = today()
 			for k, v in cart_items.items():
-				row = {"item_code": k, "qty": v[0]}
+				discount = frappe.get_value("Item",{'item_code':k},"discount")
+				row = {"item_code": k, "qty": v[0], "discount_percentage": discount}
 				doc.append("items",row)
 			doc.set_missing_values()
 			doc.save(ignore_permissions=True)
