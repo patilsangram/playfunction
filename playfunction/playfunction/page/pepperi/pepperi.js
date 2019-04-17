@@ -183,6 +183,7 @@ frappe.pepperi = Class.extend({
 			let data = me.prepare_cart_data();
 			$('.backbtn').removeClass('hide');
 			$('.pepCheckout').removeClass('hide');
+			$('#goToCartBtn').hide();
 			$('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data}))
 			me.checkout()
 		})
@@ -190,19 +191,19 @@ frappe.pepperi = Class.extend({
 
 	checkout: function() {
 		var me = this;
-		$("#grp_order li a").click(function(){
+		$(".pepCheckout_opt").click(function(){
 			var data = me.get_localstorage_data();
-			var dt=$(this).data('value');
+			var doctype = $(this).data('value');
 			frappe.call({
-				 	method: "playfunction.playfunction.custom_script.quotation.quotation.checkout_order",
-				 	args: {
-				 		"data" : data, 
-				 		"doc_type" : dt
-				 	},
-				 	callback: function(r) {
-			 		 	frappe.set_route("Form",dt,r.message);
-				 	}
-				})
+				method:"playfunction.playfunction.custom_script.quotation.quotation.checkout_order",
+				args: {
+					"data": data,
+					"doctype": doctype
+				},
+				callback: function(r) {
+					frappe.set_route("Form", doctype, r.message);
+				}
+			})
 		});
 	},
 
@@ -233,6 +234,7 @@ frappe.pepperi = Class.extend({
 		$('.backbtn').click(function() {
 			$('.backbtn').addClass('hide');
 			$('.pepCheckout').addClass('hide');
+			$('#goToCartBtn').show();
 			me.cur_page = "Grid View"
 			me.render_item_grid(true)
 		})
