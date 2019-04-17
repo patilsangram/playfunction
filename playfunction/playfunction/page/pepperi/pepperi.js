@@ -131,8 +131,6 @@ frappe.pepperi = Class.extend({
 
 					me.item_group_trigger();
 					me.category_trigger();
-					me.all_sbcat_check();
-					me.apply_sbcat_filter();
 					me.back_to_item_grid();
 				}
 				else {
@@ -142,9 +140,6 @@ frappe.pepperi = Class.extend({
 					me.show_item_details();
 					me.image_view();
 					me.unit_qty_change();
-					me.category_trigger();
-					me.all_sbcat_check();
-					me.apply_sbcat_filter();
 					me.back_to_item_grid();
 				}
 			}
@@ -328,25 +323,27 @@ frappe.pepperi = Class.extend({
 
 	category_trigger: function() {
 		var me = this;
-		if(me.cur_page == "Grid View") {
-			$('.tree-li-cat').click(function(e) {
+		$('.tree-li-cat').click(function(e) {
+			if(me.cur_page == "Grid View") {
 				var search_pos = $("#dvSmSearchHeader").position();
-				let cat = $(this).text().trim()
-				let sub_cat = $(this).attr('data-subcat').split(",")
+				var cat = $(this).text().trim()
+				var sub_cat = $(this).attr('data-subcat').split(",")
+				var selected_sbcat = me.get_localstorage_data("category")["category"][cat] || []
 
 				//all checkbox
-				sub_cat_html = "\
+				sub_cat_html = repl("\
 				<ul class='sb_checkbox' style='list-style-type:none;'>\
 					<li>\
-						<input class='sb_check' value='All' type='checkbox' id='all_check'>\
+						<input class='sb_check' value='All' type='checkbox' id='all_check' %(checked)s>\
 						<label for='all_check' class='check_lb' title='All'>All</label>\
-					</li>"
+					</li>", {"checked": selected_sbcat.includes("All")? "checked": ""})
+
 				//sub catgory checkbox
 				$.each(sub_cat, function(i,sc) {
 					sub_cat_html += repl("<li>\
-						<input class='sb_check' type='checkbox' value=%(sc)s id=%(sc_id)s>\
+						<input class='sb_check' type='checkbox' value=%(sc)s id=%(sc_id)s %(checked)s>\
 						<label class='check_lb' for=%(sc_id)s title=%(sc)s>%(sc)s</label>\
-					</li>", {"sc": sc, "sc_id": sc.replace(/ /g,'_')})
+					</li>", {"sc": sc, "sc_id": sc.replace(/ /g,'_'), "checked": selected_sbcat.includes(sc)? "checked": ""})
 				})
 				sub_cat_html += "</ul>"
 
@@ -366,8 +363,10 @@ frappe.pepperi = Class.extend({
 				$('.cat_label').text(cat)
 				$('.sbfil_btn').attr("data-cat", cat)
 				$('.subcat_menu').show();
-			})
-		}
+				me.all_sbcat_check();
+				me.apply_sbcat_filter();
+			}
+		})
 	},
 
 	all_sbcat_check: function() {

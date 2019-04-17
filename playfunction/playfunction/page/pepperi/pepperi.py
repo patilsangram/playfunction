@@ -31,7 +31,7 @@ def get_items_and_categories(filters):
 
 	if filters.get("category"):
 		# {category: [subcat1, subcat2]}
-		subcat_list = [sb for cat, subcat in filters.get("category").items() for sb in subcat]
+		subcat_list = [sb for cat, subcat in filters.get("category").items() for sb in subcat if sb != "All"]
 		if len(subcat_list):
 			subcat_tpl = "(" + ",".join("'{}'".format(i) for i in subcat_list) + ")"
 			cond += " and c.subcategory in {}".format(subcat_tpl)
