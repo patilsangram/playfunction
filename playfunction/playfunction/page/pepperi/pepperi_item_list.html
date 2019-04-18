@@ -61,7 +61,9 @@
 								<li class="tree-li-grp" data-group="{{group.name}}">
 							{% } %}
 								<span class="rectangle"></span>
-								<span class="item_group_fil">{{ group.name }}</span>
+								<span class="item_group_fil" title="{{ group.name }}">
+									{{ group.name }}
+								</span>
 							</li>
 						</div>
 					{% }); %}
@@ -81,7 +83,9 @@
 						<div class="mat-tree">
 							<li class="tree-li-cat" data-subcat="{{ subcat }}">
 								<span class="rectangle"></span>
-								<span class="item_group_fil">{{ cat }}</span>
+								<span class="item_group_fil" title="{{ cat }}">
+									{{ cat }}
+								</span>
 								<span class="pull-right flip">
 									<i aria-hidden="true" class="fa fa-angle-right"></i>
 								</span>
