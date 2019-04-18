@@ -423,6 +423,7 @@
 .item-img-dv {
 	padding-bottom: 20px;
 	padding-top: 20px;
+	text-align: center;
 }
 
 .item_data {
@@ -431,6 +432,10 @@
 	overflow-x: hidden;
 }
 
+.product-prop , .price-stock {
+	margin-left: 20px;
+	margin-right: 20px;
+}
 /*------- cart -------------------------*/
 
 .cart-label {
