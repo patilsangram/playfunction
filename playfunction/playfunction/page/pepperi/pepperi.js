@@ -274,36 +274,30 @@ frappe.pepperi = Class.extend({
 
 	unit_qty_change: function() {
 		var me = this;
+		update_cart_qty = function(el,update_qty=false) {
+			var qty = $(el).closest("div.gQs").find("input[name='UnitsQty']").val();
+			var qty = qty > 0 ? parseInt(qty) : 0
+			var item_code = $(el).closest("div.gQs").attr("data-item");
+			var price = parseFloat($(el).closest("div.gQs").attr("data-price"));
+			var img = $(el).closest("div.gQs").attr("data-img");
+			var qty = update_qty ? parseInt(qty) + update_qty : qty
+			$(el).closest("div.gQs").find("input[name='UnitsQty']").val(qty);
+			me.update_cart(item_code, qty, price, img);
+		}
 		// decrease-qty
 		$('.qty-minus').click(function() {
 			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
 			if (qty && parseInt(qty) > 0) {
-				var item_code = $(this).closest("div.gQs").attr("data-item");
-				var price = parseFloat($(this).closest("div.gQs").attr("data-price"));
-				var img = $(this).closest("div.gQs").attr("data-img");
-				qty = parseInt(qty) - 1
-				$(this).closest("div.gQs").find("input[name='UnitsQty']").val(qty);
-				me.update_cart(item_code, qty, price, img);
+				update_cart_qty(this, -1)
 			}
 		})
 		// increase-qty
 		$('.qty-plus').click(function() {
-			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
-			qty = parseInt(qty) + 1
-			var item_code = $(this).closest("div.gQs").attr("data-item");
-			var price = parseFloat($(this).closest("div.gQs").attr("data-price"));
-			var img = $(this).closest("div.gQs").attr("data-img");
-			$(this).closest("div.gQs").find("input[name='UnitsQty']").val(qty);
-			me.update_cart(item_code, qty, price, img);
+			update_cart_qty(this, 1)
 		})
 		// qty-change
 		$('.unitqty').change(function() {
-			var qty = parseInt($(this).val()) || 0;
-			var item_code = $(this).closest("div.gQs").attr("data-item");
-			var price = parseFloat($(this).closest("div.gQs").attr("data-price"));
-			var img = $(this).closest("div.gQs").attr("data-img");
-			$(this).closest("div.gQs").find("input[name='UnitsQty']").val(qty);
-			me.update_cart(item_code, qty, price, img);
+			update_cart_qty(this)
 		})
 	},
 
@@ -377,9 +371,6 @@ frappe.pepperi = Class.extend({
 	},
 
 	apply_sbcat_filter: function() {
-		//TODO: show applied category filter
-		// change py side query - sbcat in (sb1, sb2)
-		// methods get called multiple times
 		var me = this;
 
 		update_sbcat_filter = function(category, sb_cat) {
@@ -412,12 +403,17 @@ frappe.pepperi = Class.extend({
 
 	update_cart: function(item_code, qty, price, img) {
 		var items = JSON.parse(localStorage.getItem('items')) || {};
+		total_qty = 0
 		if (qty == 0) {
 			delete items[item_code]
 		}
 		else {
 			items[item_code] = [qty, price, img]
 		}
+		$.each(items, function(i, row) {
+			total_qty += parseInt(row[0]) || 0
+		})
+		$('.total-cnt').text("Total : "+ String(total_qty))
 		localStorage.setItem('items', JSON.stringify(items));
 	},
 
