@@ -190,7 +190,7 @@ frappe.pepperi = Class.extend({
 
 	checkout: function() {
 		var me = this;
-		$(".pepCheckout_opt").click(function(){
+		$(".pepCheckout_opt a").click(function(){
 			var data = me.get_localstorage_data();
 			var doctype = $(this).data('value');
 			frappe.call({
