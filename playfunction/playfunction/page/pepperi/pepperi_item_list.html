@@ -71,14 +71,22 @@
 								{% } else { %}
 									<ul class="pep-ch-ul hide">
 								{% } %}
-									{% $.each(child, function(i, ch) { %}
-										<li class="tree-li-grp-ch" data-group="{{ ch }}">
-											<span class="rectangle"></span>
-											<span class="item_group_fil-ch"
-												title="{{ ch }}">{{ ch }}
-											</span>
-										</li>
-									{% }); %}
+								{% if (child.length) { %}
+									<li class="tree-li-grp-ch" data-group="All">
+										<span class="rectangle"></span>
+										<span class="item_group_fil-ch"
+											title="All">All
+										</span>
+									</li>
+								{% } %}
+								{% $.each(child, function(i, ch) { %}
+									<li class="tree-li-grp-ch" data-group="{{ ch }}">
+										<span class="rectangle"></span>
+										<span class="item_group_fil-ch"
+											title="{{ ch }}">{{ ch }}
+										</span>
+									</li>
+								{% }); %}
 								</ul>
 							</li>
 						</div>
