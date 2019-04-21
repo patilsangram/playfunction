@@ -3,9 +3,9 @@ import frappe, json, erpnext
 
 @frappe.whitelist()
 def get_item_groups():
-	fields = ["name", "parent_item_group", "is_group", "image"]
-	erp_item_group = ['All Item Groups','Sub Assemblies','Services','Raw Material','Products','Consumable']
-	item_groups = frappe.db.get_all("Item Group", {"name": ("not in", erp_item_group)}, fields)
+	fields = ["name", "image"]
+	filters = {"name": ("!=", "All Item Groups"), "is_group": 1}
+	item_groups = frappe.db.get_all("Item Group", filters, fields)
 	return item_groups
 
 @frappe.whitelist()
@@ -15,7 +15,15 @@ def get_items_and_categories(filters):
 	filters = json.loads(filters)
 	price_list = "Standard Selling"
 
-	item_group = get_item_groups()
+	# parent-child item group
+	groups = frappe.db.sql("""select p.name as parent, group_concat(c.name) as child
+		from `tabItem Group` p left join `tabItem Group` c on c.parent_item_group = p.name
+		where p.is_group = 1 and p.name != 'All Item Groups' group by p.name""", as_dict=True)
+
+	item_groups = {
+		g.get("parent"): g.get("child").split(",") \
+		if g.get("child") else [] for g in groups
+	}
 
 	cat_subcat = frappe.db.sql("select group_concat(name) as subcategory, category \
 		from `tabItem Subcategory` group by category", as_dict=True)
@@ -26,8 +34,16 @@ def get_items_and_categories(filters):
 
 	# item details
 	cond = "where 1=1 "
-	if filters.get("item_group"):
-		cond += " and i.item_group = '{}'".format(filters.get("item_group"))
+
+	# item group condition
+	if filters.get("item_group") and not filters.get("child_item_group"):
+		parent_group = filters.get("item_group")
+		group_list = [parent_group]
+		group_list.extend([ i.get("name") for i in frappe.get_list("Item Group", {"parent_item_group": parent_group}) ])
+	elif filters.get("child_item_group"):
+		group_list = [filters.get("child_item_group")]
+
+	cond += " and i.item_group in {}".format("(" + ",".join("'{}'".format(i) for i in group_list) + ")")
 
 	if filters.get("category"):
 		# {category: [subcat1, subcat2]}
@@ -56,7 +72,7 @@ def get_items_and_categories(filters):
 		group by i.name
 	""".format(company, price_list,cond), as_dict=True)
 
-	data = {"item_group": item_group, "category": categories, "items": item_details}
+	data = {"item_groups": item_groups, "category": categories, "items": item_details}
 	return data
 
 

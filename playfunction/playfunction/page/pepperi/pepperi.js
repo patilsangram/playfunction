@@ -28,10 +28,11 @@ frappe.pepperi = Class.extend({
 		this.cur_page = "pepperi_home"
 		this.bind_events();
 
-		localStorage.removeItem("items");
-		localStorage.removeItem("filters");
-		localStorage.removeItem("search_txt");
-		localStorage.removeItem("category");
+		//clear localStorage
+		keys = ["items","filters","search_txt","category","item_group","child_item_group"]
+		$.each(keys, function(i, key) {
+			localStorage.removeItem(key);
+		})
 	},
 
 	bind_events: function() {
@@ -119,7 +120,9 @@ frappe.pepperi = Class.extend({
 					me.$main.empty()
 					me.cur_page = "Grid View"
 					me.$main.append(frappe.render_template("pepperi_item_list", {
-						"data": r.message, "item_group": filters["item_group"], "total": 0}))
+						"data": r.message, "item_group": filters["item_group"],
+						"child_item_group": filters["child_item_group"], "total": 0
+					}))
 					$('.pepperi-content').html(frappe.render_template('scope_items', 
 						{"data": r.message, "local": localdata})
 					)
@@ -130,6 +133,7 @@ frappe.pepperi = Class.extend({
 					me.unit_qty_change();
 
 					me.item_group_trigger();
+					me.child_item_group_trigger();
 					me.category_trigger();
 					me.back_to_item_grid();
 				}
@@ -305,13 +309,49 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		$('.tree-li-grp').click(function() {
 			if(me.cur_page == "Grid View") {
-				let item_group = $(this).attr("data-group")
+				var is_selected = $(this).hasClass("selected");
+				var is_child_hidden = $(this).find('.pep-ch-ul').hasClass("hide");
+				var item_group = $(this).attr("data-group")
+
+				// add select class to parent
 				$('.tree-li-grp').removeClass("selected");
 				$(this).addClass("selected");
+
+				// remove selected class from child item group & unhide current childs
+				if (!is_selected) {
+					$(".pep-ch-ul").addClass("hide");
+					$(this).find(".pep-ch-ul").removeClass("hide");
+					$('.tree-li-grp-ch').removeClass("selected");
+					localStorage.setItem("child_item_group", "")
+					$('.ch-item-grp-nav').text("")
+				}
+
+				// toggle child item groups
+				if(is_child_hidden) {
+					$(this).find(".pep-ch-ul").removeClass("hide");
+				}
+				else {
+					$(".pep-ch-ul").addClass("hide");
+				}
+
 				localStorage.setItem('item_group', item_group)
 				$('.item-grp-nav').text(item_group)
 				me.render_item_grid(true);
 			}
+		})
+	},
+
+	child_item_group_trigger: function() {
+		var me = this;
+		$('.tree-li-grp-ch').click(function(e) {
+			e.stopPropagation();
+			var child_item_group = $(this).attr("data-group")
+			$('.tree-li-grp-ch').removeClass("selected");
+			$(this).addClass("selected");
+
+			localStorage.setItem('child_item_group', child_item_group)
+			$('.ch-item-grp-nav').text(child_item_group)
+			me.render_item_grid(true);
 		})
 	},
 
@@ -419,7 +459,7 @@ frappe.pepperi = Class.extend({
 
 	get_localstorage_data: function(key=false) {
 		data = {}
-		let keys = key ? [key]:["item_group", "search_txt", "items", "category"]
+		let keys = key ? [key]:["item_group", "child_item_group","search_txt", "items", "category"]
 		for (let key of keys) {
 			if(has_common(["items", "category"],[key])) {
 				data[key] = JSON.parse(localStorage.getItem(key)) || {}

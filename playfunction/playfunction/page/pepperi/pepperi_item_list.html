@@ -10,7 +10,9 @@
 					{{item_group}}
 				</span>
 				<span style="padding-left: 3px;"><i aria-hidden="true" class="fa fa-angle-right"></i></span>
-				<!-- Add Continue Ordering btn -->
+				<span class="ellipsis ch-item-grp-nav" data-group="{{child_item_group}}">
+					{{child_item_group}}
+				</span>
 			</div>
 			<div class="col-xs-8 pull-right">
 				<div class="pull-right flip">
@@ -53,17 +55,31 @@
 		<div class="col-xs-2 pepperi-sidebar">
 			<div class="item-group-ul">
 				<ul class="pep-ul">
-					{% $.each(data.item_group, function(i, group){ %}
+					{% $.each(data.item_groups, function(parent, child){ %}
 						<div class="mat-tree">
-							{% if (item_group == group.name) { %}
-								<li class="tree-li-grp selected" data-group="{{group.name}}">
+							{% if (item_group == parent) { %}
+								<li class="tree-li-grp selected" data-group="{{ parent }}">
 							{% } else { %}
-								<li class="tree-li-grp" data-group="{{group.name}}">
+								<li class="tree-li-grp" data-group="{{ parent }}">
 							{% } %}
 								<span class="rectangle"></span>
-								<span class="item_group_fil" title="{{ group.name }}">
-									{{ group.name }}
+								<span class="item_group_fil" title="{{ parent }}">
+									{{ parent }}
 								</span>
+								{% if (item_group == parent) { %}
+									<ul class="pep-ch-ul">
+								{% } else { %}
+									<ul class="pep-ch-ul hide">
+								{% } %}
+									{% $.each(child, function(i, ch) { %}
+										<li class="tree-li-grp-ch" data-group="{{ ch }}">
+											<span class="rectangle"></span>
+											<span class="item_group_fil-ch"
+												title="{{ ch }}">{{ ch }}
+											</span>
+										</li>
+									{% }); %}
+								</ul>
 							</li>
 						</div>
 					{% }); %}
