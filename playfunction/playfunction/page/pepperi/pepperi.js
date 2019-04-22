@@ -283,10 +283,11 @@ frappe.pepperi = Class.extend({
 			var qty = qty > 0 ? parseInt(qty) : 0
 			var item_code = $(el).closest("div.gQs").attr("data-item");
 			var price = parseFloat($(el).closest("div.gQs").attr("data-price"));
+			var discount = parseFloat($(el).closest("div.gQs").attr("data-discount"));
 			var img = $(el).closest("div.gQs").attr("data-img");
 			var qty = update_qty ? parseInt(qty) + update_qty : qty
 			$(el).closest("div.gQs").find("input[name='UnitsQty']").val(qty);
-			me.update_cart(item_code, qty, price, img);
+			me.update_cart(item_code, qty, price, discount,img);
 		}
 		// decrease-qty
 		$('.qty-minus').click(function() {
@@ -441,14 +442,14 @@ frappe.pepperi = Class.extend({
 		})
 	},
 
-	update_cart: function(item_code, qty, price, img) {
+	update_cart: function(item_code, qty, price, discount, img) {
 		var items = JSON.parse(localStorage.getItem('items')) || {};
 		total_qty = 0
 		if (qty == 0) {
 			delete items[item_code]
 		}
 		else {
-			items[item_code] = [qty, price, img]
+			items[item_code] = [qty, price, discount, img]
 		}
 		$.each(items, function(i, row) {
 			total_qty += parseInt(row[0]) || 0
@@ -477,7 +478,7 @@ frappe.pepperi = Class.extend({
 		var total = 0
 		var cart_data = me.get_localstorage_data("items");
 		$.each(cart_data.items || [], function(k,v) {
-			let row = {"item_code": k, "qty": v[0], "price": v[1], "img": v[2]}
+			let row = {"item_code": k, "qty": v[0], "price": v[1], "discount": v[2], "img": v[3]}
 			total += parseFloat(v[1] || 0) > 0 ? parseFloat(v[1]) * parseInt(v[0]) : 0.00
 			data.push(row)
 		})

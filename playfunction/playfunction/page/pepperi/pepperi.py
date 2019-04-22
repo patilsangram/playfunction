@@ -59,8 +59,9 @@ def get_items_and_categories(filters):
 
 	item_details = frappe.db.sql("""
 		select
-			i.item_code, i.item_name, i.image, group_concat(concat(c.category,',',c.subcategory))
-			as category, ifnull(b.actual_qty, 0) as qty, d.default_warehouse, p.price_list_rate as price
+			i.item_code, i.item_name, i.image, ifnull(i.discount_percentage, 0) as discount,
+			group_concat(concat(c.category,',',c.subcategory)) as category, 
+			ifnull(b.actual_qty, 0) as qty, d.default_warehouse, p.price_list_rate as price
 		from
 			tabItem i left join `tabCategory List` c  on c.parent = i.name
 		left join

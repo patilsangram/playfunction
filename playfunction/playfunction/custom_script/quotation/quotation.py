@@ -1,5 +1,5 @@
 import frappe, json
-from frappe.utils import today
+from frappe.utils import today, flt
 
 @frappe.whitelist()
 def checkout_order(data,doctype):
@@ -14,8 +14,11 @@ def checkout_order(data,doctype):
 			if doctype == "Sales Order":
 				doc.delivery_date = today()
 			for k, v in cart_items.items():
-				discount = frappe.get_value("Item",{'item_code':k},"discount")
-				row = {"item_code": k, "qty": v[0], "discount_percentage": discount}
+				discount = frappe.get_value("Item",{'item_code':k},"discount_percentage")
+				row = {"item_code": k, "qty": v[0], "price_list_rate": v[1], "discount_percentage": v[2]}
+				# discount_percentage
+				if v[2] and v[1] > 0:
+					row.update({"discount_amount": flt(v[1]) * flt(v[2]) / 100})
 				doc.append("items",row)
 			doc.set_missing_values()
 			doc.save(ignore_permissions=True)
