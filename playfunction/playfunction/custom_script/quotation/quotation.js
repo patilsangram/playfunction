@@ -1,6 +1,33 @@
-frappe.ui.form.on("Quotation", {
+frappe.ui.form.on("Quotation",{
 	refresh: function(frm) {
+		if (frm.doc.docstatus==0) {
+			frm.events.make_options(frm);
+		}
+	},
+	make_options: function(frm) {
+		if(frappe.user.has_role("Pepperi Admin"))
+		{
+			frm.add_custom_button("Approve", function() {
+				frm.trigger('approve_qutotation');
+			}, "Action")
 
+			frm.add_custom_button("Reject", function() {
+				frm.trigger('reject_qutotation');
+			}, "Action")
+		}
+	},
+	approve_qutotation:function(frm){
+		frm.doc.workflow_state = "Approved"
+		frm.save()
+	},
+	reject_qutotation:function(frm){
+		frm.doc.workflow_state = "Reject"
+		frm.save()	
+	},
+	before_submit:function(frm){
+		if(frm.doc.workflow_state!='Approved'){
+			frappe.throw("Quotation must be approved by Admin")
+		}
 	}
 })
 
@@ -23,3 +50,4 @@ frappe.ui.form.on("Quotation Item",{
 		})*/
 	}
 })
+
