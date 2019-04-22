@@ -33,10 +33,11 @@
 						<span class="cart-label">Unit Price: </span>{{ item.price }}
 					</div>
 					<div class="row">
-						<span class="cart-label">Item Discount: </span>0%
+						<span class="cart-label">Item Discount: </span>{{ item.discount }}
 					</div>
 					<div class="row">
-						<span class="cart-label">Total Price After Discount: </span>{{ item.price * item.qty }}
+						<span class="cart-label">Total Price After Discount: </span>
+						{{ item.price - (item.price *flt(item.discount) / 100) * item.qty }}
 					</div>
 					<div class="row">
 						<span class="cart-label">Qty: </span>{{ item.qty }}
