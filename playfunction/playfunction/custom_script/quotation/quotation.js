@@ -4,14 +4,13 @@ frappe.ui.form.on("Quotation",{
 			frm.events.make_options(frm);
 		}
 	},
-	make_options: function(frm) {
-		if(frappe.user.has_role("Pepperi Admin"))
+	make_options: function(frm){
+		if(frappe.user.has_role("PlayFunction Admin"))
 		{
-			frm.add_custom_button("Approve", function() {
+			frm.add_custom_button("Approve", function(){
 				frm.trigger('approve_qutotation');
 			}, "Action")
-
-			frm.add_custom_button("Reject", function() {
+			frm.add_custom_button("Reject", function(){
 				frm.trigger('reject_qutotation');
 			}, "Action")
 		}
@@ -28,6 +27,12 @@ frappe.ui.form.on("Quotation",{
 		if(frm.doc.workflow_state!='Approved'){
 			frappe.throw("Quotation must be approved by Admin")
 		}
+	},
+	on_submit:function(frm){
+		frappe.model.open_mapped_doc({
+				method: "erpnext.selling.doctype.quotation.quotation.make_sales_order",
+				frm: cur_frm
+		})
 	}
 })
 
