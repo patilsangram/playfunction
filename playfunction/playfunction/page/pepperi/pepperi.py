@@ -5,7 +5,7 @@ import frappe, json, erpnext
 def get_item_groups():
 	fields = ["name", "image"]
 	filters = {"name": ("!=", "All Item Groups"), "is_group": 1}
-	item_groups = frappe.db.get_all("Item Group", filters, fields)
+	item_groups = frappe.db.get_all("Item Group", filters, fields, ignore_permissions=True)
 	return item_groups
 
 @frappe.whitelist()
@@ -40,7 +40,7 @@ def get_items_and_categories(filters):
 		or filters.get("child_item_group") == "All"):
 		parent_group = filters.get("item_group")
 		group_list = [parent_group]
-		group_list.extend([ i.get("name") for i in frappe.get_list("Item Group", {"parent_item_group": parent_group}) ])
+		group_list.extend([ i.get("name") for i in frappe.get_list("Item Group", {"parent_item_group": parent_group}, ignore_permissions=True) ])
 	elif filters.get("child_item_group"):
 		group_list = [filters.get("child_item_group")]
 
