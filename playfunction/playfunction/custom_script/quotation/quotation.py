@@ -10,6 +10,9 @@ def checkout_order(data,doctype):
 			doc = frappe.new_doc(doctype)
 			doc.selling_price_list = "Standard Selling"
 			doc.customer = frappe.get_value("Customer", {}, "name")
+			customer_name = frappe.db.get_value("User",frappe.session.user,"full_name")
+			if not frappe.db.exists('Customer',customer_name):
+				customer_name=add_customer(customer_name)
 			doc.company = frappe.get_value("Company",{},"name")
 			if doctype == "Sales Order":
 				doc.delivery_date = today()
@@ -29,3 +32,15 @@ def checkout_order(data,doctype):
 	except Exception as e:
 		frappe.msgprint("Something went wrong ..")
 		return
+
+
+def add_customer(customer_name):
+	doc = frappe.get_doc({
+	"doctype": "Customer",
+	"customer_name" : customer_name,
+	"email_id" : frappe.session.email,
+	"mobile_no" : frappe.session.mobile_no
+	})
+	doc.insert()
+	doc.submit()
+	return customer_name

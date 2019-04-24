@@ -7,10 +7,10 @@ frappe.ui.form.on("Quotation",{
 	make_options: function(frm){
 		if(frappe.user.has_role("PlayFunction Admin"))
 		{
-			frm.add_custom_button("Approve", function(){
+			frm.add_custom_button("Approve", function() {
 				frm.trigger('approve_qutotation');
 			}, "Action")
-			frm.add_custom_button("Reject", function(){
+			frm.add_custom_button("Reject", function() {
 				frm.trigger('reject_qutotation');
 			}, "Action")
 		}
