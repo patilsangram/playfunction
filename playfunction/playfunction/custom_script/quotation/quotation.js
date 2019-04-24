@@ -16,12 +16,12 @@ frappe.ui.form.on("Quotation",{
 		}
 	},
 	approve_qutotation:function(frm){
-		frm.doc.workflow_state = "Approved"
-		frm.save()
+		frm.doc.workflow_state = "Approved";
+		frm.savesubmit();
 	},
 	reject_qutotation:function(frm){
-		frm.doc.workflow_state = "Reject"
-		frm.save()	
+		frm.doc.workflow_state = "Reject";
+		frm.save();
 	},
 	before_submit:function(frm){
 		if(frm.doc.workflow_state!='Approved'){
