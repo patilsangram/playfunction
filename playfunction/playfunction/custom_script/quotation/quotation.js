@@ -1,45 +1,62 @@
 frappe.ui.form.on("Quotation",{
 	refresh: function(frm) {
-		if (frm.doc.docstatus==0) {
-			frm.events.make_options(frm);
+		if (frm.doc.docstatus == 0 && frm.doc.workflow_state != "Rejected") {
+			frm.events.init_approval_flow(frm);
+		}
+		frm.trigger("set_status_intro");
+	},
+
+	set_status_intro: function(frm) {
+		var status_mapper = {
+			"Draft": "Approve this document to Submit",
+			"Approved": "Approved",
+			"Rejected": "Rejected Quotation. Create New One"
+		}
+		frm.set_intro();
+		var workflow_state = frm.doc.workflow_state
+		if(!workflow_state || workflow_state == "") {
+			frm.set_intro(status_mapper["Draft"])
+		}
+		else {
+			frm.set_intro(status_mapper[workflow_state])
 		}
 	},
-	make_options: function(frm){
-		if(frappe.user.has_role("PlayFunction Admin"))
-		{
+
+	init_approval_flow: function(frm){
+		if(frappe.user.has_role("PlayFunction Admin")) {
 			frm.add_custom_button("Approve", function() {
 				frm.trigger('approve_qutotation');
 			}, "Action")
+
 			frm.add_custom_button("Reject", function() {
 				frm.trigger('reject_qutotation');
 			}, "Action")
+			frm.page.set_inner_btn_group_as_primary(__("Action"));
 		}
 	},
+
 	approve_qutotation:function(frm){
 		frm.doc.workflow_state = "Approved";
 		frm.savesubmit();
 	},
+
 	reject_qutotation:function(frm){
-		frm.doc.workflow_state = "Reject";
+		frm.doc.workflow_state = "Rejected";
 		frm.save();
 	},
+
 	before_submit:function(frm){
-		if(frm.doc.workflow_state!='Approved'){
-			frappe.throw("Quotation must be approved by Admin")
+		if(frm.doc.workflow_state != "Approved"){
+			frappe.throw(__("Quotation must be approved by Admin"))
 		}
-	},
-	on_submit:function(frm){
-		frappe.model.open_mapped_doc({
-				method: "erpnext.selling.doctype.quotation.quotation.make_sales_order",
-				frm: cur_frm
-		})
 	}
 })
 
-frappe.ui.form.on("Quotation Item",{
+// ToDo : Quotation Item calculation
+/*frappe.ui.form.on("Quotation Item",{
 	item_code: function(frm, cdt, cdn) {
 		var item = frappe.get_doc(cdt, cdn);
-		/*frappe.call({
+		frappe.call({
 			method: 'frappe.client.get_value',
 			args: {
 				'doctype': 'Item',
@@ -52,7 +69,6 @@ frappe.ui.form.on("Quotation Item",{
 					frappe.model.set_value(cdt, cdn, "discount_percentage", r.message.discount_percentage)
 				}
 			}
-		})*/
+		})
 	}
-})
-
+})*/
