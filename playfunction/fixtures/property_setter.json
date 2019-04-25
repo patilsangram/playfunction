@@ -1523,7 +1523,7 @@
   "doctype": "Property Setter", 
   "doctype_or_field": "DocType", 
   "field_name": null, 
-  "modified": "2019-04-25 14:16:21.593531", 
+  "modified": "2019-04-25 15:44:04.940234", 
   "name": "Quotation Item-read_only_onload", 
   "property": "read_only_onload", 
   "property_type": "Check", 
