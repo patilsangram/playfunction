@@ -85,13 +85,11 @@ fixtures = ['Custom Field', 'Property Setter', 'Role']
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-#	}
-# }
+doc_events = {
+	"Customer": {
+		"validate": "playfunction.playfunction.custom_script.customer.customer.validate_customer",
+	}
+}
 
 # Scheduled Tasks
 # ---------------
