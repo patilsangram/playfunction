@@ -53,15 +53,17 @@ frappe.ui.form.on("Quotation",{
 })
 
 frappe.ui.form.on("Quotation Item",{
-	selling_rate:function(frm,cdt,cdn){
-		var item=locals[cdt][cdn]
-		if(item.cost_price && item.cost_price > 0){
-			var selling_price= item.cost_price * item.selling_rate
-			frappe.model.set_value(cdt, cdn, "rate", selling_price)
-			refresh_field("rate")
+	selling_rate:function(frm, cdt, cdn){
+		var item = locals[cdt][cdn]
+		if(item.cost_price && item.cost_price > 0 && item.selling_rate > 0){
+			var selling_price = item.cost_price * item.selling_rate
 			frappe.model.set_value(cdt, cdn, "selling_price", selling_price)
-			refresh_field("selling_price")
-		}	
+		}
+		else {
+			frappe.model.set_value(cdt, cdn, "selling_rate", 0);
+			frappe.model.set_value(cdt, cdn, "selling_price", 0);
+		}
+		refresh_field("items");
 	}
 })
 
