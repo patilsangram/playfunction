@@ -241,37 +241,42 @@ frappe.pepperi = Class.extend({
 
 	image_view: function() {
 		var me = this;
-		var count=1;
+		var scale = 0.8;
+		transform_css = "translate(0px, 0px) rotate(0deg) scale(%(scale)s)"
+		image_max_min = function(new_scale, dialog) {
+			cal_scale = scale + new_scale
+			if(cal_scale > 0.4 && cal_scale < 1.6) {
+				scale += new_scale
+				dialog.$wrapper.find('#zoom-view').css({"transform": repl(transform_css, {"scale": scale})});
+			}
+		}
 		$('.img-view').click(function() {
+			scale = 0.8
 			let image =  $(this).attr("data-img")
 			let dialog = new frappe.ui.Dialog({
 				title: __("Image"),
 				fields: [
-				{"fieldtype": "Button", "label": __("+"), "fieldname": "plus"},
-				{"fieldtype": "Button", "label": __("-"), "fieldname": "minus"},
-				{
-					fieldtype:"HTML",
-					fieldname: "image_view",
-				}
-
+					{"fieldtype": "Button", "label": "+", "fieldname": "plus"},
+					{"fieldtype": "Button", "label": "-", "fieldname": "minus"},
+					{"fieldtype":"HTML","fieldname": "image_view"}
 				]
 			});
 			var html_field = dialog.fields_dict.image_view.$wrapper;
 			html_field.empty();
 			html = repl("<div class='img-view' style='text-align:center'>\
-				<img id='zoom-view' src=%(img)s >\
+				<img id='zoom-view' src=%(img)s \
+				style='transform: translate(0px, 0px) rotate(0deg) scale(0.8)'>\
 				</div>", {"img": image})
 	        
 			html_field.append(html)
 			dialog.fields_dict.plus.input.onclick = function() {
-				$('#zoom-view').css({"zoom":++count});
-
+				image_max_min(0.2, dialog);
 			}
 			dialog.fields_dict.minus.input.onclick = function() {
-				$('#zoom-view').css({"zoom":--count});
+				image_max_min(-0.2, dialog);
 			}
-   			dialog.$wrapper.find('.modal-dialog').css({"width":"1200px", "overflow":"auto"});
-   			dialog.$wrapper.find('.modal-content').css({"height": "600px"});
+			dialog.$wrapper.find('.modal-dialog').css({"width":"1000px", "overflow":"auto"});
+			dialog.$wrapper.find('.modal-content').css({"height": "600px"});
 			dialog.show();
 		})
 	},
@@ -345,14 +350,16 @@ frappe.pepperi = Class.extend({
 	child_item_group_trigger: function() {
 		var me = this;
 		$('.tree-li-grp-ch').click(function(e) {
-			e.stopPropagation();
-			var child_item_group = $(this).attr("data-group")
-			$('.tree-li-grp-ch').removeClass("selected");
-			$(this).addClass("selected");
+			if(me.cur_page == "Grid View") {
+				e.stopPropagation();
+				var child_item_group = $(this).attr("data-group")
+				$('.tree-li-grp-ch').removeClass("selected");
+				$(this).addClass("selected");
 
-			localStorage.setItem('child_item_group', child_item_group)
-			$('.ch-item-grp-nav').text(child_item_group)
-			me.render_item_grid(true);
+				localStorage.setItem('child_item_group', child_item_group)
+				$('.ch-item-grp-nav').text(child_item_group)
+				me.render_item_grid(true);
+			}
 		})
 	},
 

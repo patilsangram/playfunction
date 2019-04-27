@@ -14,6 +14,7 @@ def get_items_and_categories(filters):
 	company = erpnext.get_default_company() or frappe.db.get_all("Company")[0].get("name")
 	filters = json.loads(filters)
 	price_list = "Standard Selling"
+	cond = " "
 
 	# parent-child item group
 	groups = frappe.db.sql("""select p.name as parent, group_concat(c.name) as child
@@ -31,9 +32,6 @@ def get_items_and_categories(filters):
 	categories = {}
 	for c in cat_subcat:
 		categories[c.get("category")] = c.get("subcategory").split(",")
-
-	# item details
-	cond = "where 1=1 "
 
 	# item group condition
 	if filters.get("item_group") and (not filters.get("child_item_group") \
@@ -70,7 +68,7 @@ def get_items_and_categories(filters):
 			`tabBin` b on b.item_code = i.item_code and d.default_warehouse = b.warehouse
 		left join
 			`tabItem Price` p on p.item_code = i.item_code and p.price_list = '{}'
-		{}
+		where i.is_pepperi_item = 1 {}
 		group by i.name
 	""".format(company, price_list,cond), as_dict=True)
 
