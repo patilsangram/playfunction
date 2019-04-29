@@ -90,7 +90,7 @@ doc_events = {
 		"validate": "playfunction.playfunction.custom_script.customer.customer.validate_customer",
 	},
 	"Quotation":{
-		"validate": "playfunction.playfunction.custom_script.quotation.quotation.validate_quotation",
+		"validate": "playfunction.playfunction.custom_script.quotation.quotation.update_selling_data",
 	}
 }
 

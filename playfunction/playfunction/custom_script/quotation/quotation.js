@@ -56,40 +56,22 @@ frappe.ui.form.on("Quotation Item",{
 	selling_rate:function(frm, cdt, cdn){
 		var item = locals[cdt][cdn]
 		if(item.cost_price && item.cost_price > 0 && item.selling_rate > 0){
-			var selling_price = item.cost_price * item.selling_rate
-			frappe.model.set_value(cdt, cdn, "selling_price", selling_price)
+			var selling_price = flt(item.cost_price * item.selling_rate, precision("rate", item))
+			frappe.model.set_value(cdt, cdn, "rate", selling_price)
 		}
 		else {
 			frappe.model.set_value(cdt, cdn, "selling_rate", 0);
-			frappe.model.set_value(cdt, cdn, "selling_price", 0);
+			frappe.model.set_value(cdt, cdn, "rate", item.price_list_rate);
 		}
 		refresh_field("items");
 	},
+
 	rate:function(frm, cdt, cdn){
 		var item = locals[cdt][cdn]
-		var selling_rate = item.selling_rate / item.cost_price
-		frappe.model.set_value(cdt, cdn, "selling_rate", selling_rate)
+		if(item.cost_price && item.rate) {
+			var selling_rate = flt(item.rate/item.cost_price, precision("selling_rate", item))
+			frappe.model.set_value(cdt, cdn, "selling_rate", selling_rate)
+		}
 		refresh_field("items");
 	}
 })
-
-// ToDo : Quotation Item calculation
-/*frappe.ui.form.on("Quotation Item",{
-	item_code: function(frm, cdt, cdn) {
-		var item = frappe.get_doc(cdt, cdn);
-		frappe.call({
-			method: 'frappe.client.get_value',
-			args: {
-				'doctype': 'Item',
-				'filters': {'name': item.item_code},
-				'fieldname': 'discount_percentage'
-			},
-			async: false,
-			callback: function(r) {
-				if(r.message) {
-					frappe.model.set_value(cdt, cdn, "discount_percentage", r.message.discount_percentage)
-				}
-			}
-		})
-	}
-})*/
