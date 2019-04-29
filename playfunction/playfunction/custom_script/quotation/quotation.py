@@ -34,12 +34,17 @@ def checkout_order(data,doctype):
 
 
 @frappe.whitelist()
-def validate_quotation(doc,meathod):
+def update_selling_data(doc,meathod):
+	"""
+		update cost_price & discount_percentage & calculate selling_price i.e. Rate
+		formula: rate = cost_price * selling_rate
+	"""
 	for row in doc.items:
- 		get_data = frappe.get_value("Item", {"item_code": row.item_code}, ["last_purchase_rate","discount_percentage"])
-	 	if not row.cost_price:
-		 	row.cost_price = get_data[0]	
+		fields = ["last_purchase_rate as cost_price","discount_percentage"]
+		item_data = frappe.get_value("Item", row.item_code, fields, as_dict=True)
+		if not row.cost_price and item_data.get("cost_price"):
+			row.cost_price = item_data.get("cost_price")
+		if not row.discount_percentage and item_data.get("discount_percentage"):
+			row.discount_percentage = item_data.get("discount_percentage")
 		if row.cost_price and row.selling_rate:
-			row.selling_price = row.cost_price * row.selling_rate
-		if not row.discount_percentage:
-			row.discount_percentage=get_data[1]
+			row.rate = row.cost_price * row.selling_rate
