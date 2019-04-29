@@ -88,6 +88,9 @@ fixtures = ['Custom Field', 'Property Setter', 'Role']
 doc_events = {
 	"Customer": {
 		"validate": "playfunction.playfunction.custom_script.customer.customer.validate_customer",
+	},
+	"Quotation":{
+		"validate": "playfunction.playfunction.custom_script.quotation.quotation.validate_quotation",
 	}
 }
 
