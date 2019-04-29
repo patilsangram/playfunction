@@ -245,7 +245,7 @@ frappe.pepperi = Class.extend({
 		transform_css = "translate(0px, 0px) rotate(0deg) scale(%(scale)s)"
 		image_max_min = function(new_scale, dialog) {
 			cal_scale = scale + new_scale
-			if(cal_scale > 0.4 && cal_scale < 1.6) {
+			if(cal_scale > 0.2 && cal_scale < 1.4) {
 				scale += new_scale
 				dialog.$wrapper.find('#zoom-view').css({"transform": repl(transform_css, {"scale": scale})});
 			}
@@ -265,7 +265,7 @@ frappe.pepperi = Class.extend({
 			html_field.empty();
 			html = repl("<div class='img-view' style='text-align:center'>\
 				<img id='zoom-view' src=%(img)s \
-				style='transform: translate(0px, 0px) rotate(0deg) scale(0.8)'>\
+				style='transform: translate(0px, 0px) rotate(0deg) scale(0.8); height:440px;'>\
 				</div>", {"img": image})
 	        
 			html_field.append(html)
