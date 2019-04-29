@@ -64,6 +64,12 @@ frappe.ui.form.on("Quotation Item",{
 			frappe.model.set_value(cdt, cdn, "selling_price", 0);
 		}
 		refresh_field("items");
+	},
+	rate:function(frm, cdt, cdn){
+		var item = locals[cdt][cdn]
+		var selling_rate = item.selling_rate / item.cost_price
+		frappe.model.set_value(cdt, cdn, "selling_rate", selling_rate)
+		refresh_field("items");
 	}
 })
 

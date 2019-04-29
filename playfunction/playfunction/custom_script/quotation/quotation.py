@@ -31,3 +31,15 @@ def checkout_order(data,doctype):
 	except Exception as e:
 		frappe.msgprint("Something went wrong ..")
 		return
+
+
+@frappe.whitelist()
+def validate_quotation(doc,meathod):
+	for row in doc.items:
+ 		get_data = frappe.get_value("Item", {"item_code": row.item_code}, ["last_purchase_rate","discount_percentage"])
+	 	if not row.cost_price:
+		 	row.cost_price = get_data[0]	
+		if row.cost_price and row.selling_rate:
+			row.selling_price = row.cost_price * row.selling_rate
+		if not row.discount_percentage:
+			row.discount_percentage=get_data[1]
