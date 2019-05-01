@@ -107,7 +107,6 @@ frappe.pepperi = Class.extend({
 	},
 
 	render_item_grid: function(update_grid=false) {
-		// TODO: store filters in localStorage, pass it as filters e.g. item_group, categories
 		//filters = {"item_group": "Products", "category": {"Collection": ["Vintage"]}, "search_txt": "ada"}
 		var me = this;
 		filters = me.get_localstorage_data()
