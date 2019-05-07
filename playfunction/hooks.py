@@ -73,9 +73,13 @@ fixtures = ['Custom Field', 'Property Setter', 'Role']
 # -----------
 # Permissions evaluated in scripted ways
 
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
+permission_query_conditions = {
+	"Quotation": "playfunction.playfunction.custom_script.quotation.quotation.show_list",
+	"Sales Order": "playfunction.playfunction.custom_script.quotation.quotation.show_list",
+	"Sales Invoice": "playfunction.playfunction.custom_script.quotation.quotation.show_list",
+}
+
+
 #
 # has_permission = {
 # 	"Event": "frappe.desk.doctype.event.event.has_permission",

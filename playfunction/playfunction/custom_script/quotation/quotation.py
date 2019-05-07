@@ -51,3 +51,8 @@ def update_selling_data(doc,meathod):
 			row.discount_percentage = cust_discount_per or item_data.get("discount_percentage")
 		if row.cost_price and row.selling_rate:
 			row.rate = row.cost_price * row.selling_rate
+
+@frappe.whitelist()
+def show_list(self):
+	if frappe.session.user!='Administrator' and "Playfunction Customer" in frappe.get_roles(frappe.session.user):
+		return """ owner = '{user}' """.format(user=frappe.session.user)
