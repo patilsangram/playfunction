@@ -48,6 +48,23 @@
 				</div>
 			</div><hr>
 		{% }); %}
+		<div class="checkoutbtn center">
+			<span class="dropdown">
+				<button class="pepCheckout allButtons grnbtn"
+					type="button" data-toggle="dropdown">
+					<span>Checkout</span>
+					<span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<li class="pepCheckout_opt">
+						<a data-value="Quotation">Request for Quotation</a>
+					</li>
+					<li class="pepCheckout_opt">
+						<a data-value="Sales Order">Place Order</a>
+					</li>
+				</ul>
+			</span>
+		</div>
 
 	{% } else { %}
 		<div class="no-data">Items not found</div>
