@@ -53,6 +53,8 @@ def update_selling_data(doc,meathod):
 			row.rate = row.cost_price * row.selling_rate
 
 @frappe.whitelist()
-def show_list(self):
-	if frappe.session.user!='Administrator' and "Playfunction Customer" in frappe.get_roles(frappe.session.user):
-		return """ owner = '{user}' """.format(user=frappe.session.user)
+def get_permission_query_conditions(user):
+	# playfunction customer can access only his own records
+	if user != "Administrator" and "Playfunction Customer" in frappe.get_roles():
+		customer = frappe.db.get_value("Customer", {"user": user})
+		return """ customer = '{}' """.format(customer) if customer else "1=2"
