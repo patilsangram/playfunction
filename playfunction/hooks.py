@@ -74,9 +74,9 @@ fixtures = ['Custom Field', 'Property Setter', 'Role']
 # Permissions evaluated in scripted ways
 
 permission_query_conditions = {
-	"Quotation": "playfunction.playfunction.custom_script.quotation.quotation.show_list",
-	"Sales Order": "playfunction.playfunction.custom_script.quotation.quotation.show_list",
-	"Sales Invoice": "playfunction.playfunction.custom_script.quotation.quotation.show_list",
+	"Quotation": "playfunction.playfunction.custom_script.quotation.quotation.get_permission_query_conditions",
+	"Sales Order": "playfunction.playfunction.custom_script.quotation.quotation.get_permission_query_conditions",
+	"Sales Invoice": "playfunction.playfunction.custom_script.quotation.quotation.get_permission_query_conditions",
 }
 
 
@@ -95,6 +95,9 @@ doc_events = {
 	},
 	"Quotation":{
 		"validate": "playfunction.playfunction.custom_script.quotation.quotation.update_selling_data",
+	},
+	"Item Group": {
+		"before_insert": "playfunction.playfunction.custom_script.item_group.item_group.update_group_level"
 	}
 }
 
