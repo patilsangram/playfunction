@@ -57,44 +57,42 @@
 				<ul class="pep-ul">
 					{% $.each(data.item_groups, function(parent, child){ %}
 						<div class="mat-tree">
-							{% if (item_group == parent) { %}
-								<li class="tree-li-grp selected" data-group="{{ parent }}">
-							{% } else { %}
-								<li class="tree-li-grp" data-group="{{ parent }}">
-							{% } %}
+							<li class="tree-li-grp" data-group="{{ parent }}">
 								<span class="rectangle"></span>
 								<span class="item_group_fil" title="{{ parent }}">
 									{{ parent }}
 								</span>
-								{% if (item_group == parent) { %}
-									<ul class="pep-ch-ul">
-								{% } else { %}
-									<ul class="pep-ch-ul hide">
+								<span class="pull-right flip">
+									<i aria-hidden="true" class="fa fa-angle-right"></i>
+								</span>
+								{% if (Object.keys(child).length) { %}
+									<ul class="child-box">
+									{% $.each(child, function(ch, gch){ %}
+											<li class="tree-li-chgrp" data-group="{{ch}}" title="{{ch}}">
+												<a class="child-a">{{ ch }}
+												<i aria-hidden="true" class="fa fa-angle-right ch-fa"></i></a>
+												{% if (Object.keys(gch).length) { %}
+													<ul class="grand-child">
+													{% $.each(gch, function(grandch, gch){ %}
+															<li class="grand-ch-grp" data-group="{{ grandch }}" title="{{grandch}}">
+																<a class="grandch-a">
+																	{{ grandch }}
+																</a>
+															</li>
+													{% }); %}
+													</ul>
+												{% } %}
+											</li>
+									{% }); %}
+									</ul>
 								{% } %}
-								{% if (child.length) { %}
-									<li class="tree-li-grp-ch" data-group="All">
-										<span class="rectangle"></span>
-										<span class="item_group_fil-ch"
-											title="All">All
-										</span>
-									</li>
-								{% } %}
-								{% $.each(child, function(i, ch) { %}
-									<li class="tree-li-grp-ch" data-group="{{ ch }}">
-										<span class="rectangle"></span>
-										<span class="item_group_fil-ch"
-											title="{{ ch }}">{{ ch }}
-										</span>
-									</li>
-								{% }); %}
-								</ul>
 							</li>
 						</div>
 					{% }); %}
 				</ul>
 
 			</div>
-			<div  id="dvSmSearchHeader" class="row ng-star-inserted">
+			<!-- <div  id="dvSmSearchHeader" class="row ng-star-inserted">
 				<div  class="col-xs-8 ellipsis zp">
 					<label  class="pull-left flip" title="Smart search">Smart search
 					</label>
@@ -117,7 +115,7 @@
 						</div>
 					{% }); %}
 				</ul>
-			</div>
+			</div> -->
 			<div class="subcat_menu hide pull-left">
 				<div class="smHeader">
 					<a class="pep-clear pull-left flip sbfil_btn" title="Clear">Clear</a>

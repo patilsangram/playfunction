@@ -272,7 +272,7 @@
 .pepperi-sidebar a {
 	padding: 6px 8px 6px 16px;
 	text-decoration: none;
-	color: #88be23;;
+	color: #88be23;
 	display: block;
 }
 
@@ -314,6 +314,10 @@
 	letter-spacing: .6px;
 	list-style-type: none;
 	cursor: pointer;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	word-break: break-word;
+	white-space: nowrap;
 }
 
 .tree-li-grp-ch {
@@ -554,4 +558,59 @@
 
 .pep-clear, .pep-done {
 	color: #88be23;
+}
+
+/*---------------------group tree--------------------*/
+
+.pep-ul li ul {
+	position: absolute;
+	left: -999em;
+	height: auto;
+	width: 13.9em;
+	font-weight: normal;
+	border-width: 0.15em;
+	margin: 0;
+}
+
+.pep-ul li ul {
+	margin: -1.75em 0 0 11.7em;
+}
+
+.pep-ul li ul ul{
+	margin: -1.75em 0 0 14em;
+}
+
+
+.pep-ul ul {
+	float: left;
+	width: 36em;
+	list-style: none;
+	line-height: 1;
+	background: white;
+	font-weight: bold;
+	display: block;
+	padding: 0;
+	border: 1px solid #bababa;
+	margin: 0 0 1em 0;
+}
+
+.sel-hover, .ch-sel-hover {
+	left: auto !important;
+}
+
+.child-a, .grandch-a {
+	color: #636363 !important;
+}
+
+.child-a:hover, .grandch-a:hover {
+	color: #fff !important;
+}
+
+.tree-li-chgrp, .grand-ch-grp {
+	border-bottom: 1px solid grey;
+}
+
+.tree-li-chgrp:hover, .grand-ch-grp:hover {
+	background: #78aa00;
+	color: #fff !important;
 }
