@@ -111,7 +111,7 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		filters = me.get_localstorage_data()
 		frappe.call({
-			method: "playfunction.playfunction.page.pepperi.pepperi.get_items_and_categories",
+			method: "playfunction.playfunction.page.pepperi.pepperi.get_items_and_group_tree",
 			args: {"filters": filters},
 			callback: function(r) {
 				let localdata = JSON.parse(localStorage.getItem("items")) || {}
@@ -132,7 +132,7 @@ frappe.pepperi = Class.extend({
 					me.unit_qty_change();
 
 					me.item_group_trigger();
-					me.child_item_group_trigger();
+					//me.child_item_group_trigger();
 					me.category_trigger();
 					me.back_to_item_grid();
 				}
@@ -312,37 +312,44 @@ frappe.pepperi = Class.extend({
 
 	item_group_trigger: function() {
 		var me = this;
-		$('.tree-li-grp').click(function() {
-			if(me.cur_page == "Grid View") {
-				var is_selected = $(this).hasClass("selected");
-				var is_child_hidden = $(this).find('.pep-ch-ul').hasClass("hide");
-				var item_group = $(this).attr("data-group")
-
-				// add select class to parent
-				$('.tree-li-grp').removeClass("selected");
-				$(this).addClass("selected");
-
-				// remove selected class from child item group & unhide current childs
-				if (!is_selected) {
-					$(".pep-ch-ul").addClass("hide");
-					$(this).find(".pep-ch-ul").removeClass("hide");
-					$('.tree-li-grp-ch').removeClass("selected");
-					localStorage.setItem("child_item_group", "")
-					$('.ch-item-grp-nav').text("")
-				}
-
-				// toggle child item groups
-				if(is_child_hidden) {
-					$(this).find(".pep-ch-ul").removeClass("hide");
-				}
-				else {
-					$(".pep-ch-ul").addClass("hide");
-				}
-
-				localStorage.setItem('item_group', item_group)
-				$('.item-grp-nav').text(item_group)
-				me.render_item_grid(true);
+		// sidebar item grp click
+		$('.tree-li-grp').hover(
+			function() {
+				$('.child-box').removeClass("sel-hover");
+				$('.grand-child').removeClass('ch-sel-hover');
+				$(this).find('.child-box').addClass('sel-hover')
 			}
+		)
+
+		// child item group click - 1
+		$('.tree-li-chgrp').hover(function(e) {
+			e.stopPropagation();
+			$('.grand-child').removeClass('ch-sel-hover');
+			$(this).find('.grand-child').addClass('ch-sel-hover')
+		})
+
+		// grand child item group click - 2
+		$('.grand-ch-grp').click(function(e) {
+			e.stopPropagation();
+			var grand_child = $(this).attr('data-group')
+			$('.grand-child').removeClass('ch-sel-hover');
+			$('.child-box').removeClass("sel-hover");
+
+			localStorage.setItem('child_item_group', grand_child)
+			$('.ch-item-grp-nav').text(grand_child)
+			me.render_item_grid(true);
+		})
+
+		$(".grand-child, .child-box").mouseleave(function(e) {
+			e.stopPropagation()
+			$('.grand-child').removeClass('ch-sel-hover');
+			$('.child-box').removeClass("sel-hover");
+		})
+
+		// on outside click hide item group boxes
+		$(document).click(function() {
+			$('.grand-child').removeClass('ch-sel-hover');
+			$('.child-box').removeClass("sel-hover");
 		})
 	},
 
