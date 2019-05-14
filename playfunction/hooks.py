@@ -16,7 +16,7 @@ app_license = "MIT"
 
 # include js, css files in header of desk.html
 # app_include_css = "/assets/playfunction/css/playfunction.css"
-# app_include_js = "/assets/playfunction/js/playfunction.js"
+app_include_js = "/assets/playfunction/playfunction.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/playfunction/css/playfunction.css"
@@ -28,7 +28,8 @@ app_license = "MIT"
 # include js in doctype views
 doctype_js = {
 	"Item" : "playfunction/custom_script/item/item.js",
-	"Quotation": "playfunction/custom_script/quotation/quotation.js"
+	"Quotation": "playfunction/custom_script/quotation/quotation.js",
+	"Sales Order": "playfunction/custom_script/sales_order/sales_order.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
