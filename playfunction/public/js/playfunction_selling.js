@@ -3,7 +3,7 @@ frappe.provide("playfunction.selling");
 playfunction.selling.SellingController = Class.extend({
 	refresh: function() {
 		var doctype = cur_frm.doc.doctype
-		if(has_common(frappe.user_roles, ["Playfunction Customer"])/* && frappe.session.user != 'Administrator'*/) {
+		if(has_common(frappe.user_roles, ["Playfunction Customer"]) && frappe.session.user != 'Administrator') {
 			// set form fields property
 			var common_form_fields = {
 				"read_only":["customer", "transaction_date",
