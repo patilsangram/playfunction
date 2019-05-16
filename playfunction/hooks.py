@@ -29,7 +29,8 @@ app_include_js = "/assets/js/playfunction.desk.min.js"
 doctype_js = {
 	"Item" : "playfunction/custom_script/item/item.js",
 	"Quotation": "playfunction/custom_script/quotation/quotation.js",
-	"Sales Order": "playfunction/custom_script/sales_order/sales_order.js"
+	"Sales Order": "playfunction/custom_script/sales_order/sales_order.js",
+	"Sales Invoice": "playfunction/custom_script/sales_invoice/sales_invoice.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}

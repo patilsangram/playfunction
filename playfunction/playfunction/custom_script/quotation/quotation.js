@@ -6,7 +6,6 @@ frappe.ui.form.on("Quotation",{
 			frm.events.init_approval_flow(frm);
 		}
 		frm.trigger("set_status_intro");
-		//frm.trigger("update_field_property");
 	},
 
 	set_status_intro: function(frm) {
