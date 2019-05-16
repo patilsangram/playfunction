@@ -6,6 +6,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:18:39.077026", 
   "name": "System Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "System Manager", 
   "two_factor_auth": 0
@@ -17,6 +20,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:18:39.080696", 
   "name": "All", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "All", 
   "two_factor_auth": 0
@@ -28,6 +34,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:18:39.082711", 
   "name": "Administrator", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Administrator", 
   "two_factor_auth": 0
@@ -39,6 +48,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:18:39.084431", 
   "name": "Guest", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Guest", 
   "two_factor_auth": 0
@@ -50,6 +62,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:18:44.104183", 
   "name": "Report Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Report Manager", 
   "two_factor_auth": 0
@@ -61,6 +76,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:18:49.072837", 
   "name": "Blogger", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Blogger", 
   "two_factor_auth": 0
@@ -72,6 +90,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:18:49.076899", 
   "name": "Website Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Website Manager", 
   "two_factor_auth": 0
@@ -83,6 +104,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:18:56.306053", 
   "name": "Knowledge Base Contributor", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Knowledge Base Contributor", 
   "two_factor_auth": 0
@@ -94,6 +118,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:18:56.310169", 
   "name": "Knowledge Base Editor", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Knowledge Base Editor", 
   "two_factor_auth": 0
@@ -105,6 +132,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:03.291030", 
   "name": "Newsletter Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Newsletter Manager", 
   "two_factor_auth": 0
@@ -116,6 +146,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:13.197448", 
   "name": "Sales User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Sales User", 
   "two_factor_auth": 0
@@ -127,6 +160,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:13.200239", 
   "name": "Accounts User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Accounts User", 
   "two_factor_auth": 0
@@ -138,6 +174,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:13.202214", 
   "name": "Purchase User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Purchase User", 
   "two_factor_auth": 0
@@ -149,6 +188,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:13.852290", 
   "name": "Accounts Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Accounts Manager", 
   "two_factor_auth": 0
@@ -160,6 +202,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:33.394288", 
   "name": "Purchase Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Purchase Manager", 
   "two_factor_auth": 0
@@ -171,6 +216,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:33.398430", 
   "name": "Maintenance User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Maintenance User", 
   "two_factor_auth": 0
@@ -182,6 +230,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:33.400194", 
   "name": "Maintenance Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Maintenance Manager", 
   "two_factor_auth": 0
@@ -193,6 +244,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:33.402619", 
   "name": "Sales Master Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Sales Master Manager", 
   "two_factor_auth": 0
@@ -204,6 +258,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:33.404393", 
   "name": "Sales Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Sales Manager", 
   "two_factor_auth": 0
@@ -215,6 +272,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:33.406371", 
   "name": "Purchase Master Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Purchase Master Manager", 
   "two_factor_auth": 0
@@ -226,6 +286,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:43.297380", 
   "name": "Translator", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Translator", 
   "two_factor_auth": 0
@@ -237,6 +300,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:19:57.095333", 
   "name": "Auditor", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Auditor", 
   "two_factor_auth": 0
@@ -248,6 +314,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:20:02.425478", 
   "name": "Employee", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Employee", 
   "two_factor_auth": 0
@@ -259,6 +328,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:20:02.428597", 
   "name": "Stock User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Stock User", 
   "two_factor_auth": 0
@@ -270,6 +342,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:20:58.230957", 
   "name": "HR Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "HR Manager", 
   "two_factor_auth": 0
@@ -281,6 +356,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:21:09.690679", 
   "name": "Manufacturing Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Manufacturing Manager", 
   "two_factor_auth": 0
@@ -292,6 +370,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:21:16.912323", 
   "name": "Stock Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Stock Manager", 
   "two_factor_auth": 0
@@ -303,6 +384,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:21:20.156871", 
   "name": "Projects Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Projects Manager", 
   "two_factor_auth": 0
@@ -314,6 +398,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:21:20.163691", 
   "name": "Projects User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Projects User", 
   "two_factor_auth": 0
@@ -325,6 +412,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:21:22.983989", 
   "name": "HR User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "HR User", 
   "two_factor_auth": 0
@@ -336,6 +426,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:21:22.986572", 
   "name": "Manufacturing User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Manufacturing User", 
   "two_factor_auth": 0
@@ -347,6 +440,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:21:43.900233", 
   "name": "Item Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Item Manager", 
   "two_factor_auth": 0
@@ -358,6 +454,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:22:01.007323", 
   "name": "Academics User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Academics User", 
   "two_factor_auth": 0
@@ -369,6 +468,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:22:17.302116", 
   "name": "Fleet Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Fleet Manager", 
   "two_factor_auth": 0
@@ -380,6 +482,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:22:20.073050", 
   "name": "Expense Approver", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Expense Approver", 
   "two_factor_auth": 0
@@ -391,6 +496,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:22:37.989493", 
   "name": "Leave Approver", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Leave Approver", 
   "two_factor_auth": 0
@@ -402,6 +510,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:23:22.417891", 
   "name": "Quality Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Quality Manager", 
   "two_factor_auth": 0
@@ -413,6 +524,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:23:50.580572", 
   "name": "Fulfillment User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Fulfillment User", 
   "two_factor_auth": 0
@@ -424,6 +538,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:23:54.409263", 
   "name": "Support Team", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Support Team", 
   "two_factor_auth": 0
@@ -435,6 +552,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:24:00.022667", 
   "name": "Agriculture Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Agriculture Manager", 
   "two_factor_auth": 0
@@ -446,6 +566,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:24:00.028020", 
   "name": "Agriculture User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Agriculture User", 
   "two_factor_auth": 0
@@ -457,6 +580,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:24:14.150067", 
   "name": "Instructor", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Instructor", 
   "two_factor_auth": 0
@@ -468,6 +594,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:24:15.343651", 
   "name": "Education Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Education Manager", 
   "two_factor_auth": 0
@@ -479,6 +608,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:24:45.399287", 
   "name": "Healthcare Administrator", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Healthcare Administrator", 
   "two_factor_auth": 0
@@ -490,6 +622,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:24:46.503881", 
   "name": "Physician", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Physician", 
   "two_factor_auth": 0
@@ -501,6 +636,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:24:48.321598", 
   "name": "Laboratory User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Laboratory User", 
   "two_factor_auth": 0
@@ -512,6 +650,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:24:48.325619", 
   "name": "Nursing User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Nursing User", 
   "two_factor_auth": 0
@@ -523,6 +664,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:24:59.553414", 
   "name": "LabTest Approver", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "LabTest Approver", 
   "two_factor_auth": 0
@@ -534,6 +678,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:25:13.434717", 
   "name": "Restaurant Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Restaurant Manager", 
   "two_factor_auth": 0
@@ -545,6 +692,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:25:37.142994", 
   "name": "Non Profit Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Non Profit Manager", 
   "two_factor_auth": 0
@@ -556,6 +706,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:25:37.146520", 
   "name": "Non Profit Member", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Non Profit Member", 
   "two_factor_auth": 0
@@ -567,6 +720,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:25:46.603461", 
   "name": "Hotel Manager", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Hotel Manager", 
   "two_factor_auth": 0
@@ -578,6 +734,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:25:47.364730", 
   "name": "Hotel Reservation User", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Hotel Reservation User", 
   "two_factor_auth": 0
@@ -589,6 +748,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:26:04.656003", 
   "name": "Patient", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Patient", 
   "two_factor_auth": 0
@@ -600,6 +762,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:26:04.661284", 
   "name": "Supplier", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Supplier", 
   "two_factor_auth": 0
@@ -611,6 +776,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:26:04.664180", 
   "name": "Customer", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Customer", 
   "two_factor_auth": 0
@@ -622,6 +790,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:26:04.669453", 
   "name": "Student", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Student", 
   "two_factor_auth": 0
@@ -633,6 +804,9 @@
   "doctype": "Role", 
   "modified": "2019-03-17 03:26:06.956129", 
   "name": "Analytics", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Analytics", 
   "two_factor_auth": 0
@@ -644,6 +818,9 @@
   "doctype": "Role", 
   "modified": "2019-04-23 08:35:00.324075", 
   "name": "PlayFunction Admin", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "PlayFunction Admin", 
   "two_factor_auth": 0
@@ -655,6 +832,9 @@
   "doctype": "Role", 
   "modified": "2019-04-23 08:36:35.985726", 
   "name": "PlayFunction Worker", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "PlayFunction Worker", 
   "two_factor_auth": 0
@@ -666,6 +846,9 @@
   "doctype": "Role", 
   "modified": "2019-04-23 22:34:16.448603", 
   "name": "Playfunction Customer", 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
   "restrict_to_domain": null, 
   "role_name": "Playfunction Customer", 
   "two_factor_auth": 0
