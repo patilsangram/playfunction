@@ -1,4 +1,4 @@
-frappe.require("/assets/playfunction/playfunction.js")
+$.extend(cur_frm.cscript, new playfunction.selling.SellingController({frm: cur_frm}));
 
 frappe.ui.form.on("Quotation",{
 	refresh: function(frm) {
@@ -6,7 +6,7 @@ frappe.ui.form.on("Quotation",{
 			frm.events.init_approval_flow(frm);
 		}
 		frm.trigger("set_status_intro");
-		frm.trigger("update_field_property");
+		//frm.trigger("update_field_property");
 	},
 
 	set_status_intro: function(frm) {
