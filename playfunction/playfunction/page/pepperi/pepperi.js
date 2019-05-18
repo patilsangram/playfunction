@@ -43,6 +43,11 @@ frappe.pepperi = Class.extend({
 			me.home();
 		})
 
+		// redirect to catalog
+		$('#CatalogList').click(function(){
+			me.render_item_catalog();
+		})
+
 		// profile
 		$('#cust-profile').click(function() {
 			frappe.set_route("Form", "User", frappe.session.user);
