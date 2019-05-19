@@ -1,7 +1,7 @@
 <div class="row mainDiv">
 	<div class="content-nav container-fluid" id="topBarContainer">
 		<div class="row" >
-			<div class="col-xs-4 pull-left container-fluid">
+			<div class="col-xs-5 pull-left container-fluid">
 				<span>
 					<button  type="button" class="allButtons grnbtn backbtn ellipsis pull-left flip fa fa-lg fa-long-arrow-left hide">
 					</button>
@@ -14,7 +14,7 @@
 					{{child_item_group}}
 				</span>
 			</div>
-			<div class="col-xs-8 pull-right">
+			<div class="col-xs-7 pull-right">
 				<div class="pull-right flip">
 					<span class="total-cnt" data-total="{{ total || 0 }}">Total: 0</span>
 					<span>
@@ -61,9 +61,6 @@
 							<span class="item_group_fil" title="All">
 								All
 							</span>
-							<span class="pull-right flip">
-								<i aria-hidden="true" class="fa fa-angle-right"></i>
-							</span>
 						</li>
 					</div>
 					{% $.each(data.item_groups, function(parent, child){ %}
@@ -72,9 +69,6 @@
 								<span class="rectangle"></span>
 								<span class="item_group_fil" title="{{ parent }}">
 									{{ parent }}
-								</span>
-								<span class="pull-right flip">
-									<i aria-hidden="true" class="fa fa-angle-right"></i>
 								</span>
 								{% if (Object.keys(child).length) { %}
 									<ul class="child-box">
