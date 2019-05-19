@@ -27,11 +27,13 @@ def get_items_and_group_tree(filters):
 	item_groups, group_list = get_children(item_group, data, [item_group])
 
 
-	# item group condition
-	if filters.get("child_item_group"):
+	# item group/catalog condition
+	if filters.get("child_item_group") and filters.get("child_item_group") != 'All':
 		group_list = [filters.get("child_item_group")]
 
-	cond += " and i.item_group in {}".format("(" + ",".join("'{}'".format(i) for i in group_list) + ")")
+	group_tuple = "(" + ",".join("'{}'".format(i) for i in group_list) + ")"
+	cond += """ and (c.catalog_level_1 in {groups} or c.catalog_level_2 in {groups}
+		or c.catalog_level_3 in {groups} or c.catalog_level_4 in {groups} )""".format(groups=group_tuple)
 
 	if filters.get("search_txt"):
 		fil = "'%{0}%'".format(filters.get("search_txt"))
@@ -42,10 +44,10 @@ def get_items_and_group_tree(filters):
 	item_details = frappe.db.sql("""
 		select
 			i.item_code, i.item_name, i.image, {},
-			group_concat(concat(c.category,',',c.subcategory)) as category, 
+			group_concat(c.catalog_level_1) as catalogs,
 			ifnull(b.actual_qty, 0) as qty, d.default_warehouse, p.price_list_rate as price
 		from
-			tabItem i left join `tabCategory List` c  on c.parent = i.name
+			tabItem i left join `tabCatalog` c  on c.parent = i.name
 		left join
 			`tabItem Default` d on d.parent = i.name and d.company = '{}'
 		left join
