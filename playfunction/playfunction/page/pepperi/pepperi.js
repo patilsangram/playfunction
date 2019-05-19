@@ -43,6 +43,11 @@ frappe.pepperi = Class.extend({
 			me.home();
 		})
 
+		// redirect to catalog
+		$('#CatalogList').click(function(){
+			me.render_item_catalog();
+		})
+
 		// profile
 		$('#cust-profile').click(function() {
 			frappe.set_route("Form", "User", frappe.session.user);
@@ -312,7 +317,15 @@ frappe.pepperi = Class.extend({
 
 	item_group_trigger: function() {
 		var me = this;
-		// sidebar item grp click
+		// trigger item grid with given group fileter
+		var _item_grid = function(group, label='') {
+			var label = label ? label : group
+			localStorage.setItem('child_item_group', group)
+			$('.ch-item-grp-nav').text(label)
+			me.render_item_grid(true);
+		}
+
+		// sidebar item grp hover/click
 		$('.tree-li-grp').hover(
 			function() {
 				$('.child-box').removeClass("sel-hover");
@@ -321,23 +334,35 @@ frappe.pepperi = Class.extend({
 			}
 		)
 
-		// child item group click - 1
+		$('.tree-li-grp').click(function() {
+			var group = $(this).attr('data-group')
+			_item_grid(group)
+		})
+
+		// child item group - 1 hover/click
 		$('.tree-li-chgrp').hover(function(e) {
 			e.stopPropagation();
 			$('.grand-child').removeClass('ch-sel-hover');
 			$(this).find('.grand-child').addClass('ch-sel-hover')
 		})
 
-		// grand child item group click - 2
+		$('.tree-li-chgrp').click(function(e) {
+			e.stopPropagation();
+			var group = $(this).attr('data-group')
+			var label = $(this).attr('data-parent') + ' > ' + group
+			_item_grid(group, label)
+		})
+
+		// grand child item group - 2 hover/click
 		$('.grand-ch-grp').click(function(e) {
 			e.stopPropagation();
 			var grand_child = $(this).attr('data-group')
 			$('.grand-child').removeClass('ch-sel-hover');
 			$('.child-box').removeClass("sel-hover");
 
-			localStorage.setItem('child_item_group', grand_child)
-			$('.ch-item-grp-nav').text(grand_child)
-			me.render_item_grid(true);
+			var label = $(this).attr('data-grand-parent') + ' > ' +
+				$(this).attr('data-parent') + ' > ' + grand_child
+			_item_grid(grand_child, label)
 		})
 
 		$(".grand-child, .child-box").mouseleave(function(e) {

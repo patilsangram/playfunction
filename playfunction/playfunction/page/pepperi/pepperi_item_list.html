@@ -55,6 +55,17 @@
 		<div class="col-xs-2 pepperi-sidebar">
 			<div class="item-group-ul">
 				<ul class="pep-ul">
+					<div class="mat-tree">
+						<li class="tree-li-grp" data-group="All">
+							<span class="rectangle"></span>
+							<span class="item_group_fil" title="All">
+								All
+							</span>
+							<span class="pull-right flip">
+								<i aria-hidden="true" class="fa fa-angle-right"></i>
+							</span>
+						</li>
+					</div>
 					{% $.each(data.item_groups, function(parent, child){ %}
 						<div class="mat-tree">
 							<li class="tree-li-grp" data-group="{{ parent }}">
@@ -68,13 +79,13 @@
 								{% if (Object.keys(child).length) { %}
 									<ul class="child-box">
 									{% $.each(child, function(ch, gch){ %}
-											<li class="tree-li-chgrp" data-group="{{ch}}" title="{{ch}}">
+											<li class="tree-li-chgrp" data-group="{{ch}}" title="{{ch}}" data-parent="{{ parent }}">
 												<a class="child-a">{{ ch }}
 												<i aria-hidden="true" class="fa fa-angle-right ch-fa"></i></a>
 												{% if (Object.keys(gch).length) { %}
 													<ul class="grand-child">
 													{% $.each(gch, function(grandch, gch){ %}
-															<li class="grand-ch-grp" data-group="{{ grandch }}" title="{{grandch}}">
+															<li class="grand-ch-grp" data-group="{{ grandch }}" title="{{grandch}}" data-parent="{{ch }}" data-grand-parent="{{ parent }}">
 																<a class="grandch-a">
 																	{{ grandch }}
 																</a>
