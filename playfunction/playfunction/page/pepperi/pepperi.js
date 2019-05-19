@@ -2,6 +2,7 @@ frappe.pages['pepperi'].on_page_load = function(wrapper) {
 	new frappe.pepperi({
 		$wrapper: $(wrapper)
 	});
+	frappe.breadcrumbs.add("PlayFunction");
 }
 
 frappe.pepperi = Class.extend({
