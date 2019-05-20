@@ -34,7 +34,7 @@ playfunction.selling.SellingController = Class.extend({
 				$.each(fields_, function(i, f){
 					cur_frm.set_df_property(f, prop, true)
 				})
-			})
+			});
 			// Item table properties
 			var items_table = {
 				"read_only" : ["item_name", "barcode", "supplier_item_code",
@@ -47,7 +47,7 @@ playfunction.selling.SellingController = Class.extend({
 					var df = frappe.meta.get_docfield(doctype+" Item", field, cur_frm.doc.name);
 					df[prop] = true
 				})
-			})
+			});
 		}
 	}
-})
+});
