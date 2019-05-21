@@ -320,10 +320,12 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		// trigger item grid with given group fileter
 		var _item_grid = function(group, label='') {
-			var label = label ? label : group
-			localStorage.setItem('child_item_group', group)
-			$('.ch-item-grp-nav').text(label)
-			me.render_item_grid(true);
+			if(me.cur_page == "Grid View") {
+				var label = label ? label : group
+				localStorage.setItem('child_item_group', group)
+				$('.ch-item-grp-nav').text(label)
+				me.render_item_grid(true);
+			}
 		}
 
 		// sidebar item grp hover/click
