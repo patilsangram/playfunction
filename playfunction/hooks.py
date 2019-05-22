@@ -48,7 +48,7 @@ doctype_js = {
 # }
 
 # fixtures
-fixtures = ['Custom Field', 'Property Setter', 'Role']
+fixtures = ['Custom Field', 'Property Setter', 'Role','Print Format']
 
 # Website user home page (by function)
 # get_website_user_home_page = "playfunction.utils.get_home_page"
