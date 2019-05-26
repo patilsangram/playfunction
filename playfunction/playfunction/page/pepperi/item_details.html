@@ -2,24 +2,49 @@
 	<div class="item-img-dv">
 		<img src="{{data.image}}">
 	</div>
-	
-	<div class="panel panel-default product-prop">
-		<div class="panel-heading">Product Information</div>
-		<div class="panel-body">
-			<ul style="list-style-type:none;">
-				<li><label>Name</label>: {{data.item_name}}</li>
-				<li><label>Item Code</label>: {{data.item_code}}</li>
-			</ul>  
-		</div>
+
+	<div class="item-data-sec">Product Information</div>
+	<div class="item-data-body">
+		<ul style="list-style-type:none;">
+			<li><label>Name</label>: {{data.item_name}}</li>
+			<li><label>Item Code</label>: {{data.item_code}}</li>
+		</ul>
 	</div>
 
-	<div class="panel panel-default price-stock">
-		<div class="panel-heading">Pricing & Inventory</div>
-		<div class="panel-body">
-			<ul style="list-style-type:none;">
-				<li><label>Price($)</label>: {{ data.price || 0 }}</li>
-				<li><label>Inventory</label>: {{data.qty || 0 }}</li>
-			</ul>
-		</div>
+	<div class="item-data-sec">Pricing & Inventory</div>
+	<div class="item-data-body">
+		<ul style="list-style-type:none;">
+			<li><label>Price($)</label>: {{ data.price || 0 }}</li>
+			<li><label>Inventory</label>: {{data.qty || 0 }}</li>
+		</ul>
+	</div>
+	<div class="item-data-sec">Related Items</div>
+	<div class="item-data-body related-items">
+		{% if (data.related_items.length) { %}
+			<table class="table">
+				<thead>
+					<tr>
+						<th width="150">Item Code</th>
+						<th width="150">Item Name</th>
+						<th width="150">Image</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% $.each(data.related_items, function(i, item){ %}
+						<tr>
+							<td width="150">{{ item.item_code }}</td>
+							<td width="150">{{ item.item_name }}</td>
+							<td width="150">
+								<img src="{{ item.image }}" class="img-thumbnail ply-thumbnail">
+							</td>
+						</tr>
+					{% }); %}
+				</tbody>
+			</table>
+		{% } else { %}
+			<div class="msg-box no-border">
+				<p>No Related Items found</p>
+			</div>
+		{% } %}
 	</div>
 </div>

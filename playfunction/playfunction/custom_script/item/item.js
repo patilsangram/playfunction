@@ -1,3 +1,6 @@
+cur_frm.add_fetch('item_code', 'item_name', 'item_name');
+cur_frm.add_fetch('item_code', 'image', 'image');
+
 frappe.ui.form.on("Item", {
 	validate: function(frm) {
 		//validation for discount field
