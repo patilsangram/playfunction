@@ -614,3 +614,30 @@
 	background: #78aa00;
 	color: #fff !important;
 }
+
+/*------------item details-------------*/
+.item-data-sec {
+	border-bottom: 1px solid black;
+	padding: 10px;
+	margin-bottom: 10px;
+	background: #99bd42;
+	color: #fff;
+	font-weight: 400;
+	margin-right: 10px;
+	border-radius: 8px;
+}
+
+.item-data-body {
+	padding-top: 10px;
+}
+
+.ply-thumbnail {
+	height: 80px;
+	width: 80px;
+}
+
+.related-items {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+

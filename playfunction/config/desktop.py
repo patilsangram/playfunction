@@ -10,5 +10,13 @@ def get_data():
 			"icon": "octicon octicon-file-directory",
 			"type": "module",
 			"label": _("PlayFunction")
-		}
+		},
+		{
+			"module_name": "System Pepperi",
+			"color": "#2ecc71",
+			"icon": "octicon octicon-rocket",
+			"type": "page",
+			"link": "pepperi",
+			"label": _("System Pepperi")
+		},
 	]

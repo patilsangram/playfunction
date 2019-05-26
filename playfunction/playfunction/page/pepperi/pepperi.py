@@ -78,6 +78,8 @@ def get_item_details(item_code):
 	# item selling price as per login customer
 	company = erpnext.get_default_company() or frappe.db.get_all("Company")[0].get("name")
 	price_list = "Standard Selling"
+	item_doc = frappe.get_doc("Item", item_code)
+	related_items = item_doc.get("related_item") or []
 	item_details = frappe.db.sql("""
 		select
 			i.item_code, i.item_name, i.image, group_concat(concat(c.category,',',c.subcategory))
@@ -92,6 +94,7 @@ def get_item_details(item_code):
 			`tabItem Price` p on p.item_code = i.item_code and p.price_list = '{}'
 		where i.name = '{}'
 		group by i.name
-	""".format(company, price_list, item_code), as_dict=True)
+	""".format(company, price_list, item_code), as_dict=True)[0]
+	item_details['related_items'] = related_items
 	return item_details
 

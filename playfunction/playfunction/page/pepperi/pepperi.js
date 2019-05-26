@@ -228,7 +228,7 @@ frappe.pepperi = Class.extend({
 			args: {"item_code": item_code},
 			callback: function(r) {
 				me.cur_page = "Item Details"
-				$('.pepperi-content').html(frappe.render_template('item_details', {"data": r.message[0]}))
+				$('.pepperi-content').html(frappe.render_template('item_details', {"data": r.message}))
 			}
 		})
 	},
