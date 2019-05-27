@@ -66,7 +66,7 @@ frappe.pepperi = Class.extend({
 
 		//order history
 		$('#order-history').click(function() {
-			frappe.set_route("List", "Sales Order")
+			frappe.set_route("query-report", "Order History");
 		})
 
 		//order list
