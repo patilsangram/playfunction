@@ -4,7 +4,7 @@ from frappe import _
 def get_data():
 	return [
 		{
-			"label": _("Item"),
+			"label": _("Master"),
 			"icon": "fa fa-star",
 			"items": [
 				{
@@ -46,6 +46,37 @@ def get_data():
 			]
 		},
 		{
+			"label": _("CRM"),
+			"icon": "fa fa-star",
+			"items": [
+				{
+					"type": "doctype",
+					"name": "Lead",
+					"description": _("Lead")
+				},
+				{
+					"type": "doctype",
+					"name": "Customer",
+					"description": _("Customer")
+				},
+				{
+					"type": "doctype",
+					"name": "Opportunity",
+					"description": _("Opportunity")
+				},
+				{
+					"type": "doctype",
+					"name": "Contact",
+					"description": _("Contact")
+				},
+				{
+					"type": "doctype",
+					"name": "Address",
+					"description": _("Address")
+				},
+			]
+		},
+		{
 			"label": _("Selling"),
 			"icon": "fa fa-star",
 			"items": [
@@ -65,11 +96,6 @@ def get_data():
 					"description": _("Sales Invoice."),
 				},
 				{
-					"type": "doctype",
-					"name": "Customer",
-					"description": _("Customer."),
-				},
-				{
 					"type": "page",
 					"name": "pepperi",
 					"label": _("Pepperi"),
@@ -83,9 +109,34 @@ def get_data():
 			"items": [
 				{
 					"type": "doctype",
+					"name": "Supplier",
+					"description": _("Supplier."),
+				},
+				{
+					"type": "doctype",
+					"name": "Request for Quotation",
+					"description": _("Request for Quotation."),
+				},
+				{
+					"type": "doctype",
 					"name": "Purchase Order",
 					"description": _("Purchase Orders given to Suppliers."),
 				},
+				{
+					"type": "doctype",
+					"name": "Purchase Receipt",
+					"description": _("Purchase Receipt."),
+				},
+				{
+					"type": "doctype",
+					"name": "Purchase Invoice",
+					"description": _("Purchase Invoice."),
+				},
+				{
+					"type": "doctype",
+					"name": "Payment Entry",
+					"description": _("Payment Entry."),
+				}
 			]
 		},
 	]
