@@ -9,6 +9,19 @@ frappe.ui.form.on("Item", {
 			refresh_field("discount")
 			frappe.throw("Please enter valid discount, it should not be more than max discount")
 		}
+		
+
+	// related item duplicate check
+		var related_item_list = []
+		frm.doc.related_item.forEach(function(e){
+			related_item_list.push(e.item_code)
+		});
+		var related_item_set=new Set(related_item_list)
+		if(related_item_set.size < related_item_list.length)
+		{
+			frappe.throw("Duplicates found in related item section, please remove it")
+		}
+
 	},
 });
 
