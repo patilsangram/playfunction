@@ -11,17 +11,15 @@ frappe.ui.form.on("Item", {
 		}
 		
 
-	// related item duplicate check
-		var related_item_list = []
-		frm.doc.related_item.forEach(function(e){
-			related_item_list.push(e.item_code)
-		});
-		var related_item_set=new Set(related_item_list)
-		if(related_item_set.size < related_item_list.length)
-		{
-			frappe.throw("Duplicates found in related item section, please remove it")
+		// validate duplicate Related Item entry
+		var related_items = []
+		$.each(frm.doc.related_item, function(i, v){
+			related_items.push(v.item_code)
+		})
+		var related_items_set = new Set(related_items)
+		if(related_items.length > related_items_set.size) {
+			frappe.throw(__("Duplicate Entry found in Related Items."))
 		}
-
 	},
 });
 
