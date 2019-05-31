@@ -12,9 +12,9 @@ def amount_owed_log(doc, method):
 			})
 			new_doc.save()
 			frappe.db.commit()
-	if doc.doctype="Payment Entry" and doc.party_type=='Supplier': 
+	if doc.doctype=="Payment Entry" and doc.party_type=='Supplier': 
 		for row in doc.references:
-			if row.reference_doctype =='Purchase Invoice' and row.outstanding_amount > 0::
+			if row.reference_doctype =='Purchase Invoice' and row.outstanding_amount > 0:
 				if frappe.db.exists("Amount Owed", {"name":row.reference_name}):
 					frappe.delete_doc("Amount Owed", row.reference_name)
 					frappe.db.commit()
