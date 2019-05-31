@@ -4,6 +4,7 @@
  "allow_guest_to_view": 0, 
  "allow_import": 0, 
  "allow_rename": 0, 
+ "autoname": "field:invoice_no", 
  "beta": 0, 
  "creation": "2019-05-29 12:22:52.566832", 
  "custom": 0, 
@@ -45,7 +46,7 @@
    "search_index": 0, 
    "set_only_once": 0, 
    "translatable": 0, 
-   "unique": 0
+   "unique": 1
   }, 
   {
    "allow_bulk_edit": 0, 
@@ -124,7 +125,7 @@
  "issingle": 0, 
  "istable": 1, 
  "max_attachments": 0, 
- "modified": "2019-05-29 18:40:18.352185", 
+ "modified": "2019-05-30 18:06:43.275227", 
  "modified_by": "Administrator", 
  "module": "PlayFunction", 
  "name": "Amount Owed", 
