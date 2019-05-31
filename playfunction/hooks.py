@@ -31,8 +31,7 @@ doctype_js = {
 	"Quotation": "playfunction/custom_script/quotation/quotation.js",
 	"Sales Order": "playfunction/custom_script/sales_order/sales_order.js",
 	"Sales Invoice": "playfunction/custom_script/sales_invoice/sales_invoice.js",
-	"Purchase Invoice": "playfunction/custom_script/purchase_invoice/purchase_invoice.js"
-
+	"Supplier": "playfunction/custom_script/supplier/supplier.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
@@ -103,13 +102,12 @@ doc_events = {
 	"Item Group": {
 		"before_insert": "playfunction.playfunction.custom_script.item_group.item_group.update_group_level"
 	},
-	"Payment Entry": {
-		"on_submit": "playfunction.playfunction.custom_script.payment_entry.payment_entry.validate_payment",
-	},
 	"Purchase Invoice": {
-		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.insert_amount_owed",
+		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.amount_owed_log",
+	},
+	"Payment Entry": {
+		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.amount_owed_log",
 	}
-
 }
 
 # Scheduled Tasks
