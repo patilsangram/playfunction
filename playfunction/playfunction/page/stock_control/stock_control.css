@@ -1,0 +1,18 @@
+div#header {
+	padding: 20px 20px 0 20px;
+	overflow: hidden;
+    padding: 20px 20px 0 20px;
+    position: relative;
+    background-color: #e0e0d8;
+}
+
+#header h1.page-title {
+	float: right;
+}
+
+#header h1.page-title {
+	color: #000;
+	padding-bottom: 10px;
+	font-size: 1.385em;
+	font-weight: normal;
+}

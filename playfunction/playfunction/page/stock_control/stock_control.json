@@ -1,0 +1,23 @@
+{
+ "content": null, 
+ "creation": "2019-05-30 00:48:33.898778", 
+ "docstatus": 0, 
+ "doctype": "Page", 
+ "idx": 0, 
+ "modified": "2019-05-30 00:48:33.898778", 
+ "modified_by": "Administrator", 
+ "module": "PlayFunction", 
+ "name": "stock-control", 
+ "owner": "Administrator", 
+ "page_name": "Stock Control", 
+ "roles": [
+  {
+   "role": "All"
+  }
+ ], 
+ "script": null, 
+ "standard": "Yes", 
+ "style": null, 
+ "system_page": 0, 
+ "title": "Stock Control"
+}
