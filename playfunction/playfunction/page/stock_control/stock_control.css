@@ -1,13 +1,12 @@
 div#header {
-	padding: 20px 20px 0 20px;
 	overflow: hidden;
-    padding: 20px 20px 0 20px;
-    position: relative;
-    background-color: #e0e0d8;
+	padding: 0px 20px 0 20px;
+	position: relative;
+	background-color: #e0e0d8;
 }
 
 #header h1.page-title {
-	float: right;
+	float: left;
 }
 
 #header h1.page-title {
@@ -15,4 +14,9 @@ div#header {
 	padding-bottom: 10px;
 	font-size: 1.385em;
 	font-weight: normal;
+}
+
+.filter-search {
+	float: right;
+	padding-right: 10px;
 }
