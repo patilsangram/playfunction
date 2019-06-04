@@ -10,10 +10,12 @@ def checkout_order(data,doctype):
 		if cart_items:
 			doc = frappe.new_doc(doctype)
 			doc.selling_price_list = "Standard Selling"
-			doc.customer = customer
 			doc.company = frappe.get_value("Company",{},"name")
 			if doctype == "Sales Order":
+				doc.customer = customer
 				doc.delivery_date = today()
+			else:
+				doc.party_name = customer
 			for k, v in cart_items.items():
 				discount = frappe.get_value("Item",{'item_code':k},"discount_percentage")
 				row = {"item_code": k, "qty": v[0], "price_list_rate": v[1], "discount_percentage": v[2]}
@@ -58,4 +60,4 @@ def get_permission_query_conditions(user):
 	# playfunction customer can access only his own records
 	if user != "Administrator" and "Playfunction Customer" in frappe.get_roles():
 		customer = frappe.db.get_value("Customer", {"user": user})
-		return """ customer = '{}' """.format(customer) if customer else "1=2"
+		return """ customer_name = '{}' """.format(customer) if customer else "1=2"
