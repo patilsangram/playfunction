@@ -22,8 +22,7 @@ def update_amount_owed(doc, method):
 			supplier_doc.append("amount_owed", {
 				"invoice_no": inv.get("name"),
 				"amount_owed": inv.get("outstanding_amount"),
-				"date_owed": formatdate(inv.get("creation"))
+				"date_owed": formatdate(inv.get("creation"), "yyyy-MM-dd")
 			})
 		supplier_doc.save()
 		frappe.db.commit()
-
