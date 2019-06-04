@@ -61,11 +61,6 @@ def get_data():
 				},
 				{
 					"type": "doctype",
-					"name": "Opportunity",
-					"description": _("Opportunity")
-				},
-				{
-					"type": "doctype",
 					"name": "Contact",
 					"description": _("Contact")
 				},
@@ -136,7 +131,13 @@ def get_data():
 					"type": "doctype",
 					"name": "Payment Entry",
 					"description": _("Payment Entry."),
-				}
+				},
+				{
+					"type": "page",
+					"name": "stock-control",
+					"label": _("Stock Control"),
+					"description": _("Stock Control")
+				},
 			]
 		},
 	]

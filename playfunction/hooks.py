@@ -103,10 +103,10 @@ doc_events = {
 		"before_insert": "playfunction.playfunction.custom_script.item_group.item_group.update_group_level"
 	},
 	"Purchase Invoice": {
-		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.amount_owed_log",
+		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.update_amount_owed",
 	},
 	"Payment Entry": {
-		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.amount_owed_log",
+		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.update_amount_owed",
 	}
 }
 

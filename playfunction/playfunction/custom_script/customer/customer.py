@@ -2,8 +2,6 @@ import frappe
 from frappe import _
 
 
-
-
 @frappe.whitelist()
 def validate_customer(doc, method):
 	"""validate: same user is linked with multilple customers"""
