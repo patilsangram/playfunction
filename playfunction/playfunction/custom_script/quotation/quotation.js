@@ -1,7 +1,7 @@
-$.extend(cur_frm.cscript, new playfunction.selling.SellingController({frm: cur_frm}));
-
 frappe.ui.form.on("Quotation",{
 	refresh: function(frm) {
+		// from public - playfunction_selling.js
+		playfunction.selling.set_field_permissions();
 		if (frm.doc.docstatus == 0 && frm.doc.workflow_state != "Rejected") {
 			frm.events.init_approval_flow(frm);
 		}
