@@ -77,9 +77,9 @@ fixtures = ['Custom Field', 'Property Setter', 'Role','Print Format']
 # Permissions evaluated in scripted ways
 
 permission_query_conditions = {
-	"Quotation": "playfunction.playfunction.custom_script.quotation.quotation.get_permission_query_conditions",
-	"Sales Order": "playfunction.playfunction.custom_script.quotation.quotation.get_permission_query_conditions",
-	"Sales Invoice": "playfunction.playfunction.custom_script.quotation.quotation.get_permission_query_conditions",
+	"Quotation": "playfunction.playfunction.custom_script.quotation.quotation.get_permission_query_conditions_quotation",
+	"Sales Order": "playfunction.playfunction.custom_script.quotation.quotation.get_permission_query_conditions_sales_order",
+	"Sales Invoice": "playfunction.playfunction.custom_script.quotation.quotation.get_permission_query_conditions_sales_invoice",
 }
 
 

@@ -55,9 +55,21 @@ def update_selling_data(doc,meathod):
 		if row.cost_price and row.selling_rate:
 			row.rate = row.cost_price * row.selling_rate
 
+def get_permission_query_conditions_quotation(user):
+	return get_permission_query_conditions(user, "Quotation")
+
+def get_permission_query_conditions_sales_order(user):
+	return get_permission_query_conditions(user, "Sales Order")
+
+def get_permission_query_conditions_sales_invoice(user):
+	return get_permission_query_conditions(user, "Sales Invoice")
+
 @frappe.whitelist()
-def get_permission_query_conditions(user):
+def get_permission_query_conditions(user, doctype):
 	# playfunction customer can access only his own records
+	if not user:
+		user = frappe.session.user
+	customer_field = {"Quotation": "party_name", "Sales Order": "customer", "Sales Invoice": "customer"}
 	if user != "Administrator" and "Playfunction Customer" in frappe.get_roles():
 		customer = frappe.db.get_value("Customer", {"user": user})
-		return """ customer_name = '{}' """.format(customer) if customer else "1=2"
+		return """ {} = '{}' """.format(customer_field.get(doctype), customer) if customer else "1=2"
