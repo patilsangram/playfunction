@@ -1,3 +1,7 @@
+.stock-control-dashboard {
+	font-size: 12px;
+}
+
 div#header {
 	overflow: hidden;
 	padding: 0px 20px 0 20px;
@@ -19,4 +23,112 @@ div#header {
 .filter-search {
 	float: right;
 	padding-right: 10px;
+}
+
+.filter-row {
+	display: flex;
+	padding-left: 55px;
+}
+
+.filter-col {
+	padding: 0px 30px 0px 30px;
+}
+
+.stock-fil {
+	width: 27%;
+}
+
+
+
+/*------------------Body---------------*/
+.item-tbl {
+	padding: 0px 10px 0px 10px;
+}
+
+.tb-th {
+	text-transform: uppercase;
+	background: #e1e2dc;
+	font-weight: normal;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #bebfb9;
+	padding: 3px 10px;
+}
+
+.tb-td {
+	vertical-align: middle;
+	padding: 8px 10px;
+	border: 0;
+	color: #000;
+	text-align: center;
+}
+
+.tb-head {
+	margin-bottom: 0px;
+}
+
+.tb-body {
+	text-align: center;
+}
+
+.tb-body {
+	margin-top: 0px;
+}
+
+.action {
+	padding-top: 25px;
+	padding-right: 10px;
+}
+
+.action-btn {
+	font-size: 12px;
+}
+
+.action-menu {
+	min-width: 95px;
+	font-size: 12px;
+}
+
+.check:hover {
+	color: blue;
+}
+
+.check {
+	width: 5px;
+}
+
+.i-code {
+	width: 100px;
+}
+
+.i-code-td {
+	width: 100px;
+	color: #0074BD;
+}
+
+.i-name, .nm-of-gm {
+	width: 150px;
+}
+
+.supp, .cust {
+	width: 120px;
+}
+
+.cost, .stock, .pend-qty, .quote-qty, .order-qty {
+	width: 100px;
+	text-align: right !important;
+}
+
+.to-be-ordered {
+	min-width: 25px;
+	max-width: 50px;
+	border-radius: 5px;
+}
+
+.dt-link, .stock-report-link {
+	cursor: pointer;
+}
+
+.dt-link:hover, .stock-report-link:hover {
+	color: #0074BD;
 }

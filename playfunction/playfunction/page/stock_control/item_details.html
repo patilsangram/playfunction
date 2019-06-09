@@ -1,18 +1,61 @@
-<table>
-	<thead>
-		<tr>
-			<th>Sr.</th>
-			<th>Item Code</th>
-			<th>Item Name</th>
-			<th>Customer</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>1.</td>
-			<td>Adaptor</td>
-			<td>Adaptor</td>
-			<td>Brayan</td>
-		</tr>
-	</tbody>
-</table>
+{% if (data.length) %}
+	<table class="table table-hover tb-head">
+		<thead>
+			<tr>
+				<th class="tb-th check"><input class="all-check" type="checkbox"></th>
+				<th class="tb-th i-code">{{ __("Item Code") }}</th>
+				<th class="tb-th i-name">{{ __("Item Name") }}</th>
+				<th class="tb-th supp">{{ __("Supplier") }}</th>
+				<th class="tb-th cust">{{ __("Customer") }}</th>
+				<th class="tb-th nm-of-gm">{{ __("Supplier Item Name") }}</th>
+				<th class="tb-th cost">{{ __("Cost Price") }}</th>
+				<th class="tb-th stock">{{ __("Stock") }}</th>
+				<th class="tb-th pend-qty">{{ __("Pending Order Qty") }}</th>
+				<th class="tb-th quote-qty">{{ __("Quote Qty") }}</th>
+				<th class="tb-th order-qty">{{ __("To Be Ordered") }}</th>
+			</tr>
+		</thead>
+	</table>
+	<table class="table table-hover tb-body">
+		<tbody>
+			{% for item in data %}
+				<tr>
+					<td class="tb-td check"><input class="check-item" type="checkbox"></td>
+					<td class="tb-td i-code-td dt-link" data-dn="{{ item.item_code }}"
+						data-dt="Item" title="{{ item.item_code }}">
+						{{ item.item_code }}
+					</td>
+					<td class="tb-td i-name">{{ item.item_name }}</td>
+					<td class="tb-td supp dt-link" data-dn="{{ item.supplier }}"
+						data-dt="Supplier" title="{{ item.supplier }}">
+						{{ item.supplier }}
+					</td>
+					<td class="tb-td cust dt-link" data-dn="{{ item.customer }}"
+						data-dt="Customer" title="{{ item.customer }}">
+						{{ item.customer }}
+					</td>
+					<td class="tb-td nm-of-gm">{{ item.supplier_item_name }}</td>
+					<td class="tb-td cost">{{ item.cost_price }}</td>
+					<td class="tb-td stock stock-report-link" title="Click to open Stock Ledger Report">
+						{{ item.stock }}
+					</td>
+					<td class="tb-td pend-qty">{{ item.pending_qty }}</td>
+					<td class="tb-td quote-qty">{{ item.quote_qty }}</td>
+					<td class="tb-td order-qty">
+						<input autocomplete="off" class="to-be-ordered" type="number">
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% else %}
+
+	<div class="no-result text-muted flex justify-center align-center" style="">
+		<div class="msg-box no-border">
+			<p>No Item found</p>
+			<p><button class="btn btn-primary btn-sm new-item">
+				Make a new Item
+			</button></p>
+		</div>
+	</div>
+{% endif %}
