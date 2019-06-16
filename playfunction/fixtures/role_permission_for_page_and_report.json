@@ -1,0 +1,16 @@
+[
+ {
+  "disable_prepared_report": 0, 
+  "docstatus": 0, 
+  "doctype": "Role Permission for Page and Report", 
+  "modified": "2019-03-17 03:19:41.448115", 
+  "name": "Role Permission for Page and Report", 
+  "page": null, 
+  "parent": null, 
+  "parentfield": null, 
+  "parenttype": null, 
+  "report": null, 
+  "roles": [], 
+  "set_role_for": ""
+ }
+]
