@@ -20,7 +20,10 @@
 		<tbody>
 			{% for item in data %}
 				<tr>
-					<td class="tb-td check"><input class="check-item" type="checkbox"></td>
+					<td class="tb-td check">
+						<input class="check-item" type="checkbox"
+							data-item="{{ item.item_code }}">
+					</td>
 					<td class="tb-td i-code-td dt-link" data-dn="{{ item.item_code }}"
 						data-dt="Item" title="{{ item.item_code }}">
 						{{ item.item_code }}

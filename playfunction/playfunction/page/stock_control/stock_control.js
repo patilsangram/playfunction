@@ -111,6 +111,7 @@ frappe.StockControl = Class.extend({
 			callback: function(r) {
 				$('.item-tbl').html(frappe.render_template("item_details", {"data": r.message}))
 				me.check_all();
+				me.check_item();
 				me.validate_order_qty();
 				me.open_record();
 				me.open_stock_ledger();
@@ -123,14 +124,20 @@ frappe.StockControl = Class.extend({
 	place_order: function() {
 		var me = this;
 		$('.place-order').on("click", function() {
-			frappe.msgprint("Place Order- Invalid Data")
+			var data = me.get_checked_items()
+			if (data) {
+				me.make_transaction_record("Purchase Order", data)
+			}
 		})
 	},
 
 	request_for_quote: function() {
 		var me = this;
 		$('.request-for-quote').on("click", function(){
-			frappe.msgprint("Request for Quote - Invalid Data")
+			var data = me.get_checked_items()
+			if (data) {
+				me.make_transaction_record("Request for Quotation", data)
+			}
 		})
 	},
 
@@ -138,6 +145,21 @@ frappe.StockControl = Class.extend({
 		var me = this;
 		$('.all-check').on("click", function() {
 			$(".check-item").prop('checked', $(this).prop('checked'));
+		})
+	},
+
+	check_item: function() {
+		// uncheck if supplier is not present
+		var me = this;
+		$('.check-item').on("click", function() {
+			if($(this).prop("checked")) {
+				var supplier = $(this).closest('tr').find('.supp').attr('data-dn').trim();
+				var item = $(this).attr("data-item");
+				if (!supplier) {
+					$(this).prop("checked", false);
+					frappe.msgprint(__("Supplier is missing for "+"<b>"+(item)+"</b>"))
+				}
+			}
 		})
 	},
 
@@ -169,6 +191,41 @@ frappe.StockControl = Class.extend({
 			frappe.route_options = {"item_code": item_code}
 			frappe.set_route("query-report", "Stock Ledger");
 		})
-	}
+	},
 
+	get_checked_items: function() {
+		// [{ "item_code": "ABC", "qty": 12, "supplier": "Bryan" }]
+		var me = this;
+		data = []
+		$("input:checkbox[class=check-item]:checked").each(function () {
+			var item_code = $(this).attr("data-item")
+			var supplier = $(this).closest('tr').find('.supp').attr('data-dn').trim();
+			var qty = $(this).closest('tr').find('.to-be-ordered').val();
+			if (qty && supplier) {
+				data.push({"item_code": item_code, "supplier": supplier, "qty": qty})
+			}
+			else {
+				$(this).prop("checked", false);
+			}
+		})
+		if(!data.length) {
+			frappe.msgprint(__("Supplier & Qty required."))
+			return false
+		}
+		return data
+	},
+
+	make_transaction_record: function(dt, data) {
+		var me = this;
+		frappe.call({
+			method: "playfunction.playfunction.page.stock_control.stock_control.make_transaction_record",
+			args: {"dt": dt, "data": data},
+			callback: function(r) {
+				if (!r.exc && r.message) {
+					frappe.msgprint(__(dt+" Record Created Successfully..."))
+					me.fetch_dashboard_data();
+				}
+			}
+		})
+	}
 })
