@@ -40,7 +40,8 @@ frappe.ui.form.on("Item", {
 
 	sp_without_vat:function(frm){
 		if(frm.doc.sp_without_vat > 0) {
-			frm.set_value("sp_with_vat", frm.doc.sp_without_vat*0.17);
+			var with_vat = frm.doc.sp_without_vat*0.17 + frm.doc.sp_without_vat
+			frm.set_value("sp_with_vat", with_vat);
 		}
 	}
 });
