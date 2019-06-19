@@ -47,11 +47,6 @@ frappe.ui.form.on("Item", {
 });
 
 
-cur_frm.fields_dict['related_item'].grid.get_field('item_code').get_query =function(frm,cdt,cdn){
-	return {
-		"filters": {'group_level': 1}
-	}
-}
 
 cur_frm.fields_dict['catalogs'].grid.get_field('catalog_level_1').get_query =function(frm,cdt,cdn){
 	return {
