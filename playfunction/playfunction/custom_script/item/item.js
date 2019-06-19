@@ -2,6 +2,15 @@ cur_frm.add_fetch('item_code', 'item_name', 'item_name');
 cur_frm.add_fetch('item_code', 'image', 'image');
 
 frappe.ui.form.on("Item", {
+	onload:function(frm){
+		frm.trigger("is_stock_item");
+		if(!frm.doc.item_group) {
+			frm.set_value("item_group", "All Item Groups");
+		}
+		frm.set_df_property("item_group", "hidden", true);
+		frm.set_df_property("allow_alternative_item", "hidden", true);
+	},
+
 	validate: function(frm) {
 		//validation for discount field
 		if(frm.doc.max_discount>0 && frm.doc.discount>frm.doc.max_discount) {
@@ -9,7 +18,6 @@ frappe.ui.form.on("Item", {
 			refresh_field("discount")
 			frappe.throw("Please enter valid discount, it should not be more than max discount")
 		}
-		
 
 		// validate duplicate Related Item entry
 		var related_items = []
@@ -21,29 +29,20 @@ frappe.ui.form.on("Item", {
 			frappe.throw(__("Duplicate Entry found in Related Items."))
 		}
 	},
+
 	is_stock_item:function(frm){
-	    if(frm.doc.is_stock_item==1){
-			cur_frm.set_df_property("catalogs", "reqd", true);
-	    }
-	    else{
-			cur_frm.set_df_property("catalogs", "reqd", false);
-	    }
-	},
-	onload:function(frm){
-		cur_frm.set_df_property("catalogs", "reqd", frm.doc.is_stock_item=="1");
-		cur_frm.set_df_property("item_group", "hidden", true);
-		cur_frm.set_df_property("allow_alternative_item", "hidden", true);
-	},
-	quick_entry:function(frm){
-		cur_frm.set_df_property("item_group", "hidden", true);
-	},
-	sp_without_vat:function(frm){
-		if(frm.doc.sp_without_vat>0){
-			var sp_with_vat=frm.doc.sp_without_vat*0.17;
-			cur_frm.set_value("sp_with_vat",sp_with_vat);
-		}
+		frm.toggle_reqd("catalogs", frm.doc.is_stock_item);
 	},
 
+	quick_entry:function(frm){
+		frm.set_df_property("item_group", "hidden", true);
+	},
+
+	sp_without_vat:function(frm){
+		if(frm.doc.sp_without_vat > 0) {
+			frm.set_value("sp_with_vat", frm.doc.sp_without_vat*0.17);
+		}
+	}
 });
 
 
