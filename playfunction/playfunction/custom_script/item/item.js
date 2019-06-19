@@ -23,13 +23,14 @@ frappe.ui.form.on("Item", {
 	},
 	is_stock_item:function(frm){
 	    if(frm.doc.is_stock_item==1){
-			cur_frm.set_df_property("catalogs", "reqd", frm.doc.is_stock_item=="1");
+			cur_frm.set_df_property("catalogs", "reqd", true);
 	    }
 	    else{
 			cur_frm.set_df_property("catalogs", "reqd", false);
 	    }
 	},
 	onload:function(frm){
+		cur_frm.set_df_property("catalogs", "reqd", frm.doc.is_stock_item=="1");
 		cur_frm.set_df_property("item_group", "hidden", true);
 		cur_frm.set_df_property("allow_alternative_item", "hidden", true);
 	},
