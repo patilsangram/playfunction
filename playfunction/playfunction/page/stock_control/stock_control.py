@@ -37,7 +37,7 @@ def get_dashboard_data(filters):
 		# sub query to handle stock filter/alias
 		query = """
 			select * from (select
-				i.item_code, i.item_name, i.cost_price, i.supplier_list as supplier,
+				i.item_code, i.item_name, i.cost_price, i.supplier,
 				i.supplier_item_name, q.party_name as customer, ifnull(sum(qi.qty), 0) as quote_qty,
 				ifnull((soi.qty - soi.delivered_qty), 0) as pending_qty, ifnull(sum(bin.actual_qty), 0) as stock
 			from
