@@ -29,10 +29,10 @@ def checkout_order(data,doctype):
 			return doc.name
 		else:
 			frappe.msgprint("Please add items to cart first")
-			return
+			return False
 	except Exception as e:
 		frappe.msgprint("Something went wrong ..")
-		return
+		return False
 
 
 @frappe.whitelist()
