@@ -205,7 +205,12 @@ frappe.pepperi = Class.extend({
 					"doctype": doctype
 				},
 				callback: function(r) {
-					frappe.set_route("Form", doctype, r.message);
+					if(!r.exc && r.message) {
+						frappe.set_route("Form", doctype, r.message);
+					}
+					else {
+						frappe.msgprint(__("Something went wrong while placing order."))
+					}
 				}
 			})
 		});
