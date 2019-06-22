@@ -19,7 +19,8 @@ app_license = "MIT"
 app_include_js = "/assets/js/playfunction.desk.min.js"
 
 # include js, css files in header of web template
-# web_include_css = "/assets/playfunction/css/playfunction.css"
+web_include_css = "/assets/css/playfunction-web.min.css"
+
 # web_include_js = "/assets/playfunction/js/playfunction.js"
 
 # include js in page
