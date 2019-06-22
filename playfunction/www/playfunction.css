@@ -1,0 +1,276 @@
+@charset "utf-8";
+
+/* CSS Document */
+
+@font-face {
+  font-family: Montserrat-Regular;
+  src: url('../fonts/montserrat/Montserrat-Regular.ttf');
+}
+
+@font-face {
+  font-family: Montserrat-Medium;
+  src: url('../fonts/montserrat/Montserrat-Medium.ttf');
+}
+
+@font-face {
+  font-family: Montserrat-Bold;
+  src: url('../fonts/montserrat/Montserrat-Bold.ttf');
+}
+
+@font-face {
+  font-family: Montserrat-Italic;
+  src: url('../fonts/montserrat/Montserrat-Italic.ttf');
+}
+
+@font-face {
+  font-family: Montserrat-Black;
+  src: url('../fonts/montserrat/Montserrat-Black.ttf');
+}
+
+body,
+html {
+  height: 100%;
+  font-family: Montserrat-Regular, sans-serif;
+  font-weight: 400;
+}
+
+a {
+  font-family: Montserrat-Regular;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #666666;
+  margin: 0px;
+  transition: all 0.4s;
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+}
+
+a:focus {
+  outline: none !important;
+}
+
+a:hover {
+  text-decoration: none;
+  color: #e65540;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0px;
+}
+
+p {
+  font-family: Montserrat-Regular;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #888888;
+  margin: 0px;
+}
+
+ul,
+li {
+  margin: 0px;
+  list-style-type: none;
+}
+
+.text-dark-blue {
+  color: #3f6a84;
+}
+
+.a-btn {
+  text-decoration: none !important;
+}
+
+.form-rounded {
+  border-radius: 1.5rem;
+  width: 250px !important;
+}
+
+.form-rounded:focus {
+  border-color: #ced4da;
+}
+
+.btn-rounded {
+  border-radius: 1.5rem;
+}
+
+.input-group-text {
+  border-radius: 1.25rem;
+}
+
+.form-control:focus {
+  border-color: none;
+}
+
+.navbar-border {
+  border-bottom: 3px solid #04b6f0;
+  border-top: 3px solid #04b6f0;
+}
+
+.navbar-border-1 {
+  border-bottom: 1px solid #A8A8A8;
+  border-top: 1px solid #A8A8A8;
+}
+
+.navbar-nav>li {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.height250 {
+  height: 250px;
+}
+
+.mt-195 {
+  margin-top: 195px;
+}
+
+.img-bg1 {
+  background-image: url("../images/bg1.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.img-bg2 {
+  background-image: url("../images/com-cen.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.img-bg3 {
+  background-image: url("../images/gift-ideas.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.img-bg4 {
+  background-image: url("../images/our-range.png");
+  background-position: center;
+  background-size: cover;
+}
+
+.img-bg5 {
+  background-image: url("../images/meet-our-experts.png");
+  background-position: center;
+  background-size: cover;
+}
+
+
+/*Parnter Slider*/
+
+.slick-slide {
+  margin: 0px 20px;
+}
+
+.slick-slide img {
+  width: 100%;
+}
+
+.slick-slider {
+  position: relative;
+  display: block;
+  box-sizing: border-box;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -khtml-user-select: none;
+  -ms-touch-action: pan-y;
+  touch-action: pan-y;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.slick-list {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+.slick-list:focus {
+  outline: none;
+}
+
+.slick-list.dragging {
+  cursor: pointer;
+  cursor: hand;
+}
+
+.slick-slider .slick-track,
+.slick-slider .slick-list {
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  -ms-transform: translate3d(0, 0, 0);
+  -o-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+.slick-track {
+  position: relative;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+.slick-track:before,
+.slick-track:after {
+  display: table;
+  content: '';
+}
+
+.slick-track:after {
+  clear: both;
+}
+
+.slick-loading .slick-track {
+  visibility: hidden;
+}
+
+.slick-slide {
+  display: none;
+  float: left;
+  height: 100%;
+  min-height: 1px;
+}
+
+[dir='rtl'] .slick-slide {
+  float: right;
+}
+
+.slick-slide img {
+  display: block;
+}
+
+.slick-slide.slick-loading img {
+  display: none;
+}
+
+.slick-slide.dragging img {
+  pointer-events: none;
+}
+
+.slick-initialized .slick-slide {
+  display: block;
+}
+
+.slick-loading .slick-slide {
+  visibility: hidden;
+}
+
+.slick-vertical .slick-slide {
+  display: block;
+  height: auto;
+  border: 1px solid transparent;
+}
+
+.slick-arrow.slick-hidden {
+  display: none;
+}

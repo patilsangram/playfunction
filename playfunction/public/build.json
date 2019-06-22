@@ -3,3 +3,9 @@
 		"public/js/playfunction_selling.js"
 	]
 }
+{
+	"css/playfunction-web.min.css": [
+		"public/css/themify-icons.css",
+		"public/css/bootstrap_4_3_1.css"
+	]
+}
