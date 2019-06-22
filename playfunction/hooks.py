@@ -32,7 +32,8 @@ doctype_js = {
 	"Quotation": "playfunction/custom_script/quotation/quotation.js",
 	"Sales Order": "playfunction/custom_script/sales_order/sales_order.js",
 	"Sales Invoice": "playfunction/custom_script/sales_invoice/sales_invoice.js",
-	"Supplier": "playfunction/custom_script/supplier/supplier.js"
+	"Supplier": "playfunction/custom_script/supplier/supplier.js",
+	"Purchase Order": "playfunction/custom_script/purchase_order_item/purchase_order_item.js"
 }
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
