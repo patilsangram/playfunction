@@ -8,15 +8,12 @@ from frappe import _
 def ping():
 	return "Pong"
 
-
-#LOGIN API
 @frappe.whitelist(allow_guest=True)
 def login(usr,pwd):
 	"""
 		:param usr: username or email_id
 		:param pwd: password
 	"""
-	
 	try:
 		response = frappe._dict({})
 		if usr and pwd:
@@ -28,23 +25,20 @@ def login(usr,pwd):
 				frappe.response["status_code"] = 200
 		else:
 				frappe.response["message"] = "Invalid Email Id"
-				frappe.response["status_code"] = 404
-		
+				frappe.response["status_code"] = 404	
 	except frappe.AuthenticationError,e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.response["status_code"] = http_status_code
 
-
-#FORGOT_PASSWORD API
 @frappe.whitelist(allow_guest=True)
 def forgot_password(usr):
-	if usr=="Administrator":
-		return 'not allowed'
+	if usr == "Administrator":
+		return 'Not Allowed'
 
 	try:
 		usr = frappe.get_doc("User", usr)
 		if not usr.enabled:
-			return 'disabled'
+			return 'User Disabled'
 
 		usr.validate_reset_password()
 		usr.reset_password(send_email=True)
@@ -53,26 +47,11 @@ def forgot_password(usr):
 
 	except frappe.DoesNotExistError:
 		frappe.clear_messages()
-		return 'not found'
+		return 'Not Found'
 
-
-
-#LOGOUT API
 @frappe.whitelist(allow_guest=True)
 def logout(usr,pwd):
 		frappe.local.login_manager.logout()
 		frappe.db.commit()
 		frappe.response["message"] = "Logged out"
-
-
-
-
-
-
-
-
-
-
-		
-		
 
