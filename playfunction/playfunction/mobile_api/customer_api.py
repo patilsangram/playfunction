@@ -28,19 +28,13 @@ def create_customer(customer_name, customer_type=None,email_id=None,city=None, c
 
 #UPDATE CUSTOMER API
 @frappe.whitelist(allow_guest=True)
-def update_customer(customer_name, customer_type=None,email_id=None,city=None, customer_group=None, territory=None, address_line1=None,address_line2=None,state=None,country=None,pincode=None):
+def update_customer(customer_name, customer_type=None,email_id=None, customer_group=None, territory=None):
 	customer_doc = frappe.get_doc("Customer" , customer_name)
 	customer_doc.customer_name = customer_name
 	customer_doc.customer_type = customer_type
 	customer_doc.customer_group = customer_group
 	customer_doc.email_id = email_id
 	customer_doc.territory = territory
-	customer_doc.address_line1 = address_line1
-	customer_doc.address_line2 = address_line2
-	customer_doc.city = city
-	customer_doc.state = state
-	customer_doc.country = country
-	customer_doc.pincode = pincode
 	customer_doc.flags.ignore_permissions = True			
 	customer_doc.save()
 	frappe.db.commit()
@@ -50,7 +44,7 @@ def update_customer(customer_name, customer_type=None,email_id=None,city=None, c
 #READ API
 @frappe.whitelist(allow_guest=True)
 def get_customer():
-	cust_list = frappe.db.sql("""select customer_name,customer_type,customer_group,territory,email_id,city,address_line1 from tabCustomer """,as_dict=1)
+	cust_list = frappe.db.sql("""select customer_name,customer_type,customer_group,territory,email_id from tabCustomer """,as_dict=1)
 	return cust_list
 
 
@@ -58,7 +52,7 @@ def get_customer():
 @frappe.whitelist(allow_guest=True)
 def get_customer_list(customer=None,):	
 	if customer:
-		cl=frappe.db.sql("""select * from `tabCustomer` where customer_name="admin" """,as_dict=1)
+		cl=frappe.db.sql("""select customer_name from `tabCustomer` where name like "%ad%"; """,as_dict=1)
 		return cl
 	
 	else:
