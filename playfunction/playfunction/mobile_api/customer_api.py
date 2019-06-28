@@ -1,69 +1,126 @@
 from __future__ import unicode_literals
 import frappe, os, json
 from frappe.permissions import reset_perms
+from frappe import _
 
 
-#CREATE CUSTOMER API
-@frappe.whitelist(allow_guest=True)
-def create_customer(customer_name, customer_type=None,email_id=None,city=None, customer_group=None, territory=None, address_line1=None,address_line2=None,state=None,country=None,pincode=None):
-	if frappe.db.exists("Customer", customer_name):
-		return frappe.msgprint("Customer already exists")
-	else:
-		customer_doc = frappe.new_doc("Customer")
-		customer_doc.customer_name = customer_name
-		customer_doc.customer_type = customer_type
-		customer_doc.customer_group = customer_group
-		customer_doc.email_id = email_id
-		customer_doc.territory = territory
-		customer_doc.address_line1 = address_line1
-		customer_doc.address_line2 = address_line2
-		customer_doc.city = city
-		customer_doc.state = state
-		customer_doc.country = country
-		customer_doc.pincode = pincode
-		customer_doc.flags.ignore_permissions = True
-		customer_doc.save()
-		frappe.db.commit()
-		return "customer is created"
 
-#UPDATE CUSTOMER API
-@frappe.whitelist(allow_guest=True)
-def update_customer(customer_name, customer_type=None,email_id=None, customer_group=None, territory=None):
-	customer_doc = frappe.get_doc("Customer" , customer_name)
-	customer_doc.customer_name = customer_name
-	customer_doc.customer_type = customer_type
-	customer_doc.customer_group = customer_group
-	customer_doc.email_id = email_id
-	customer_doc.territory = territory
-	customer_doc.flags.ignore_permissions = True			
-	customer_doc.save()
-	frappe.db.commit()
-	return "Customer is updated"
+@frappe.whitelist()
+def create_customer(data):
+	""":param data = {
+		:customer_name
+		:customer_type
+		:email_id
+	}"""
+	try:
+		api_data= json.loads(data)
+		if not frappe.db.exists('Customer',api_data.get('customer_name')):
 
+			customer_doc = frappe.new_doc("Customer")
+			if customer_doc:
+				customer_doc.customer_name = api_data.get('customer_name')
+				customer_doc.customer_type = api_data.get('customer_type')
+				customer_doc.customer_group = api_data.get('customer_group')
+				customer_doc.email_id = api_data.get('email_id')
+				customer_doc.territory = api_data.get('territory')
+				customer_doc.save(ignore_permissions=1)
+				if api_data.get('address'):
+					address_dict = api_data.get('address')
+					address = frappe.get_doc({
+						'doctype': 'Address',
+						'address_title': address_dict.get('address_title'),
+						'address_type': address_dict.get('address_type'),
+						'address_line1': address_dict.get('address_line1'),
+						'address_line2': address_dict.get('address_line2'),
+						'city': address_dict.get('city'),
+						'pincode': address_dict.get('pincode'),
+						'state': address_dict.get('state'),
+						'country': address_dict.get('country'),
+						'links': [{
+							'link_doctype': "Customer",
+							'link_name': customer_doc.name
+						}]
+					}).insert(ignore_permissions=True)
+			return "Customer is created".format(customer_doc.name)
+		else:
+			return "Customer is already exist"		
+	except Exception as e:
+		make_error_log(title="Failed api of create customer",method="create_customer",
+					status="Error",
+					data = "No data",
+					message=e,
+					traceback=frappe.get_traceback(),exception=True)
+		raise e
 
-#READ API
-@frappe.whitelist(allow_guest=True)
-def get_customer():
-	cust_list = frappe.db.sql("""select customer_name,customer_type,customer_group,territory,email_id from tabCustomer """,as_dict=1)
-	return cust_list
+@frappe.whitelist()
+def update_customer(data):
+	try:
+		api_data= json.loads(data)
+		if frappe.db.exists('Customer',api_data.get('customer_name')):
+			customer_doc = frappe.get_doc("Customer" , api_data.get('customer_name'))
+			customer_doc.customer_name = api_data.get('customer_name')
+			customer_doc.customer_type = api_data.get('customer_type')
+			customer_doc.customer_group = api_data.get('customer_group')
+			customer_doc.territory = api_data.get('territory')
+			customer_doc.flags.ignore_permissions = True			
+			customer_doc.save()
+			return "Customer is updated"
+		else:
+			return "Customer does not exist"
 
-
-#SEACH CUSTOMER and CUSTOMER LIST API
-@frappe.whitelist(allow_guest=True)
-def get_customer_list(customer=None,):	
-	if customer:
-		cl=frappe.db.sql("""select customer_name from `tabCustomer` where name like "%ad%"; """,as_dict=1)
-		return cl
+	except Exception as e:
+		raise e
 	
-	else:
-		return 	get_customer()
+
+
+@frappe.whitelist()
+def get_customer(data):
+	try:
+
+		cust_list= frappe.db.sql("""select name, customer_group, territory from `tabCustomer` where docstatus < 2 """,as_dict=1)
+		return cust_list
+	except Exception as e:		
+		make_error_log(title="Failed api of get customer list",method="get_customer",
+					status="Error",
+					data = "No data",
+					message=e,
+					traceback=frappe.get_traceback(),exception=True)
+		raise e
 
 
 
 
-#DELETE CUSTOMER API
-@frappe.whitelist(allow_guest=True)
+
+@frappe.whitelist()
+def get_customer_searchlist(customer=None):	
+	try:
+		if customer:
+			cust=frappe.db.sql("""select customer_name from `tabCustomer` where name like "%ad%"; """,as_dict=1)
+			return cust
+		
+		else:
+			return 	get_customer()
+	except Exception as e:
+		
+		raise e
+
+
+
+
+
+@frappe.whitelist()
 def delete_customer(customer_name):
-	customer_doc = frappe.delete_doc("Customer", customer_name)
-	frappe.db.commit()
-	return "Customer is deleted"
+	try:
+		if not frappe.db.exists("Customer", customer_name):
+			return frappe.msgprint("Customer does not exists")
+		else:
+			customer_doc = frappe.delete_doc("Customer", customer_name)
+			frappe.db.commit()
+			return "Customer is deleted"
+	except Exception as e:
+		make_error_log(title="Failed api of delete customer",method="delete_customer",
+					status="Error",
+					data = "No data",
+					message=e,
+					traceback=frappe.get_traceback(),exception=True)
+		raise e
