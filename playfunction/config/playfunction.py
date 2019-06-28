@@ -140,4 +140,50 @@ def get_data():
 				},
 			]
 		},
+		{
+			"label": _("Account"),
+			"icon": "fa fa-star",
+			"items": [
+				{
+					"type": "report",
+					"name": "Accounts Receivable",
+					"doctype": "Sales Invoice",
+					"is_query_report": True
+				},
+				{
+					"type": "report",
+					"name": "Accounts Payable",
+					"doctype": "Purchase Invoice",
+					"is_query_report": True
+				},
+				{
+					"type": "doctype",
+					"name": "Sales Invoice",
+					"description": _("Sales Invoice."),
+				},
+				{
+					"type": "doctype",
+					"name": "Purchase Invoice",
+					"description": _("Purchase Invoice."),
+				}
+			]
+		},
+		{
+			"label": _("Stock"),
+			"icon": "fa fa-star",
+			"items": [
+				{
+					"type": "report",
+					"name": "Stock Ledger",
+					"is_query_report": True,
+					"description": _("Stock Transactions")
+				},
+				{
+					"type": "report",
+					"name": "Stock Details",
+					"doctype": "Catalog",
+					"is_query_report": True
+				}
+			]
+		}
 	]
