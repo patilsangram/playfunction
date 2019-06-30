@@ -114,7 +114,11 @@ doc_events = {
 }
 
 # Scheduled Tasks
-# ---------------
+scheduler_events = {
+	"hourly": [
+		"playfunction.playfunction.schedulers.scheduler_events.stock_availability"
+	]
+}
 
 # scheduler_events = {
 # 	"all": [
