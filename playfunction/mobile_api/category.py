@@ -3,11 +3,12 @@ from frappe import _
 
 
 @frappe.whitelist()
-def get_categories(search=None, only_parent=False):
+def get_categories(search=None, only_parent=False, parent=None):
 	"""Get category list
 
 	:param search: search text
 	:param only_parent: group level 1 categories
+	:param parent: parent_item_group
 	"""
 	try:
 		response = frappe._dict()
@@ -16,6 +17,8 @@ def get_categories(search=None, only_parent=False):
 			cond += " and group_level=1"
 		if search:
 			cond += " and name like '{}'".format("%{}%".format(search))
+		if parent:
+			cond += " and parent_item_group = '{}'".format(parent)
 
 		query = """
 			select name, parent_item_group as parent_category, 
