@@ -64,10 +64,7 @@ def update_customer(data):
 
 			customer_doc = frappe.get_doc("Customer" , api_data.get('customer_name'))
 			customer_doc.customer_name = api_data.get('customer_name')
-			customer_doc.customer_type = api_data.get('customer_type')
-			customer_doc.customer_group = api_data.get('customer_group')
-			customer_doc.territory = api_data.get('territory')
-			customer_doc.flags.ignore_permissions = True			
+			customer_doc.customer_type = api_data.get('customer_type')		
 			customer_doc.save()
 			customer.doc.as_dict()
 			return response.update({"message":"Customer is updated","status_code": 200})
