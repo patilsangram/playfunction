@@ -13,50 +13,55 @@ def create_customer(data):
 		:email_id
 	}"""
 	try:
+		response=frappe._dict()
 		api_data= json.loads(data)
 		if not frappe.db.exists('Customer',api_data.get('customer_name')):
-
 			customer_doc = frappe.new_doc("Customer")
 			if customer_doc:
 				customer_doc.customer_name = api_data.get('customer_name')
 				customer_doc.customer_type = api_data.get('customer_type')
-				customer_doc.customer_group = api_data.get('customer_group')
 				customer_doc.email_id = api_data.get('email_id')
-				customer_doc.territory = api_data.get('territory')
-				customer_doc.save(ignore_permissions=1)
-				if api_data.get('address'):
-					address_dict = api_data.get('address')
-					address = frappe.get_doc({
-						'doctype': 'Address',
-						'address_title': address_dict.get('address_title'),
-						'address_type': address_dict.get('address_type'),
-						'address_line1': address_dict.get('address_line1'),
-						'address_line2': address_dict.get('address_line2'),
-						'city': address_dict.get('city'),
-						'pincode': address_dict.get('pincode'),
-						'state': address_dict.get('state'),
-						'country': address_dict.get('country'),
-						'links': [{
-							'link_doctype': "Customer",
-							'link_name': customer_doc.name
-						}]
-					}).insert(ignore_permissions=True)
-			return "Customer is created".format(customer_doc.name)
+				customer_doc.save()
+				customer_name= customer_doc.name
+				add_address(data,customer_name)
+				
+			return  response.update({"message":"Customer is created","status_code": 200})
 		else:
-			return "Customer is already exist"		
+			return response.update({"message": "Customer already exists","status_code": 409})
 	except Exception as e:
-		make_error_log(title="Failed api of create customer",method="create_customer",
-					status="Error",
-					data = "No data",
-					message=e,
-					traceback=frappe.get_traceback(),exception=True)
 		raise e
+
+
+def add_address(data,customer_name):
+	try:
+		api_data= json.loads(data)
+		if api_data.get('address'):
+			address_dict = api_data.get('address')
+			address = frappe.get_doc({
+				'doctype': 'Address',
+				'address_title': address_dict.get('address_title'),
+				'address_type': address_dict.get('address_type'),
+				'address_line1': address_dict.get('address_line1'),
+				'address_line2': address_dict.get('address_line2'),
+				'city': address_dict.get('city'),
+				'pincode': address_dict.get('pincode'),
+				'links': [{
+					'link_doctype': "Customer",
+					'link_name': customer_name
+				}]
+			}).insert()
+	except Exception as e:
+		raise e		
+
+
 
 @frappe.whitelist()
 def update_customer(data):
 	try:
+		response=frappe._dict()
 		api_data= json.loads(data)
 		if frappe.db.exists('Customer',api_data.get('customer_name')):
+
 			customer_doc = frappe.get_doc("Customer" , api_data.get('customer_name'))
 			customer_doc.customer_name = api_data.get('customer_name')
 			customer_doc.customer_type = api_data.get('customer_type')
@@ -64,9 +69,10 @@ def update_customer(data):
 			customer_doc.territory = api_data.get('territory')
 			customer_doc.flags.ignore_permissions = True			
 			customer_doc.save()
-			return "Customer is updated"
+			customer.doc.as_dict()
+			return response.update({"message":"Customer is updated","status_code": 200})
 		else:
-			return "Customer does not exist"
+			return response.update({"message":"Invalid Customer", "status_code": 404})
 
 	except Exception as e:
 		raise e
@@ -81,7 +87,7 @@ def get_customer(data):
 		return cust_list
 	except Exception as e:		
 		make_error_log(title="Failed api of get customer list",method="get_customer",
-					status="Error",
+					status=404,
 					data = "No data",
 					message=e,
 					traceback=frappe.get_traceback(),exception=True)
@@ -110,17 +116,15 @@ def get_customer_searchlist(customer=None):
 
 @frappe.whitelist()
 def delete_customer(customer_name):
+
 	try:
+		response=frappe._dict()
 		if not frappe.db.exists("Customer", customer_name):
-			return frappe.msgprint("Customer does not exists")
+			return response.update({"message":"Invalid Customer", "status_code": 404})
 		else:
 			customer_doc = frappe.delete_doc("Customer", customer_name)
 			frappe.db.commit()
-			return "Customer is deleted"
+			return response.update({"message":"Customer is deleted" ,"status_code":200})
 	except Exception as e:
-		make_error_log(title="Failed api of delete customer",method="delete_customer",
-					status="Error",
-					data = "No data",
-					message=e,
-					traceback=frappe.get_traceback(),exception=True)
+		
 		raise e
