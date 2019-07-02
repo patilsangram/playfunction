@@ -79,9 +79,10 @@ def update_customer(data):
 @frappe.whitelist()
 def get_customer(data):
 	try:
-
-		cust_list= frappe.db.sql("""select name, customer_group, territory from `tabCustomer` where docstatus < 2 """,as_dict=1)
-		return cust_list
+	 	cust_list=frappe.db.sql("""SELECT c.email_id, c.customer_name,a.name,a.address_line1,
+	 		a.address_line2,a.city,a.pincode from `tabDynamic Link` d,`tabAddress` a,`tabCustomer` c
+	 		 WHERE  d.link_doctype = "Customer" and a.name = d.parent and d.link_name=c.name""",as_dict=1)
+	 	return cust_list
 	except Exception as e:		
 		make_error_log(title="Failed api of get customer list",method="get_customer",
 					status=404,
@@ -98,7 +99,7 @@ def get_customer(data):
 def get_customer_searchlist(customer=None):	
 	try:
 		if customer:
-			cust=frappe.db.sql("""select customer_name from `tabCustomer` where name like "%ad%"; """,as_dict=1)
+			cust=frappe.db.sql("""SELECT customer_name from `tabCustomer` WHERE name like "%ad%"; """,as_dict=1)
 			return cust
 		
 		else:
