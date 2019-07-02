@@ -58,9 +58,11 @@ div#header {
 .tb-td {
 	vertical-align: middle;
 	padding: 8px 10px;
-	border: 0;
 	color: #000;
-	text-align: center;
+	text-align: left;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #bebfb9;
 }
 
 .tb-head {
