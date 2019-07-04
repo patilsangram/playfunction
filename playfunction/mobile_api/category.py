@@ -3,33 +3,39 @@ from frappe import _
 
 
 @frappe.whitelist()
-def get_categories(search=None, only_parent=False, parent=None):
-	"""Get category list
-
-	:param search: search text
-	:param only_parent: group level 1 categories
-	:param parent: parent_item_group
+def get_categories(search=None):
 	"""
+	returns group level 1 and 2 Item Groups/categories
+	:param search: search text
+	"""
+
+
 	# TODO - {"parent_category": [{"child category data"}]}
 	try:
 		response = frappe._dict()
 		cond = ""
-		if only_parent:
-			cond += " and group_level=1"
 		if search:
-			cond += " and name like '{}'".format("%{}%".format(search))
-		if parent:
-			cond += " and parent_item_group = '{}'".format(parent)
+			cond += " and name like '{0}' or parent_item_group like '{0}'".format("%{}%".format(search))
 
 		query = """
-			select name, parent_item_group as parent_category, 
-			is_group,group_level, image from `tabItem Group` 
+			select name as category, parent_item_group as parent_category,
+			image from `tabItem Group`
 			where name not in ('All Item Groups', 'Products', 'Raw Material', 
-			'Services', 'Sub Assemblies', 'Consumable') {} 
-			order by group_level
+			'Services', 'Sub Assemblies', 'Consumable') and group_level = 2 {}
 		""".format(cond)
 
-		categories = frappe.db.sql(query, as_dict=True)
+		categories_data = frappe.db.sql(query, as_dict=True)
+
+		# grouping in {parent:childs}
+		categories = {}
+		for cat in categories_data:
+			parent = cat.pop("parent_category")
+			if cat.get("parent_category") not in categories:
+				categories[parent] = [cat]
+			else:
+				cat_list = categories[parent]
+				cat_list.append(cat)
+				categories[parent] = cat_list
 		response.update({"categories":categories, "status_code": 200})
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
