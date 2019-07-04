@@ -10,6 +10,7 @@ def get_categories(search=None, only_parent=False, parent=None):
 	:param only_parent: group level 1 categories
 	:param parent: parent_item_group
 	"""
+	# TODO - {"parent_category": [{"child category data"}]}
 	try:
 		response = frappe._dict()
 		cond = ""
