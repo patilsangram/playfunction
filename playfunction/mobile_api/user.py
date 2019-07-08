@@ -28,12 +28,15 @@ def login(data):
 			else:
 				frappe.response["message"] = _("Invalid User or Email ID")
 				frappe.response["status_code"] = 404
+				frappe.local.response['http_status_code'] = 404
 		else:
 			frappe.response["status_code"] = 422
 			frappe.response["message"] = _("Invalid Data")
+			frappe.local.response['http_status_code'] = 422
 	except frappe.AuthenticationError,e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.response["status_code"] = http_status_code
+		frappe.local.response["http_status_code"] = http_status_code
 
 @frappe.whitelist(allow_guest=True)
 def forgot_password(data):
@@ -59,9 +62,12 @@ def forgot_password(data):
 		else:
 			response.message = _("Invalid User")
 			response.status_code = 404
+			frappe.local.response['http_status_code'] = 404
 	except Exception, e:
 		response["message"] = "Unable to perform action: {}".format(str(e))
-		response["status_code"] = getattr(e, "http_status_code", 500)
+		http_status_code = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
+		frappe.local.response["http_status_code"] = http_status_code
 	finally:
 		return response
 
@@ -85,6 +91,7 @@ def update_password(data):
 				if not user:
 					response.message = _("Password reset key is expired")
 					response.status_code = 417
+					frappe.local.response['http_status_code'] = 417
 					return response
 			elif args.get("old_password"):
 				frappe.local.login_manager.check_password(user, args.get("old_password"))
@@ -96,9 +103,12 @@ def update_password(data):
 		else:
 			response.message = _("Invalid User")
 			response.status_code = 404
+			frappe.local.response['http_status_code'] = 404
 	except Exception, e:
+		http_status_code = getattr(e, "http_status_code", 500)
 		response["message"] = "Unable to perform action: {}".format(str(e))
-		response["status_code"] = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
+		frappe.local.response["http_status_code"] = http_status_code
 	finally:
 		return response
 
@@ -118,8 +128,11 @@ def change_password(data):
 		else:
 			response.message = _("Old password does not matched.")
 			response.status_code = 404
+			frappe.local.response['http_status_code'] = 404
 	except Exception, e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
+		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to perform action: {}".format(str(e))
-		response["status_code"] = getattr(e, "http_status_code", 500)
 	finally:
 		return response

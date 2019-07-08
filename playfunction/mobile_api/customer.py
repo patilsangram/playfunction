@@ -24,10 +24,12 @@ def create_customer(data):
 		if not all([ f in data.keys() for f in mandatory ]):
 			response["status_code"] = 422
 			response["message"] = _("Invalid Data")
+			frappe.local.response['http_status_code'] = 422
 		else:
 			if frappe.db.exists("Customer", data.get("customer_name")):
 				response["status_code"] = 500
 				response["message"] = "Customer already exists."
+				frappe.local.response['http_status_code'] = 500
 			else:
 				customer = frappe.new_doc("Customer")
 				customer.update(data)
@@ -37,6 +39,7 @@ def create_customer(data):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
+		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Customer creation failed: {}".format(str(e))
 	finally:
 		return response
@@ -58,10 +61,12 @@ def get_customer_list(search=None):
 			""".format(cond), as_dict=True)
 			response.update({"status_code": 200, "data": data})
 		else:
+			frappe.local.response['http_status_code'] = 403
 			response.update({"status_code": 403, "message": "Insufficient Permission"})
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
+		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to fetch customer: {}".format(str(e))
 	finally:
 		return response
@@ -109,6 +114,7 @@ def update_customer(customer, data):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
+		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Customer update failed: {}".format(str(e))
 	finally:
 		return response
@@ -123,12 +129,15 @@ def delete_customer(customer=None):
 				frappe.db.commit()
 				response.update({"status_code": 200, "message": "Delete Successfully"})
 			else:
+				frappe.local.response['http_status_code'] = 404
 				response.update({"status_code": 404, "message": "Customer not found"})
 		else:
+			frappe.local.response['http_status_code'] = 403
 			response.update({"status_code": 403, "message": "Insufficient Permission"})
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
+		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to delete customer: {}".format(str(e))
 	finally:
 		return response
@@ -151,9 +160,11 @@ def get_customer_details(customer):
 		else:
 			response["status_code"] = 404
 			response["message"] = "Customer not found"
+			frappe.local.response['http_status_code'] = 404
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
+		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to fetch customer Details: {}".format(str(e))
 	finally:
 		return response
