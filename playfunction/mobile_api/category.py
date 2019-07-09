@@ -33,7 +33,8 @@ def get_categories(search=None):
 				cat_list = categories[parent]
 				cat_list.append(cat)
 				categories[parent] = cat_list
-		response.update({"categories":categories, "status_code": 200})
+		category_tree = [ {"category_name": k, "sub_category": v} for k,v in categories.items() ]
+		response.update({"category": category_tree, "status_code": 200})
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
