@@ -22,7 +22,7 @@ def get_category_items(category, search=None):
 		query = """
 			select distinct i.name, i.image, i.item_name, i.age as age_range, i.cost_price,
 			i.cost_price - i.cost_price*i.discount_percentage/100 as after_discount_price,
-			sum(b.actual_qty) as stock_qty from `tabItem` i left join `tabBin` b
+			ifnull(sum(b.actual_qty), 0) as stock_qty from `tabItem` i left join `tabBin` b
 			on b.item_code = i.name left join `tabCatalog` c on c.parent = i.name 
 			{} group by i.name
 		""".format(cond)
