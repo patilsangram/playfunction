@@ -47,17 +47,22 @@ def create_customer(data):
 
 @frappe.whitelist()
 def get_customer_list(search=None):
+	# return customer details list along with address details
 	try:
 		response = frappe._dict()
-		cond = " where 1=1"
-		if search:
-			cond += " and customer_name like '{0}' \
-				or email_id like '{0}'".format("%{}%".format(search))
-
 		if frappe.has_permission("Customer", "read"):
+			cond = " where 1=1"
+			if search:
+				cond += " and c.customer_name like '{0}' \
+					or c.email_id like '{0}'".format("%{}%".format(search))
+
 			data = frappe.db.sql("""
-				select name, customer_name, email_id, customer_type
-				from tabCustomer {}
+				select distinct c.name, c.customer_name, c.email_id, c.customer_type,
+				ad.address_line1, ad.address_line2, ad.city, ad.pincode,
+				ad.country, ad.address_title from `tabCustomer` c
+				left join `tabDynamic Link` dl on dl.link_name = c.name
+				and dl.link_doctype = 'Customer' left join `tabAddress` ad
+				on dl.parent = ad.name  {} group by c.name
 			""".format(cond), as_dict=True)
 			response.update({"status_code": 200, "data": data})
 		else:
@@ -87,30 +92,34 @@ def update_customer(customer, data):
 	}
 	"""
 	try:
+		response = frappe._dict()
 		data = json.loads(data)
-		email_id = data.pop("email_id")
-		customer = frappe.get_doc("Customer", customer)
-		customer.customer_name = data.pop("customer_name")
-		customer.email_id = data.pop("email_id")
-		customer.update({
-			"customer_name": data.get("customer_name"),
-			"email_id": data.get("email_id")
-			})
-		customer.save()
-
-		# update/create address
-		address = get_customer_address(customer)
-		if address:
-			address_doc = frappe.get_doc("Address", address.get("name"))
-			address_doc.update(data)
-			address.save(ignore_permissions=True)
+		if not frappe.db.exists("Customer", customer):
+			response["status_code"] = 404
+			frappe.local.response["http_status_code"] = 404
+			response["message"] = "Customer {} not found".format(customer)
 		else:
-			address = frappe.new_doc("Address")
-			address.update(data)
-			address.flags.ignore_permissions = True
-			address.flags.ignore_mandatory = True
-			address.save()
-		response.update({"status_code": 200, "message": "Customer updated Successfully"})
+			customer = frappe.get_doc("Customer", customer)
+			customer.customer_name = data.pop("customer_name")
+			customer.email_id = data.pop("email_id")
+			customer.save()
+			frappe.db.commit()
+
+			# update/create address
+			address = get_customer_address(customer)
+			if address and len(data.keys()):
+				address_doc = frappe.get_doc("Address", address.get("name"))
+				address_doc.update(data)
+				address_doc.save(ignore_permissions=True)
+			elif len(data) and \
+				all([ f in data.keys() for f in  ['address_title', 'address_line1', 'city', 'country']]):
+				address = frappe.new_doc("Address")
+				address.update(data)
+				address.flags.ignore_permissions = True
+				address.flags.ignore_mandatory = True
+				address.save()
+			frappe.db.commit()
+			response.update({"status_code": 200, "message": "Customer updated Successfully"})
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
@@ -151,6 +160,7 @@ def get_customer_details(customer):
 			doc = frappe.get_doc("Customer", customer)
 			response["customer_name"] = doc.get("customer_name")
 			response["email_id"] = doc.get("email_id")
+			response["name"] = doc.get("name")
 			response["status_code"] = 200
 			address = get_customer_address(customer)
 			if address:
