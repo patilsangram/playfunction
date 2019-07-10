@@ -208,3 +208,10 @@ def get_customer_address(customer):
 			return {}
 	else:
 		return {}
+
+@frappe.whitelist()
+def customer_dropdown():
+	try:
+		return [c.get("name") for c in frappe.get_all("Customer")]
+	except Exception as e:
+		return []
