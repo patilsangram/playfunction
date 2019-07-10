@@ -100,10 +100,14 @@ def update_customer(customer, data):
 			response["message"] = "Customer {} not found".format(customer)
 		else:
 			customer = frappe.get_doc("Customer", customer)
-			customer.customer_name = data.pop("customer_name")
-			customer.email_id = data.pop("email_id")
-			customer.save()
-			frappe.db.commit()
+			customer_fields = {
+				k:v for k,v in data.items()
+				if k in ["email_id", "customer_name"]
+			}
+			if customer_fields.keys():
+				customer.update(customer_fields)
+				customer.save()
+				frappe.db.commit()
 
 			# update/create address
 			address = get_customer_address(customer)
@@ -111,10 +115,15 @@ def update_customer(customer, data):
 				address_doc = frappe.get_doc("Address", address.get("name"))
 				address_doc.update(data)
 				address_doc.save(ignore_permissions=True)
+				frappe.db.commit()
 			elif len(data) and \
 				all([ f in data.keys() for f in  ['address_title', 'address_line1', 'city', 'country']]):
 				address = frappe.new_doc("Address")
 				address.update(data)
+				address.append("links", {
+					"link_doctype": "Customer",
+					"link_name": customer.name
+				})
 				address.flags.ignore_permissions = True
 				address.flags.ignore_mandatory = True
 				address.save()
@@ -147,7 +156,7 @@ def delete_customer(customer=None):
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to delete customer: {}".format(str(e))
+		response["message"] = "Cannot Delete, Linked with transaction records"
 	finally:
 		return response
 
@@ -199,3 +208,10 @@ def get_customer_address(customer):
 			return {}
 	else:
 		return {}
+
+@frappe.whitelist()
+def customer_dropdown():
+	try:
+		return [c.get("name") for c in frappe.get_all("Customer")]
+	except Exception as e:
+		return []
