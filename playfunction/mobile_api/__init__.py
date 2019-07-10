@@ -6,3 +6,4 @@ from .category import get_categories
 from .customer import get_customer_list, delete_customer, create_customer, \
 	get_customer_details, update_customer, customer_dropdown
 from .item import get_category_items
+from .order import get_order_list
