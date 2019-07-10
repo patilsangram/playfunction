@@ -42,3 +42,19 @@ def get_categories(search=None):
 		response["message"] = "Unable to fetch categories: {}".format(str(e))
 	finally:
 		return response
+
+def get_child_categories(category):
+	# return sub categorie from hierarchy
+	def _get_child(category, data, child):
+		for d in data:
+			if d.get("parent") == category:
+				child.append(d.get("name"))
+				if d.get("expandable"):
+					_get_child(d.get("name"), data, child)
+		return child
+
+	filters_ = {"group_level": (">", 1)}
+	fields = ['name','parent_item_group as parent','is_group as expandable']
+	data = frappe.get_list("Item Group", fields=fields, filters=filters_)
+	categories = _get_child(category, data, [])
+	return categories
