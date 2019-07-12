@@ -4,7 +4,7 @@ from frappe import _
 from frappe.utils import has_common
 
 
-item_fields = ["item_code", "qty", "discount_percentage", "notes", "rate", "amount"]
+item_fields = ["item_code", "item_name","qty", "discount_percentage", "notes", "rate", "amount"]
 
 
 @frappe.whitelist()
@@ -21,6 +21,7 @@ def get_quote_details(quote_id):
 		else:
 			quote = frappe.get_doc("Quotation", quote_id)
 			response["customer"] = quote.party_name
+			response["quote_id"] = quote.name
 			items = []
 			# fetch required item details
 			for row in quote.get("items"):
