@@ -21,7 +21,7 @@ def get_category_items(category, search=None):
 
 		query = """
 			select distinct i.name, i.image, i.item_name, i.age as age_range, i.cost_price,
-			i.cost_price - i.cost_price*i.discount_percentage/100 as after_discount_price,
+			i.discount_percentage, i.cost_price - i.cost_price*i.discount_percentage/100 as after_discount_price,
 			ifnull(sum(b.actual_qty), 0) as stock_qty from `tabItem` i left join `tabBin` b
 			on b.item_code = i.name left join `tabCatalog` c on c.parent = i.name 
 			{} group by i.name
@@ -35,5 +35,34 @@ def get_category_items(category, search=None):
 		response["status_code"] = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to fetch category items: {}".format(str(e))
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: get_category_items")
+	finally:
+		return response
+
+@frappe.whitelist()
+def get_item_discount(item_code, discount_percentage=0):
+	"""
+		send item details with given discount percentage
+	"""
+	try:
+		response = frappe._dict()
+		if not frappe.db.exists("Item", item_code):
+			response["message"] = "Item not found"
+			frappe.local.response['http_status_code'] = 404
+		else:
+			discount_query = "i.cost_price - i.cost_price*{}/100 as after_discount_price".format(discount_percentage)
+			query = """
+				select distinct i.name, i.image, i.item_name, i.age as age_range,
+				i.cost_price, {0} as discount_percentage, {1},
+				ifnull(sum(b.actual_qty), 0) as stock_qty from `tabItem` i left join `tabBin` b
+				on b.item_code = i.name left join `tabCatalog` c on c.parent = i.name
+				where i.name = '{2}' group by i.name
+			""".format(discount_percentage, discount_query, item_code)
+			response["data"] = frappe.db.sql(query, as_dict=True)[0]
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response["http_status_code"] = http_status_code
+		response["message"] = "Unable to get discount details"
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: get_item_discount")
 	finally:
 		return response

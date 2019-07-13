@@ -102,9 +102,10 @@ def update_quote(quote_id, items):
 	"""
 	try:
 		response = frappe._dict()
+		items = json.loads(items)
 		if not frappe.db.exists("Quotation", quote_id):
 			response["message"] = "Quotation not found"
-			frappe.local.response = 404
+			frappe.local.response['http_status_code'] = 404
 		else:
 			if not all([ f in item_fields for f in items.keys()]):
 				response["message"] = "Invalid Data"
@@ -129,5 +130,28 @@ def update_quote(quote_id, items):
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Quotation Creation failed"
 		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: update_quote")
+	finally:
+		return response
+
+@frappe.whitelist()
+def delete_quote_item(quote_id, item_code):
+	try:
+		response = frappe._dict()
+		if not frappe.db.exists("Quotation", quote_id):
+			response["message"] = "Quotation not found"
+			frappe.local.response['http_status_code'] = 404
+		else:
+			quote = frappe.get_doc("Quotation", quote_id)
+			for idx, row in enumerate(quote.get("items")):
+				if row.item_code == item_code:
+					del quote.get("items")[idx]
+			quote.save()
+			frappe.db.commit()
+			response = get_quote_details(quote_id)
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Unable to Delete Quote Item"
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: delete_quote_item")
 	finally:
 		return response
