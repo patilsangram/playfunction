@@ -1,7 +1,7 @@
 import frappe
 import json
 from frappe import _
-from frappe.utils import has_common
+from frappe.utils import has_common, flt
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 
@@ -33,10 +33,13 @@ def get_quote_details(quote_id):
 			response["items"] = items
 
 			#check delivery charges
-			# TODO - delivery charges condition
+			delivery_account = frappe.db.get_value("Account", {
+				"account_name": "Delivery Charge"
+			}, "name")
+
 			delivery_charges = 0
 			for tax_ in quote.get("taxes", []):
-				if tax_.get("charge_type") == "Actula": #and tax_.get("account_head"):
+				if tax_.get("account_head") == delivery_account:
 					delivery_charges = tax_.get("tax_amount")
 					break;
 
@@ -136,21 +139,33 @@ def update_quote(quote_id, items):
 
 @frappe.whitelist()
 def delete_quote_item(quote_id, item_code):
-	# TODO - what if quote has only one item
+	"""Delete given item_codes from Quote if all deleted then delete Quote"""
 	try:
 		response = frappe._dict()
+		item_code = item_code.encode('utf-8')
+		item_list= [ i.strip() for i in item_code.split(",")]
+
+		if not isinstance(item_code, list):
+			item_code = [item_code]
 		if not frappe.db.exists("Quotation", quote_id):
 			response["message"] = "Quotation not found"
 			frappe.local.response['http_status_code'] = 404
 		else:
 			quote = frappe.get_doc("Quotation", quote_id)
+			new_items = []
 			for idx, row in enumerate(quote.get("items")):
-				if row.item_code == item_code:
-					del quote.get("items")[idx]
-			quote.save()
+				if not row.item_code in item_list:
+					new_items.append(row)
+			quote.items = new_items
 			quote.flags.ignore_mandatory = True
+			quote.save()
+			if not len(quote.get("items", [])):
+				frappe.delete_doc("Quotation", quote_id)
+				response["message"] = "Deleted all items"
+				frappe.local.response["http_status_code"] = 404
+			else:
+				response = get_quote_details(quote_id)
 			frappe.db.commit()
-			response = get_quote_details(quote_id)
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
@@ -170,6 +185,7 @@ def quotation_details(quote_id):
 		else:
 			doc = frappe.get_doc("Quotation", quote_id)
 			response["customer"] = doc.party_name
+			response["quote_id"] = doc.name
 
 			# item details
 			items = []
@@ -236,5 +252,71 @@ def place_order(quote_id):
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Error occured while placing order"
 		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: place_order")
+	finally:
+		return response
+
+@frappe.whitelist()
+def add_delivery_charges(dt, dn, delivery_charge):
+	"""Add delivery charges in tax table"""
+	try:
+		response = frappe._dict()
+		if not frappe.db.exists(dt, dn):
+			response["message"] = "{} not found".format(dt)
+			frappe.local.response["http_status_code"] = 404
+		else:
+			doc = frappe.get_doc(dt, dn)
+			delivery_account = frappe.db.get_value("Account", {
+				"account_name": "Delivery Charge"
+			}, "name")
+
+			if delivery_account:
+				doc.append("taxes", {
+					"charge_type": "Actual",
+					"account_head": delivery_account,
+					"tax_amount": flt(delivery_charge),
+					"description": "Delivery Charges"
+				})
+				doc.save()
+				if dt == "Quotation":
+					response = quotation_details(doc.name)
+				else:
+					# TODO - Send Sales Order Details
+					response["message"] = "Delivery Charges Added Successfully."
+			else:
+				response["message"] = "Delivery Account not found"
+				frappe.local.response["http_status_code"] = 422
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Unable to add Delivery Charges"
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: add_delivery_charges")
+	finally:
+		return response
+
+
+@frappe.whitelist()
+def add_discount(dt, dn, discount):
+	"""Add additional Discount percentage"""
+	try:
+		response = frappe._dict()
+		if not frappe.db.exists(dt, dn):
+			response["message"] = "{} not found".format(dt)
+			frappe.local.response["http_status_code"] = 404
+		else:
+			# TODO - check apply_discount_on ?
+			doc = frappe.get_doc(dt, dn)
+			doc.apply_discount_on = "Grand Total"
+			doc.additional_discount_percentage = flt(discount)
+			doc.save()
+			if dt == "Quotation":
+				response = quotation_details(doc.name)
+			else:
+				# TODO - Send Sales Order Details
+				response["message"] = "Discount Added Successfully."
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Unable to add Discount"
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: add_discount")
 	finally:
 		return response
