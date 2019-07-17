@@ -2,6 +2,7 @@ import frappe
 import json
 from frappe import _
 from frappe.utils import has_common
+from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 
 item_fields = ["item_code", "item_name","qty", "discount_percentage", "notes", "rate", "amount"]
@@ -135,6 +136,7 @@ def update_quote(quote_id, items):
 
 @frappe.whitelist()
 def delete_quote_item(quote_id, item_code):
+	# TODO - what if quote has only one item
 	try:
 		response = frappe._dict()
 		if not frappe.db.exists("Quotation", quote_id):
@@ -146,6 +148,7 @@ def delete_quote_item(quote_id, item_code):
 				if row.item_code == item_code:
 					del quote.get("items")[idx]
 			quote.save()
+			quote.flags.ignore_mandatory = True
 			frappe.db.commit()
 			response = get_quote_details(quote_id)
 	except Exception as e:
@@ -153,5 +156,85 @@ def delete_quote_item(quote_id, item_code):
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to Delete Quote Item"
 		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: delete_quote_item")
+	finally:
+		return response
+
+@frappe.whitelist()
+def quotation_details(quote_id):
+	"""Get Detailed Quotation"""
+	try:
+		response = frappe._dict()
+		if not frappe.db.exists("Quotation", quote_id):
+			response["message"] = "Quotation not found"
+			frappe.local.response["http_status_code"] = 404
+		else:
+			doc = frappe.get_doc("Quotation", quote_id)
+			response["customer"] = doc.party_name
+
+			# item details
+			items = []
+			item_fields = ["item_code", "description", "qty", "rate",
+				"discount_percentage", "discount_amount", "amount"]
+			for item in doc.get("items"):
+				row_data = {}
+				for f in item_fields:
+					row_data[f] = item.get(f)
+				items.append(row_data)
+			response["items"] = items
+
+			# tax, delivery & totals
+			response["total"] = doc.get("total")
+			response["additional_discount_percentage"] = doc.get("additional_discount_percentage")
+			response["after_discount"] = doc.get("net_total")
+			response["grand_total"] = doc.get("grand_total")
+			response["delivery_charges"] = 0
+			response["vat"] = 0
+
+			delivery_account = frappe.db.get_value("Account", {
+				"account_name": "Delivery Charge"
+			}, "name")
+
+			vat_account = frappe.db.get_value("Account", {
+				"account_name": "VAT 17%"
+			}, "name")
+
+			for t in doc.get("taxes"):
+				if t.account_head == delivery_account:
+					response["delivery_charges"] = t.get("tax_amount")
+				elif t.account_head == vat_account:
+					response["vat"] = t.get("tax_amount")
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Failed to fetch Quotation Details"
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: quotation_details")
+	finally:
+		return response
+
+@frappe.whitelist()
+def place_order(quote_id):
+	try:
+		response = frappe._dict()
+		if not frappe.db.exists("Quotation", quote_id):
+			response["message"] = "Quotation not found"
+			frappe.local.response["http_status_code"] = 404
+		else:
+			doc = frappe.get_doc("Quotation", quote_id)
+			doc.workflow_state = "Approved"
+			doc.save()
+			doc.submit()
+
+			# sales order
+			sales_order = make_sales_order(doc.name)
+			if sales_order:
+				sales_order.delivery_date = frappe.utils.today()
+				sales_order.save()
+				response["message"] = "Order Placed Successfully."
+				response["order_id"] = sales_order.name
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Error occured while placing order"
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: place_order")
 	finally:
 		return response
