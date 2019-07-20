@@ -2,6 +2,7 @@ import frappe
 import json
 from frappe import _
 from frappe.utils import has_common, flt
+from order import order_details
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 
@@ -100,18 +101,20 @@ def update_quote(quote_id, items):
 		items: {
 		item_code:
 		qty:
-		discount:
-		notes:
+		rate: Unit Price
+		discount_percentage:
+		description:
 	}
 	"""
 	try:
+		fields = ["item_code", "description", "qty", "rate", "discount_percentage"]
 		response = frappe._dict()
 		items = json.loads(items)
 		if not frappe.db.exists("Quotation", quote_id):
 			response["message"] = "Quotation not found"
 			frappe.local.response['http_status_code'] = 404
 		else:
-			if not all([ f in item_fields for f in items.keys()]):
+			if not all([ f in fields for f in items.keys()]):
 				response["message"] = "Invalid Data"
 				frappe.local.response["http_status_code"] = 422
 			else:
@@ -132,7 +135,7 @@ def update_quote(quote_id, items):
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Quotation Creation failed"
+		response["message"] = "Quotation Update failed"
 		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: update_quote")
 	finally:
 		return response
@@ -280,8 +283,7 @@ def add_delivery_charges(dt, dn, delivery_charge):
 				if dt == "Quotation":
 					response = quotation_details(doc.name)
 				else:
-					# TODO - Send Sales Order Details
-					response["message"] = "Delivery Charges Added Successfully."
+					response["message"] = order_details(doc.name)
 			else:
 				response["message"] = "Delivery Account not found"
 				frappe.local.response["http_status_code"] = 422
@@ -311,8 +313,7 @@ def add_discount(dt, dn, discount):
 			if dt == "Quotation":
 				response = quotation_details(doc.name)
 			else:
-				# TODO - Send Sales Order Details
-				response["message"] = "Discount Added Successfully."
+				response["message"] = order_details(doc.name)
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
