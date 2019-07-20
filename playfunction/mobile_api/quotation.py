@@ -10,6 +10,23 @@ item_fields = ["item_code", "item_name","qty", "discount_percentage", "notes", "
 
 
 @frappe.whitelist()
+def get_quotation_list():
+	"""Return Quotation List"""
+	try:
+		response = frappe._dict()
+		filters = {}
+		fields = ["name as quote_id", "party_name as customer", "transaction_date", "grand_total", "status"]
+		quotation_list = frappe.get_list("Quotation",filters=filters, fields=fields)
+		response["data"] = quotation_list
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Unable to fetch Quotations."
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: get_quotation_list")
+	finally:
+		return response
+
+@frappe.whitelist()
 def get_quote_details(quote_id):
 	"""
 		return quotation details.
@@ -165,7 +182,7 @@ def delete_quote_item(quote_id, item_code):
 			if not len(quote.get("items", [])):
 				frappe.delete_doc("Quotation", quote_id)
 				response["message"] = "Deleted all items"
-				frappe.local.response["http_status_code"] = 404
+				frappe.local.response["http_status_code"] = 200
 			else:
 				response = get_quote_details(quote_id)
 			frappe.db.commit()
@@ -283,7 +300,7 @@ def add_delivery_charges(dt, dn, delivery_charge):
 				if dt == "Quotation":
 					response = quotation_details(doc.name)
 				else:
-					response["message"] = order_details(doc.name)
+					response = order_details(doc.name)
 			else:
 				response["message"] = "Delivery Account not found"
 				frappe.local.response["http_status_code"] = 422
@@ -313,7 +330,7 @@ def add_discount(dt, dn, discount):
 			if dt == "Quotation":
 				response = quotation_details(doc.name)
 			else:
-				response["message"] = order_details(doc.name)
+				response = order_details(doc.name)
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code

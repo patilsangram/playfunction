@@ -1,6 +1,5 @@
-from __future__ import unicode_literals
-import frappe, os, json
-from frappe.permissions import reset_perms
+import frappe
+import json
 from frappe import _
 
 
@@ -123,7 +122,7 @@ def delete_order_item(order_id, item_code):
 			if not len(order.get("items", [])):
 				frappe.delete_doc("Sales Order", order_id)
 				response["message"] = "Deleted all items"
-				frappe.local.response["http_status_code"] = 404
+				frappe.local.response["http_status_code"] = 200
 			else:
 				response = order_details(order_id)
 			frappe.db.commit()
