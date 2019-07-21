@@ -43,6 +43,7 @@ def get_categories(search=None):
 	finally:
 		return response
 
+@frappe.whitelist()
 def get_child_categories(category):
 	# return sub categorie from hierarchy
 	def _get_child(category, data, child):

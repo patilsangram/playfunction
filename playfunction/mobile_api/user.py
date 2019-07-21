@@ -25,6 +25,7 @@ def login(data):
 				frappe.response["sid"] = frappe.session.sid
 				frappe.response["message"] = "Logged In"
 				frappe.response["status_code"] = 200
+				frappe.response["email"] = frappe.session.user
 			else:
 				frappe.response["message"] = _("Invalid User or Email ID")
 				frappe.response["status_code"] = 404
@@ -37,6 +38,7 @@ def login(data):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.response["status_code"] = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: login")
 
 @frappe.whitelist(allow_guest=True)
 def forgot_password(data):
@@ -64,10 +66,10 @@ def forgot_password(data):
 			response.status_code = 404
 			frappe.local.response['http_status_code'] = 404
 	except Exception, e:
-		response["message"] = "Unable to perform action: {}".format(str(e))
+		response["message"] = "Forgot Password failed"
 		http_status_code = getattr(e, "http_status_code", 500)
-		response["status_code"] = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: forgot_password")
 	finally:
 		return response
 
@@ -106,9 +108,9 @@ def update_password(data):
 			frappe.local.response['http_status_code'] = 404
 	except Exception, e:
 		http_status_code = getattr(e, "http_status_code", 500)
-		response["message"] = "Unable to perform action: {}".format(str(e))
-		response["status_code"] = http_status_code
+		response["message"] = "Update Password failed"
 		frappe.local.response["http_status_code"] = http_status_code
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: update_password")
 	finally:
 		return response
 
@@ -131,8 +133,29 @@ def change_password(data):
 			frappe.local.response['http_status_code'] = 404
 	except Exception, e:
 		http_status_code = getattr(e, "http_status_code", 500)
-		response["status_code"] = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to perform action: {}".format(str(e))
+		response["message"] = "Unable to change password"
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: change_password")
+	finally:
+		return response
+
+@frappe.whitelist()
+def user_profile():
+	"""return login user profile"""
+	try:
+		response = frappe._dict()
+		user = frappe.session.user
+		fields = ["username", "email"]
+		if not user:
+			response["message"] = "User not found"
+			frappe.local.response["http_status_code"] = 404
+		else:
+			profile_data = frappe.db.get_value("User", frappe.session.user, fields, as_dict=True)
+			response = profile_data
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response["http_status_code"] = http_status_code
+		response["message"] = "User not found"
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: user_profile")
 	finally:
 		return response
