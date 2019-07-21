@@ -6,7 +6,7 @@ from order import order_details
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 
-item_fields = ["item_code", "item_name","qty", "discount_percentage", "notes", "rate", "amount"]
+item_fields = ["item_code", "item_name","qty", "discount_percentage", "description", "notes", "rate", "amount"]
 
 
 @frappe.whitelist()
@@ -121,17 +121,17 @@ def update_quote(quote_id, items):
 		rate: Unit Price
 		discount_percentage:
 		description:
+		notes: 
 	}
 	"""
 	try:
-		fields = ["item_code", "description", "qty", "rate", "discount_percentage"]
 		response = frappe._dict()
 		items = json.loads(items)
 		if not frappe.db.exists("Quotation", quote_id):
 			response["message"] = "Quotation not found"
 			frappe.local.response['http_status_code'] = 404
 		else:
-			if not all([ f in fields for f in items.keys()]):
+			if not all([ f in item_fields for f in items.keys()]):
 				response["message"] = "Invalid Data"
 				frappe.local.response["http_status_code"] = 422
 			else:
@@ -209,8 +209,6 @@ def quotation_details(quote_id):
 
 			# item details
 			items = []
-			item_fields = ["item_code", "description", "qty", "rate",
-				"discount_percentage", "discount_amount", "amount"]
 			for item in doc.get("items"):
 				row_data = {}
 				for f in item_fields:
