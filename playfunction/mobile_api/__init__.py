@@ -1,8 +1,8 @@
 import frappe
 import json
 
-from .user import ping, login, forgot_password, update_password
-from .category import get_categories
+from .user import ping, login, forgot_password, update_password, user_profile
+from .category import get_categories, get_child_categories
 from .customer import get_customer_list, delete_customer, create_customer, \
 	get_customer_details, update_customer, customer_dropdown
 from .item import get_category_items, get_item_discount
