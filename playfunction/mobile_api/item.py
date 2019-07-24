@@ -4,10 +4,11 @@ from category import get_child_categories
 
 
 @frappe.whitelist()
-def get_category_items(category, search=None):
+def get_category_items(category, subcategory=None, search=None):
 	try:
 		response = frappe._dict()
 		cond = " where 1=1"
+		category = category if not subcategory else subcategory
 		if category:
 			child_cat = get_child_categories(category)
 			child_cat.append(category)

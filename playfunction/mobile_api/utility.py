@@ -14,6 +14,7 @@ def delete_record(dt, dn):
 				if frappe.has_permission(dt, "delete"):
 					frappe.delete_doc(dt, dn)
 					response["message"] = "{}: {} Deleted Successfully.".format(dt, dn)
+					frappe.db.commit()
 				else:
 					response["message"] = "Don't have delete permission for {}: {}".format(dt, dn)
 					frappe.local.response["http_status_code"] = 403
