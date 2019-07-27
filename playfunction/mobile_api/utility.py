@@ -1,6 +1,7 @@
 import frappe
 import json
-
+from .order import order_details
+from .quotation import get_quote_details
 
 @frappe.whitelist()
 def delete_record(dt, dn):
@@ -58,5 +59,38 @@ def send_mail(dt, dn, recipient):
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Mail Sending failed"
 		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: send_mail")
+	finally:
+		return response
+
+@frappe.whitelist()
+def create_copy(dt, dn, customer):
+	"""
+		create record copy update customer and send record details
+		:param dt -- doctype
+		:param dn -- docname
+		:param customer
+	"""
+	try:
+		response = frappe._dict()
+		customer_field = "party_name" if dt == "Quotation" else "customers"
+		if not frappe.db.exists(dt, dn):
+			response["message"] = "Record Not found"
+			frappe.local.response["http_status_code"] = 404
+		else:
+			existing_doc = frappe.get_doc(dt, dn)
+			record_copy = frappe.copy_doc(existing_doc)
+			if dt == "Quotation":
+				record_copy.party_name = customer
+			else:
+				record_copy.customer = customer
+			record_copy.title = customer
+			record_copy.save()
+			response = get_quote_details(record_copy.name) if dt == "Quotation" \
+				else order_details(record_copy.name)
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Unable to Create a Record Copy"
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: create_copy")
 	finally:
 		return response
