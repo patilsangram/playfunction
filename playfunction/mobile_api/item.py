@@ -21,14 +21,24 @@ def get_category_items(category, subcategory=None, search=None):
 				or i.age like '{0}')".format("%{}%".format(search))
 
 		query = """
-			select distinct i.name, i.image, i.item_name, i.age as age_range, i.cost_price,
-			i.discount_percentage, i.cost_price - i.cost_price*i.discount_percentage/100 as after_discount_price,
-			ifnull(sum(b.actual_qty), 0) as stock_qty from `tabItem` i left join `tabBin` b
-			on b.item_code = i.name left join `tabCatalog` c on c.parent = i.name 
-			{} group by i.name
+			select
+				distinct i.name, i.image, i.item_name, i.age as age_range, i.cost_price,
+				i.discount_percentage, i.cost_price - i.cost_price*i.discount_percentage/100
+				as after_discount_price, ifnull(sum(b.actual_qty), 0) as stock_qty,
+				group_concat(f.file_url) as item_videoes
+			from
+				`tabItem` i left join `tabBin` b on b.item_code = i.name
+			left join
+				`tabCatalog` c on c.parent = i.name
+			left join
+				`tabFile` f on f.attached_to_name = i.name and f.attached_to_doctype = 'Item'
+				and substring_index(f.file_url,'.',-1) in ("m4v","avi","mpg","mp4")
+			{}  group by i.name
 		""".format(cond)
 		items = frappe.db.sql(query, as_dict=True)
-		response["status_code"] = 200
+		for i in items:
+			item_videoes = i.pop("item_videoes") or ""
+			i["item_videoes"] = item_videoes.split(",") if item_videoes else []
 		response["items"] = items
 		response["total"] = len(items)
 	except Exception as e:
