@@ -25,20 +25,23 @@ def get_category_items(category, subcategory=None, search=None):
 				distinct i.name, i.image, i.item_name, i.age as age_range, i.cost_price,
 				i.discount_percentage, i.cost_price - i.cost_price*i.discount_percentage/100
 				as after_discount_price, ifnull(sum(b.actual_qty), 0) as stock_qty,
-				group_concat(f.file_url) as item_videoes
+				group_concat(concat(v.video_file, "#", v.image)) as item_media
 			from
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
 			left join
 				`tabCatalog` c on c.parent = i.name
 			left join
-				`tabFile` f on f.attached_to_name = i.name and f.attached_to_doctype = 'Item'
-				and substring_index(f.file_url,'.',-1) in ("m4v","avi","mpg","mp4")
+				`tabItem Media` v on v.parent = i.name and v.type = 'Video'
 			{}  group by i.name
 		""".format(cond)
 		items = frappe.db.sql(query, as_dict=True)
 		for i in items:
-			item_videoes = i.pop("item_videoes") or ""
-			i["item_videoes"] = item_videoes.split(",") if item_videoes else []
+			if i.get("item_media"):
+				item_media = i.pop("item_media")
+				media = [{"video": m.split("#")[0], "thumbnail": m.split("#")[1]} for m in item_media.split(",") ]
+				i["item_videoes"] = media
+			else:
+				i["item_videoes"] = []
 		response["items"] = items
 		response["total"] = len(items)
 	except Exception as e:
