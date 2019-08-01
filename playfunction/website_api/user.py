@@ -1,8 +1,6 @@
 import frappe
 import json
 from frappe import _
-from frappe.utils import validate_email_add
-
 
 @frappe.whitelist(allow_guest=True)
 def login(data):
