@@ -4,10 +4,11 @@ from category import get_child_categories
 
 
 @frappe.whitelist()
-def get_category_items(category, search=None):
+def get_category_items(category, subcategory=None, search=None):
 	try:
 		response = frappe._dict()
 		cond = " where 1=1"
+		category = category if not subcategory else subcategory
 		if category:
 			child_cat = get_child_categories(category)
 			child_cat.append(category)
@@ -20,14 +21,27 @@ def get_category_items(category, search=None):
 				or i.age like '{0}')".format("%{}%".format(search))
 
 		query = """
-			select distinct i.name, i.image, i.item_name, i.age as age_range, i.cost_price,
-			i.discount_percentage, i.cost_price - i.cost_price*i.discount_percentage/100 as after_discount_price,
-			ifnull(sum(b.actual_qty), 0) as stock_qty from `tabItem` i left join `tabBin` b
-			on b.item_code = i.name left join `tabCatalog` c on c.parent = i.name 
-			{} group by i.name
+			select
+				distinct i.name, i.image, i.item_name, i.age as age_range, i.cost_price,
+				i.discount_percentage, i.cost_price - i.cost_price*i.discount_percentage/100
+				as after_discount_price, ifnull(sum(b.actual_qty), 0) as stock_qty,
+				group_concat(concat(v.video_file, "#", v.image)) as item_media
+			from
+				`tabItem` i left join `tabBin` b on b.item_code = i.name
+			left join
+				`tabCatalog` c on c.parent = i.name
+			left join
+				`tabItem Media` v on v.parent = i.name and v.type = 'Video'
+			{}  group by i.name
 		""".format(cond)
 		items = frappe.db.sql(query, as_dict=True)
-		response["status_code"] = 200
+		for i in items:
+			if i.get("item_media"):
+				item_media = i.pop("item_media")
+				media = [{"video": m.split("#")[0], "thumbnail": m.split("#")[1]} for m in item_media.split(",") ]
+				i["item_videoes"] = media
+			else:
+				i["item_videoes"] = []
 		response["items"] = items
 		response["total"] = len(items)
 	except Exception as e:
