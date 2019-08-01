@@ -98,7 +98,7 @@ def forgot_password(data):
 		response.status_code = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: forgot_password")
-	finally:message
+	finally:
 		return response
 
 @frappe.whitelist(allow_guest=True)
