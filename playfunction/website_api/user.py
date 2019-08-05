@@ -246,3 +246,49 @@ def verify_mail(data):
 		response["message"] = "Mail Verification failed"
 	finally:
 		return response
+
+@frappe.whitelist()
+def make_customer(data):
+	"""
+	request_data: {
+		customer_name:
+			email_id:
+			customer_type:
+			address_line1:
+			address_line2:
+			country:
+			city:
+			pincode:
+	}
+	"""
+	try:
+		response = frappe._dict()
+		args = json.loads(data)
+		dt= frappe.db.exists("Customer", args.get("customer_name"))
+		print "jjjjjj",dt
+		if dt:
+			response["status_code"] = 200
+			response["message"] = "Customer already exists."
+			frappe.local.response['http_status_code'] = 200
+		else:
+			customer = frappe.new_doc("Customer")
+			customer.customer_name = args.get("customer_name")
+			customer.customer_type = args.get("customer_type")
+			customer.email_id = args.get("email_id")
+			customer.address_line1 = args.get("address_line1")
+			customer.address_line2 = args.get("address_line2")
+			customer.country = args.get("country")
+			customer.city = args.get("city")
+			customer.pincode = args.get("pincode")
+			customer.save()
+			frappe.db.commit()
+			response["status_code"] = 200
+			response["message"] = "Customer successfully created."
+			frappe.local.response['http_status_code'] = 200
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Customer creation failed"
+	finally:
+		return response
