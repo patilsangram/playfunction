@@ -1,12 +1,15 @@
 import frappe
 import json
 from frappe import _
+from frappe.utils import random_string, get_url
+from frappe.utils.password import update_password as _update_password
 
 @frappe.whitelist(allow_guest=True)
 def login(data):
-	""":param data: {
-		"usr": "tripti.s@indictranstech.com",
-		"pwd": "admin@123"
+	"""
+		request_data: {
+			"usr": "tripti.s@indictranstech.com",
+			"pwd": "admin@123"
 		}
 	"""
 	user_data = json.loads(data)
@@ -67,12 +70,12 @@ def logout(usr):
 
 @frappe.whitelist(allow_guest=True)
 def forgot_password(data):
-	""":param data: {
+	"""
+		request_data: {
 			"usr": "test@gmail.com"
 		}
 	"""
 	try:
-		from frappe.utils import random_string, get_url
 		args = json.loads(data)
 		response = frappe._dict({})
 		user = frappe.db.exists("User", args.get("usr"))
@@ -81,9 +84,9 @@ def forgot_password(data):
 			key = random_string(32)
 			user.db_set("reset_password_key", key)
 			link = get_url("/update-password?key=" + key)
-			user.password_reset_mail(link)
+			# user.password_reset_mail(link)
 			response.key = key
-			response.message = _("Password reset instructions have been sent to your email")
+			# response.message = _("Password reset instructions have been sent to your email")
 			response.status_code = 200
 			frappe.local.response['http_status_code'] = 200
 		else:
@@ -101,14 +104,14 @@ def forgot_password(data):
 
 @frappe.whitelist(allow_guest=True)
 def update_password(data):
-	""":param data: {
+	"""
+		request_data: {
 			"usr": "test@gmail.com",
 			"key": "AR2xs49BkdNPUmBnfjHCou6QAOxx7wFj",
 			"new_password": "test@1234",
 			"old_password": "test@12"
 		}
 	"""
-	from frappe.utils.password import update_password as _update_password
 	try:
 		args = json.loads(data)
 		response = frappe._dict({})
@@ -141,3 +144,106 @@ def update_password(data):
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: update_password")
 	finally:
 		return response
+
+@frappe.whitelist(allow_guest=True)
+def registration(data):
+	"""
+		request_data:{
+			"email": "tripti.sharma8@gmail.com",
+			"first_name": "tripti",
+			"last_name":"sharma",
+			"password":"",
+			"mobile_no":9876543215
+		}
+	"""
+	try:
+		response = frappe._dict({})
+		args = json.loads(data)	
+		user = frappe.db.exists("User", args.get("email"))
+		if user:
+			response["status_code"] = 200
+			response["message"] = "User Already Registered"
+			frappe.local.response['http_status_code'] = 200
+		else:
+			user_doc = frappe.new_doc("User")
+			user_doc.email = args.get("email")
+			user_doc.first_name = args.get("first_name")
+			user_doc.last_name = args.get("last_name")
+			user_doc.mobile_no = args.get("mobile_no")
+			user_doc.enabled = 0
+			user_doc.new_password = args.get("password")
+			user_doc.send_welcome_email = 0
+			user_doc.save()
+			if user_doc:
+				key = random_string(32)
+				user_doc.db_set("reset_password_key", key)
+				send_mail(user_doc.name,key)
+				response.message = _("User created with Email Id {} Please check Email for Verification".format(user_doc.name))
+				response["status_code"] = 200
+				frappe.local.response['http_status_code'] = 200
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		response.status_code = http_status_code
+		response["message"] = "Registration failed"
+		frappe.local.response["http_status_code"] = http_status_code
+		frappe.log_error(message = frappe.get_traceback() , title = "Website API: registration")
+	finally:
+		return response
+
+@frappe.whitelist()
+def send_mail(email,key):
+	"""
+		used to send access key
+	"""
+	try:
+		user = frappe.db.exists("User", email)
+		if user:
+			subject = "Access Key"
+			content = """ This is your access key {} """.format(key)
+			frappe.sendmail(
+				recipients = email, 
+				sender = frappe.session.user, 
+				subject = subject,
+				message = content,	
+				delayed = 1)					
+	except Exception as e:
+		frappe.log_error(message = frappe.get_traceback() , title = "Website API: registration -send_mail")
+
+@frappe.whitelist()
+def verify_mail(data):
+	"""
+		request_data:{
+			  "email": "tripti.sharma8@gmail.com",
+			  "key":"KB7Y2OBU0iuhgulTbNCf8xmqxsGOAUC5"
+			  }
+		enables user through key
+	"""
+	try:
+		response = frappe._dict({})
+		args = json.loads(data)	
+		if frappe.db.exists("User", args.get("email")) and args.get("key"):
+			user = frappe.db.get_value("User", {"reset_password_key":args.get("key")})
+			if user == args.get("email"):
+				user_doc = frappe.get_doc("User",args.get("email"))
+				user_doc.enabled = 1
+				user_doc.save()
+				response.message = ("Email Verified")
+				response["status_code"] = 200
+				frappe.local.response['http_status_code'] = 200
+			else:
+				response.message = _("Invalid Access Key")
+				response.status_code = 417
+				frappe.local.response['http_status_code'] = 417
+		else:
+			response.message = ("Invalid User")
+			response["status_code"] = 404
+			frappe.local.response['http_status_code'] = 404
+	except Exception as e:
+		frappe.log_error(message = frappe.get_traceback() , title = "Website API: Verify Mail")
+		http_status_code = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Mail Verification failed"
+	finally:
+		return response
+
