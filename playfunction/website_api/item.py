@@ -3,32 +3,31 @@ from frappe import _
 import json
 from playfunction.mobile_api.category import get_child_categories
 
-@frappe.whitelist()
-def get_category_items(category, subcategory=None, search=None, data=None):
+@frappe.whitelist(allow_guest=True)
+def get_category_items(data):
 	"""
 	 	returns items with category,
-	 	data:{sales_item,
-		 	community_center,
-		 	best_seller,
-		 	gift_ideas,
-		 	award_wining,
-		 	our_range,
-		 	new_item
+	 	data:{"category":
+	 		"subcategory":
+	 		"search":
+	 		"sales_item":
+		 	"community_center":
+		 	"best_seller":
+		 	"gift_ideas":
 		 } 
 	"""
 	try:
 		response = frappe._dict()
 		data = json.loads(data)
 		cond = " where 1=1"
-		category = category if not subcategory else subcategory
-		if category:
-			child_cat = get_child_categories(category)
-			child_cat.append(category)
+		if data.get("category"):
+			child_cat = get_child_categories(data.get("category"))
+			child_cat.append(data.get("category"))
 			chid_category = "(" + ",".join("'{}'".format(c) for c in child_cat) + ")"
 			cond += " and (c.catalog_level_1 in {0} or c.catalog_level_2 in {0}\
 				or c.catalog_level_3 in {0} or c.catalog_level_4 in {0})".format(chid_category)
 
-		if search:
+		if data.get("search"):
 			cond += " and (i.name like '{0}' or i.item_name like '{0}'\
 				or i.age like '{0}' or i.sp_without_vat like '{0}')".format("%{}%".format(search))
 
@@ -63,7 +62,6 @@ def get_category_items(category, subcategory=None, search=None, data=None):
 			{} 	group by i.name
 		""".format(cond)
 		items = frappe.db.sql(query,as_dict=True)
-		print "items",items
 		response["items"] = items
 		response["status_code"] = 200
 		frappe.local.response["http_status_code"] = 200
@@ -77,16 +75,17 @@ def get_category_items(category, subcategory=None, search=None, data=None):
 	finally:
 		return response
 
-@frappe.whitelist()
-def search(category=None, subcategory=None, search=None):
+@frappe.whitelist(allow_guest=True)
+def search(search=None):
 	"""
 	 	returns the details on the basis of search
 	 	search:search text/brands/items
 	"""
 	try:
+		# Need to find category
+		category = None
 		response = frappe._dict()
 		cond = " where 1=1"
-		category = category if not subcategory else subcategory
 		if category:
 			child_cat = get_child_categories(category)
 			child_cat.append(category)
@@ -96,11 +95,11 @@ def search(category=None, subcategory=None, search=None):
 
 		if search:
 			cond += " and (i.name like '{0}' or i.item_name like '{0}'\
-				or i.age like '{0}' or i.brand like '{0}')".format("%{}%".format(search))
+				or i.age like '{0}' or i.brand like  '{0}')".format("%{}%".format(search))
 
 		query = """
 			select distinct
-				i.name, i.item_name, i.brand,i.age as age_range, i.sp_without_vat as selling_price
+				i.name, i.item_name, i.brand, i.image,i.age as age_range, i.sp_without_vat as selling_price
 			from
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
 			left join
@@ -108,7 +107,6 @@ def search(category=None, subcategory=None, search=None):
 			{} 	group by i.name
 		""".format(cond)
 		items = frappe.db.sql(query,debug=1,as_dict=True)
-		print "items",items
 		response["items"] = items
 		response["status_code"] = 200
 		frappe.local.response["http_status_code"] = 200

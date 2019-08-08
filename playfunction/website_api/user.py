@@ -14,6 +14,7 @@ def login(data):
 	"""
 	user_data = json.loads(data)
 	try:
+		response = frappe._dict({}) 
 		if user_data.get("usr") and user_data.get("pwd"):
 			user = frappe.db.exists("User", user_data.get("usr"))
 			if user:
