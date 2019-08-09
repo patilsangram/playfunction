@@ -252,9 +252,6 @@ def verify_mail(data):
 def make_customer(data):
 	"""
 	request_data: {
-		customer_name:
-			email_id:
-			customer_type:
 			address_line1:
 			address_line2:
 			country:
@@ -265,21 +262,24 @@ def make_customer(data):
 	try:
 		response = frappe._dict()
 		args = json.loads(data)
-		if frappe.db.exists("Customer", args.get("customer_name")):
+		user= frappe.get_doc("User",frappe.session.user)
+		if frappe.db.exists("Customer",user.full_name):
 			response["status_code"] = 200
 			response["message"] = "Customer already exists."
 			frappe.local.response['http_status_code'] = 200
 		else:
 			customer = frappe.new_doc("Customer")
-			customer.customer_name = args.get("customer_name")
-			customer.customer_type = args.get("customer_type")
-			customer.email_id = args.get("email_id")
+			customer.customer_name= user.full_name
+			customer.email_id= user.email
+			customer.mobile_no = user.mobile_no
+			customer.customer_type = "Individual"
 			customer.address_line1 = args.get("address_line1")
 			customer.address_line2 = args.get("address_line2")
 			customer.country = args.get("country")
 			customer.city = args.get("city")
 			customer.pincode = args.get("pincode")
-			customer.save()
+			customer.user = user.email 
+			customer.save(ignore_permissions= True)
 			frappe.db.commit()
 			response["status_code"] = 200
 			response["message"] = "Customer successfully created."

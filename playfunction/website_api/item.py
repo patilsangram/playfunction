@@ -106,7 +106,7 @@ def search(search=None):
 				`tabCatalog` c on c.parent = i.name
 			{} 	group by i.name
 		""".format(cond)
-		items = frappe.db.sql(query,debug=1,as_dict=True)
+		items = frappe.db.sql(query,as_dict=True)
 		response["items"] = items
 		response["status_code"] = 200
 		frappe.local.response["http_status_code"] = 200
