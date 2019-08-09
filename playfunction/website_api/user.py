@@ -263,7 +263,9 @@ def make_customer(data):
 		response = frappe._dict()
 		args = json.loads(data)
 		user= frappe.get_doc("User",frappe.session.user)
-		if frappe.db.exists("Customer",user.full_name):
+		#check customer exists or not for the current user
+		customer = frappe.db.get_value("Customer",{'user':user.name},"name")
+		if customer:
 			response["status_code"] = 200
 			response["message"] = "Customer already exists."
 			frappe.local.response['http_status_code'] = 200
