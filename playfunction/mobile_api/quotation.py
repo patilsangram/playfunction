@@ -70,7 +70,7 @@ def get_quote_details(quote_id):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to fetch Quotation Details"
-		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: create_quote")
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: get_quote_details")
 	finally:
 		return response
 
@@ -97,6 +97,11 @@ def create_quote(customer, items):
 		else:
 			quote = frappe.new_doc("Quotation")
 			quote.party_name = customer
+			# update price list price
+			item_rate = frappe.db.get_value("Item", items.get("item_code"), ["cost_price", "last_purchase_rate"], as_dict=True)
+			items["price_list_rate"] = item_rate.get("cost_price") or item_rate.get("last_purchase_rate") or 0
+			if "discount_percentage" in items:
+				items["margin_type"] = "Percentage"
 			quote.append("items", items)
 			quote.save()
 			frappe.db.commit()
@@ -127,6 +132,7 @@ def update_quote(quote_id, items):
 	try:
 		response = frappe._dict()
 		items = json.loads(items)
+
 		if not frappe.db.exists("Quotation", quote_id):
 			response["message"] = "Quotation not found"
 			frappe.local.response['http_status_code'] = 404
@@ -136,6 +142,11 @@ def update_quote(quote_id, items):
 				frappe.local.response["http_status_code"] = 422
 			else:
 				quote = frappe.get_doc("Quotation", quote_id)
+				if items.get("discount_percentage"):
+					items["margin_type"] = "Percentage"
+					items["price_list_rate"] = items.get("rate") or \
+						frappe.db.get_value("Item", items.get("item_code"), "cost_price")
+					items["rate"] = 0
 				existing_item = False
 				for row in quote.get("items"):
 					# update item row
