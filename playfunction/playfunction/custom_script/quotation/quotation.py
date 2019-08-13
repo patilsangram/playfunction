@@ -45,10 +45,10 @@ def update_selling_data(doc,meathod):
 	if doc.party_name:
 		cust_discount_per = frappe.db.get_value("Customer", doc.party_name, "discount_percentage")
 	for row in doc.items:
-		fields = ["last_purchase_rate as cost_price","discount_percentage"]
+		fields = ["last_purchase_rate", "cost_price","discount_percentage"]
 		item_data = frappe.get_value("Item", row.item_code, fields, as_dict=True)
-		if not row.cost_price and item_data.get("cost_price"):
-			row.cost_price = item_data.get("cost_price")
+		if not row.cost_price and (item_data.get("cost_price") or item_data.get("last_purchase_rate")):
+			row.cost_price = item_data.get("cost_price") or item_data.get("last_purchase_rate")
 		if not row.discount_percentage and (cust_discount_per or item_data.get("discount_percentage")):
 			row.discount_percentage = cust_discount_per or item_data.get("discount_percentage")
 			row.rate=row.cost_price-((row.discount_percentage/100)*row.cost_price)
