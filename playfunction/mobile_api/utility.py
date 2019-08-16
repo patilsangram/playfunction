@@ -94,3 +94,23 @@ def create_copy(dt, dn, customer):
 		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: create_copy")
 	finally:
 		return response
+
+
+@frappe.whitelist(allow_guest=True)
+def set_payment_status(data=None):
+	try:
+		response = {}
+		response["headers"] = str(frappe.request.headers)
+		if data:
+			response["type"] = "Data Parameter"
+			response["data"] = data
+		elif frappe.request.data:
+			response["type"] = "frappe.request.data"
+			response["data"] = frappe.request.data
+		else:
+			response["data"] = "Not found"
+	except Exception as e:
+		response["error"] = str(e)
+	finally:
+		frappe.log_error(message=response , title="Mobile API: set_payment_status")
+		return response
