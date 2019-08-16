@@ -179,3 +179,46 @@ def update_order(order_id, items):
 		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: update_order")
 	finally:
 		return response
+
+@frappe.whitelist()
+def store_sales_token(order_id, data):
+	"""Store Private/Public Token received from GetUrl API"""
+	try:
+		tokens = json.loads(data)
+		if not frappe.db.exists("Sales Order", order_id):
+			frappe.local.response['http_status_code'] = 404
+			return "Order not found"
+		elif not tokens or not tokens.get("PrivateSaleToken"):
+			frappe.local.response['http_status_code'] = 422
+			return "Tokens not found"
+		else:
+			doc = frappe.get_doc("Sales Order", order_id)
+			doc.sales_tokens = json.dumps(tokens)
+			doc.save()
+			frappe.db.commit()
+			return "Tokens Saved Successfully."
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: store_sales_token")
+		return "Tokens Update Failed"
+
+@frappe.whitelist()
+def get_sales_token(order_id):
+	"""Get Sales Token from Sales Order"""
+	try:
+		if not order_id or not frappe.db.exists("Sales Order", order_id):
+			frappe.local.response['http_status_code'] = 404
+			return "Order not found"
+		else:
+			doc = frappe.get_doc("Sales Order", order_id)
+			if not doc.get("sales_tokens"):
+				frappe.local.response['http_status_code'] = 404
+				return "Tokens not found"
+			else:
+				return json.loads(doc.get("sales_tokens"))
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: get_sales_token")
+		return "Tokens fetch Failed"
