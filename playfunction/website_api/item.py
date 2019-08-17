@@ -126,10 +126,8 @@ def add_to_wishlist(data):
 	 	data:{ "item_code":
 			   "item_name":
 			   "qty":
-			   "wishlist_date":
 			   "age":
-			   "uom":
-		      }
+			   }
 	"""
 	try:
 		response = frappe._dict()
@@ -212,15 +210,14 @@ def delete_wishlist(name,item_code):
 
 
 @frappe.whitelist(allow_guest=True)
-def get_wishlist_details(wishlist_id=None):
+def get_wishlist_details():
 	try:
 		item_fields = ["item_code", "item_name","qty", "image", "description","rate","age"]
 		response = frappe._dict()
 		cust = frappe.db.get_value("Customer",{'user':frappe.session.user},"name")
-		if cust:
-			wishlist = frappe.get_doc("Wishlist", wishlist_id)
-			response["customer"] = wishlist.customer
-			response["wishlist_id"] = wishlist.name
+		wishlist_doc =frappe.get_value("Wishlist",{'customer':cust},"name")
+		if frappe.db.exists("Wishlist",wishlist_doc):
+			wishlist = frappe.get_doc("Wishlist", wishlist_doc)
 			items = []
 			# fetch required item details
 			for row in wishlist.get("items"):
@@ -230,8 +227,9 @@ def get_wishlist_details(wishlist_id=None):
 				items.append(row_data)
 			response["items"] = items
 		else:
-			response["message"] = "Invalid Wishlist"
-			frappe.local.response["http_status_code"] = 404
+			response["message"] = "Data not found"
+			response["status_code"] = 404
+			frappe.local.response['http_status_code'] = 404
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
@@ -283,3 +281,34 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age, manufacturer=Non
 	finally:
 		return response
 
+
+@frappe.whitelist()
+def get_item_details(item_code):
+	try:
+		
+		response = frappe._dict()
+		if not frappe.db.exists("Item", item_code):
+			response["data"] = "Item not found"
+			frappe.local.response["http_status_code"] = 404
+		else:
+			items = frappe.db.sql("""select i.name, i.image, i.item_name, i.age as age_range, group_concat(concat(v.video_file, "#", v.image)) as item_media
+			 					from `tabItem` i left join `tabItem Media` v on v.parent = i.name and v.type = 'Video' 
+			 	 				where i.item_code = {} """.format(item_code),as_dict=True)
+			for i in items:
+				if i.get("item_media"):
+					item_media = i.pop("item_media")
+					media = [{"video": m.split("#")[0], "thumbnail": m.split("#")[1]} for m in item_media.split(",") ]
+					i["item_videoes"] = media
+				else:
+					i["item_videoes"] = []
+			response["items"] = items
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
+		frappe.local.response["http_status_code"] = http_status_code
+		response["message"] = "Unable to fetch item_details: {}".format(str(e))
+		frappe.log_error(message=frappe.get_traceback() , title = "Website API: get_item_details")
+	finally:
+		return response
+
+# @frappe.whitelist
