@@ -120,7 +120,7 @@ def search(search=None):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def add_to_wishlist(data):
 	"""
 	 	data:{ "item_code":
@@ -173,7 +173,7 @@ def add_to_wishlist(data):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def delete_wishlist(name,item_code):
 	try:
 		response = frappe._dict()
@@ -190,6 +190,8 @@ def delete_wishlist(name,item_code):
 			wish.items = new_items
 			wish.flags.ignore_mandatory = True
 			wish.save()
+			response["status_code"] = 200
+			response["message"] = "Wishlist Item deleted"
 			if not len(wish.get("items", [])):
 				frappe.delete_doc("Wishlist", wish_doc)
 				response["message"] = "Deleted all items"
@@ -209,7 +211,7 @@ def delete_wishlist(name,item_code):
 		return response
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_wishlist_details():
 	try:
 		item_fields = ["item_code", "item_name","qty", "image", "description","rate","age"]
@@ -284,6 +286,9 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age, manufacturer=Non
 
 @frappe.whitelist()
 def get_item_details(item_code):
+	"""
+		Returns item details
+	"""
 	try:
 		
 		response = frappe._dict()
@@ -311,4 +316,25 @@ def get_item_details(item_code):
 	finally:
 		return response
 
-# @frappe.whitelist
+@frappe.whitelist(allow_guest=True)
+def recommended_items(item_code):
+	"""
+		Returns recommended item details
+	"""
+	try:
+		response = frappe._dict()
+		if not frappe.db.exists("Item", item_code):
+			response["data"] = "Item not found"
+			frappe.local.response["http_status_code"] = 404
+		else:
+			items = frappe.db.sql("""select i.name, i.item_name, i.image, i.sp_without_vat as selling_price, i.age as age_range,r.item_name,r.item_code,r.image  
+				from `tabItem` i left join `tabRecommend Item` r on r.parent = i.name where i.name = {0} """.format(item_code),as_dict=True)
+			response["items"] = items
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
+		frappe.local.response["http_status_code"] = http_status_code
+		response["message"] = "Unable to fetch item_details: {}".format(str(e))
+		frappe.log_error(message=frappe.get_traceback() , title = "Website API: recommended_items")
+	finally:
+		return response
