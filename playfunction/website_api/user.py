@@ -7,9 +7,9 @@ from frappe.utils.password import update_password as _update_password
 @frappe.whitelist(allow_guest=True)
 def login(data):
 	"""
-		request_data: {
-			"usr": "tripti.s@indictranstech.com",
-			"pwd": "admin@123"
+		data: {
+			'usr': 'test@gmail.com',
+			'pwd': 'admin@123'
 		}
 	"""
 	user_data = json.loads(data)
@@ -71,11 +71,9 @@ def logout(usr):
 
 @frappe.whitelist(allow_guest=True)
 def forgot_password(data):
-	"""
-		request_data: {
-			"usr": "test@gmail.com"
-		}
-	"""
+	"""data: {
+		'usr': 'test@gmail.com'
+	}"""
 	try:
 		args = json.loads(data)
 		response = frappe._dict({})
@@ -106,11 +104,11 @@ def forgot_password(data):
 @frappe.whitelist(allow_guest=True)
 def update_password(data):
 	"""
-		request_data: {
-			"usr": "test@gmail.com",
-			"key": "AR2xs49BkdNPUmBnfjHCou6QAOxx7wFj",
-			"new_password": "test@1234",
-			"old_password": "test@12"
+		data: {
+			'usr': 'test@gmail.com',
+			'key': 'AR2xs49BkdNPUmBnfjHCou6QAOxx7wFj',
+			'new_password': 'test@1234',
+			'old_password': 'test@12'
 		}
 	"""
 	try:
@@ -149,12 +147,12 @@ def update_password(data):
 @frappe.whitelist(allow_guest=True)
 def registration(data):
 	"""
-		request_data:{
-			"email": "tripti.sharma8@gmail.com",
-			"first_name": "tripti",
-			"last_name":"sharma",
-			"password":"",
-			"mobile_no":9876543215
+		data:{
+			'email': 'test@gmail.com',
+			'first_name': 'tripti',
+			'last_name':'sharma',
+			'password':' 'admin@123',
+			'mobile_no':'9999999999'
 		}
 	"""
 	try:
@@ -205,18 +203,18 @@ def send_mail(email,key=None):
 				recipients = email, 
 				sender = frappe.session.user, 
 				subject = subject,
-				message = content,	
-				delayed = 1)					
+				message = content,
+				delayed = 1)
 	except Exception as e:
 		frappe.log_error(message = frappe.get_traceback() , title = "Website API: registration -send_mail")
 
 @frappe.whitelist(allow_guest=True)
 def verify_mail(data):
 	"""
-		request_data:{
-			  "email": "tripti.sharma8@gmail.com",
-			  "key":"KB7Y2OBU0iuhgulTbNCf8xmqxsGOAUC5"
-			  }
+		data:{
+			'email': 'test@gmail.com',
+			'key':'KB7Y2OBU0iuhgulTbNCf8xmqxsGOAUC5'
+		}
 		enables user through key
 	"""
 	try:
@@ -251,12 +249,12 @@ def verify_mail(data):
 @frappe.whitelist()
 def make_customer(data):
 	"""
-	request_data: {
-			address_line1:
-			address_line2:
-			country:
-			city:
-			pincode:
+	data: {
+		address_line1:
+		address_line2:
+		country:
+		city:
+		pincode:
 	}
 	"""
 	try:
