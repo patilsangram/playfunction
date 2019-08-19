@@ -338,3 +338,49 @@ def recommended_items(item_code):
 		frappe.log_error(message=frappe.get_traceback() , title = "Website API: recommended_items")
 	finally:
 		return response
+
+@frappe.whitelist(allow_guest=True)
+def related_items(data):
+	"""
+		Returns related item details
+		data:{"item_code":
+	 		"sales_item":
+		 	"best_seller":
+		 	"award_wining":
+		 	"new_item":
+		 } 
+	"""
+	try:
+		response = frappe._dict()
+		data = json.loads(data)
+		cond = " where 1=1"
+		if data.get("item_code"):
+			cond += " and (i.item_code = {0})".format(data.get("item_code"))
+
+		if data.get("sales_item"):
+			cond += " and (i.sales_item ='Yes')"
+
+		elif data.get("best_seller"):
+			cond += " and (i.best_seller ='Yes' )"
+
+		elif data.get("award_wining"):
+			cond += " and (i.award_wining ='Yes' )"
+
+		elif data.get("new_item"):
+			cond += " and (i.new_item ='Yes')"
+
+		query = ("""select i.name, i.item_name, i.image, i.sp_without_vat as selling_price, i.age as age_range,r.item_name,r.item_code,r.image  
+			from `tabItem` i left join `tabRelated Item` r on r.parent = i.name
+			{0}  group by i.item_code
+			""".format(cond))
+		items=frappe.db.sql(query,debug=1,as_dict=True)
+		response["items"] = items
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
+		frappe.local.response["http_status_code"] = http_status_code
+		response["message"] = "Unable to fetch item_details: {}".format(str(e))
+		frappe.log_error(message=frappe.get_traceback() , title = "Website API: recommended_items")
+	finally:
+		return response
+
