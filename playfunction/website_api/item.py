@@ -373,14 +373,13 @@ def related_items(data):
 			from `tabItem` i left join `tabRelated Item` r on r.parent = i.name
 			{0}  group by i.item_code
 			""".format(cond))
-		items=frappe.db.sql(query,debug=1,as_dict=True)
+		items=frappe.db.sql(query,as_dict=True)
 		response["items"] = items
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to fetch item_details: {}".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title = "Website API: recommended_items")
+		frappe.log_error(message=frappe.get_traceback() , title = "Website API: related_items")
 	finally:
 		return response
-
