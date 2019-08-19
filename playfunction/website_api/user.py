@@ -174,7 +174,7 @@ def registration(data):
 			user_doc.enabled = 0
 			user_doc.new_password = args.get("password")
 			user_doc.send_welcome_email = 0
-			user_doc.save()
+			user_doc.save(ignore_permissions = True)
 			if user_doc:
 				key = random_string(32)
 				user_doc.db_set("reset_password_key", key)
@@ -191,8 +191,8 @@ def registration(data):
 	finally:
 		return response
 
-@frappe.whitelist()
-def send_mail(email,key):
+@frappe.whitelist(allow_guest=True)
+def send_mail(email,key=None):
 	"""
 		used to send access key
 	"""
@@ -210,7 +210,7 @@ def send_mail(email,key):
 	except Exception as e:
 		frappe.log_error(message = frappe.get_traceback() , title = "Website API: registration -send_mail")
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def verify_mail(data):
 	"""
 		request_data:{
