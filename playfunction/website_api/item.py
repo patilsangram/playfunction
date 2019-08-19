@@ -152,7 +152,7 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age, manufacturer=Non
 		return response
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_item_details(item_code):
 	"""
 		Returns item details
@@ -244,13 +244,12 @@ def related_items(data):
 				on r.parent = i.name
 			{0} group by i.item_code
 		""".format(cond)
-
-		items = frappe.db.sql(query, as_dict=True)
+		items=frappe.db.sql(query,as_dict=True)
 		response["items"] = items
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to fetch item_details: {}".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title = "Website API: recommended_items")
+		frappe.log_error(message=frappe.get_traceback() , title = "Website API: related_items")
 	finally:
 		return response
