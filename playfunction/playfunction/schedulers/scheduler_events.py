@@ -44,23 +44,24 @@ def stock_availability():
 
 		# check sales order wise availability
 		for so, items in sales_data.items():
-			item_qty = {}
-			is_stock_available = True
-			for item in items:
-				item_code, qty = item.keys()[0], item.values()[0]
-				if item_code in bin_qty:
-					if qty <= bin_qty[item_code]["qty"] - bin_qty[item_code]["reserved"]:
-						item_qty[item_code] = qty
+			if not frappe.db.get_value("Sales Order", so, "stock_availability_mail"):
+				item_qty = {}
+				is_stock_available = True
+				for item in items:
+					item_code, qty = item.keys()[0], item.values()[0]
+					if item_code in bin_qty:
+						if qty <= bin_qty[item_code]["qty"] - bin_qty[item_code]["reserved"]:
+							item_qty[item_code] = qty
+						else:
+							is_stock_available = False
+							break
 					else:
 						is_stock_available = False
 						break
-				else:
-					is_stock_available = False
-					break
-			if is_stock_available:
-				# update_bit_qty_reserved
-				bin_qty = update_reserved_qty(bin_qty, item_qty)
-				stock_for_so.append(so)
+				if is_stock_available:
+					# update_bit_qty_reserved
+					bin_qty = update_reserved_qty(bin_qty, item_qty)
+					stock_for_so.append(so)
 		if len(stock_for_so):
 			stock_availability_mail(stock_for_so)
 	except Exception as e:
@@ -83,6 +84,9 @@ def stock_availability_mail(sales_orders):
 			subject=_("Stock availability"),
 			message=message
 		)
+		so_tuple = "(" + ",".join("'{}'".format(so) for so in sales_orders) + ")"
+		frappe.db.sql("update `tabSales Order` set stock_availability_mail=1 \
+				where name in {}".format(so_tuple))
 		frappe.db.commit()
 	except Exception as e:
 		frappe.log_error(message=frappe.get_traceback(), title="Stock availability Scheduler failed")
