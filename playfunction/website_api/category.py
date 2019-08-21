@@ -56,6 +56,6 @@ def get_child_categories(category):
 
 	filters_ = {"group_level": (">", 1)}
 	fields = ['name','parent_item_group as parent','is_group as expandable']
-	data = frappe.get_list("Item Group", fields=fields, filters=filters_)
+	data = frappe.get_list("Item Group", fields=fields, filters=filters_, ignore_permissions=True)
 	categories = _get_child(category, data, [])
 	return categories
