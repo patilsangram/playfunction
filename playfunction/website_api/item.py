@@ -202,9 +202,8 @@ def recommended_items(item_code):
 			frappe.local.response["http_status_code"] = 404
 		else:
 			items = frappe.db.sql("""select i.name as item_code, i.item_name, i.image, i.sp_without_vat as selling_price, i.age as age_range,r.item_name,r.item_code,r.image  
-					from `tabItem` i left join `tabRecommend Item` r on r.parent = i.name where i.name = {0} """.format(item_code),as_dict=True)
+					from `tabItem` i left join `tabRecommend Item` r on r.parent = i.name where i.name = {0} and r.item_code is not null """.format(item_code),as_dict=True)
 			response["items"] = items
-
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
