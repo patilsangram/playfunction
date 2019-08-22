@@ -27,7 +27,7 @@ def get_quotation_list():
 		return response
 
 @frappe.whitelist()
-def get_quote_details(quote_id):
+def get_quote_details(quote_id=None):
 	"""
 		return quotation details.
 		items, taxes and total

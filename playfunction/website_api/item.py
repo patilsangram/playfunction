@@ -41,7 +41,7 @@ def get_category_items(data):
 
 		query = """
 			select
-				i.name, i.item_name, i.image, i.age as age_range,
+				i.name as item_code, i.item_name, i.image, i.age as age_range,
 				i.sp_without_vat as selling_price
 			from
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
@@ -85,7 +85,7 @@ def search(search=None):
 
 		query = """
 			select distinct
-				i.name, i.item_name, i.brand, i.image,i.age as age_range,
+				i.name as item_code, i.item_name, i.brand, i.image,i.age as age_range,
 				i.sp_without_vat as selling_price
 			from
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
@@ -133,7 +133,7 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age, manufacturer=Non
 
 		query = """
 			select
-				i.name, i.item_name, i.brand, i.age as age_range,
+				i.name as item_code, i.item_name, i.brand, i.age as age_range,
 				i.sp_without_vat as selling_price
 			from
 				`tabItem` i left join `tabCatalog` c on c.parent = i.name
@@ -166,7 +166,7 @@ def get_item_details(item_code):
 		else:
 			items = frappe.db.sql("""
 				select
-					i.name, i.image, i.item_name, i.age as age_range,
+					i.name as item_code, i.image, i.item_name,i.description,i.age as age_range,i.sp_without_vat as selling_price,
 					group_concat(concat(v.video_file, "#", v.image)) as item_media
 				from
 					`tabItem` i left join `tabItem Media` v on v.parent = i.name
@@ -201,9 +201,10 @@ def recommended_items(item_code):
 			response["data"] = "Item not found"
 			frappe.local.response["http_status_code"] = 404
 		else:
-			items = frappe.db.sql("""select i.name, i.item_name, i.image, i.sp_without_vat as selling_price, i.age as age_range,r.item_name,r.item_code,r.image  
-				from `tabItem` i left join `tabRecommend Item` r on r.parent = i.name where i.name = {0} """.format(item_code),as_dict=True)
+			items = frappe.db.sql("""select i.name as item_code, i.item_name, i.image, i.sp_without_vat as selling_price, i.age as age_range,r.item_name,r.item_code,r.image  
+					from `tabItem` i left join `tabRecommend Item` r on r.parent = i.name where i.name = {0} """.format(item_code),as_dict=True)
 			response["items"] = items
+
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
@@ -237,7 +238,7 @@ def related_items(data):
 
 		query = """
 			select
-				i.name, i.item_name, i.image, i.sp_without_vat as selling_price,
+				i.name as item_code, i.item_name, i.image, i.sp_without_vat as selling_price,
 				i.age as age_range,r.item_name,r.item_code,r.image
 			from
 				`tabItem` i left join `tabRelated Item` r
