@@ -2,32 +2,11 @@ import frappe
 import json
 from frappe import _
 from frappe.utils import has_common, flt
-from order import order_details
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
-
-item_fields = ["item_code", "item_name","qty", "discount_percentage", "description", "notes", "rate", "amount"]
-
-
+item_fields = ["item_code", "item_name","qty", "discount_percentage", "description", "rate", "amount"]
 @frappe.whitelist()
-def get_quotation_list():
-	"""Return Quotation List"""
-	try:
-		response = frappe._dict()
-		filters = {}
-		fields = ["name as quote_id", "party_name as customer", "transaction_date", "grand_total", "status"]
-		quotation_list = frappe.get_list("Quotation",filters=filters, fields=fields)
-		response["data"] = quotation_list
-	except Exception as e:
-		http_status_code = getattr(e, "http_status_code", 500)
-		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to fetch Quotations."
-		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: get_quotation_list")
-	finally:
-		return response
-
-@frappe.whitelist()
-def get_quote_details(quote_id=None):
+def get_quote_details(quote_id):
 	"""
 		return quotation details.
 		items, taxes and total
@@ -70,64 +49,64 @@ def get_quote_details(quote_id=None):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to fetch Quotation Details"
-		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: get_quote_details")
+		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: get_quote_details")
 	finally:
 		return response
 
 @frappe.whitelist()
-def create_quote(customer, items):
+def add_to_cart(customer, items):
 	"""
 	:param data: {
 		customer:
 		items: {
 			item_code:
 			qty:
-			discount_percentage:
-			notes:
 		}
 	}
 	"""
 	try:
 		response = frappe._dict()
 		items = json.loads(items)
-		if not has_common(["item_code", "qty"], items.keys()) or \
-			not all([ f in item_fields for f in items.keys()]):
-			response["message"] = "Invalid data"
-			frappe.local.response["http_status_code"] = 422
+		user= frappe.get_doc("User",frappe.session.user)
+		#check customer exists or not for the current user
+		customer = frappe.db.get_value("Customer",{'user':user.name},"name")
+		if not customer:
+			response["message"] = "Customer doesn't exists."
+			frappe.local.response['http_status_code'] = 200
 		else:
-			quote = frappe.new_doc("Quotation")
-			quote.party_name = customer
-			# update price list price
-			item_rate = frappe.db.get_value("Item", items.get("item_code"), ["cost_price", "last_purchase_rate"], as_dict=True)
-			items["price_list_rate"] = item_rate.get("cost_price") or item_rate.get("last_purchase_rate") or 0
-			if "discount_percentage" in items:
-				items["margin_type"] = "Percentage"
-			quote.append("items", items)
-			quote.save()
-			frappe.db.commit()
-			response = get_quote_details(quote.name)
+			if not has_common(["item_code", "qty"], items.keys()) or \
+			not all([ f in item_fields for f in items.keys()]):
+				response["message"] = "Invalid data"
+				frappe.local.response["http_status_code"] = 422
+			else:
+				quote = frappe.new_doc("Quotation")
+				quote.party_name = customer
+				# update price list price
+				item_rate = frappe.db.get_value("Item", items.get("item_code"), ["cost_price", "last_purchase_rate"], as_dict=True)
+				items["price_list_rate"] = item_rate.get("cost_price") or item_rate.get("last_purchase_rate") or 0
+				if "discount_percentage" in items:
+					items["margin_type"] = "Percentage"
+				quote.append("items", items)
+				quote.save()
+				frappe.db.commit()
+				response = get_quote_details(quote.name)
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Quotation Creation failed"
-		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: create_quote")
+		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: add_to_cart")
 	finally:
 		return response
 
 @frappe.whitelist()
-def update_quote(quote_id, items):
+def update_cart(quote_id, items):
 	"""
 	:params 
 		quote_id: quotation
 		items: {
 		item_code:
 		qty:
-		rate: Unit Price
-		discount_percentage:
-		description:
-		notes: 
-	}
 	"""
 	try:
 		response = frappe._dict()
@@ -136,6 +115,7 @@ def update_quote(quote_id, items):
 		if not frappe.db.exists("Quotation", quote_id):
 			response["message"] = "Quotation not found"
 			frappe.local.response['http_status_code'] = 404
+
 		else:
 			if not all([ f in item_fields for f in items.keys()]):
 				response["message"] = "Invalid Data"
@@ -164,12 +144,12 @@ def update_quote(quote_id, items):
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Quotation Update failed"
-		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: update_quote")
+		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: update_cart")
 	finally:
 		return response
 
 @frappe.whitelist()
-def delete_quote_item(quote_id, item_code):
+def delete_cart_item(quote_id, item_code):
 	"""Delete given item_codes from Quote if all deleted then delete Quote"""
 	try:
 		response = frappe._dict()
@@ -201,13 +181,13 @@ def delete_quote_item(quote_id, item_code):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to Delete Quote Item"
-		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: delete_quote_item")
+		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: delete_cart_item")
 	finally:
 		return response
 
+
 @frappe.whitelist()
-def quotation_details(quote_id):
-	"""Get Detailed Quotation"""
+def place_order(quote_id):
 	try:
 		response = frappe._dict()
 		if not frappe.db.exists("Quotation", quote_id):
@@ -215,14 +195,45 @@ def quotation_details(quote_id):
 			frappe.local.response["http_status_code"] = 404
 		else:
 			doc = frappe.get_doc("Quotation", quote_id)
-			response["customer"] = doc.party_name
-			response["quote_id"] = doc.name
+			doc.workflow_state = "Approved"
+			doc.save(ignore_permissions = True)
+			doc.submit()
+
+			# sales order
+			sales_order = make_sales_order(doc.name)
+			if sales_order:
+				sales_order.delivery_date = frappe.utils.today()
+				sales_order.save(ignore_permissions = True)
+				response["message"] = "Order Placed Successfully."
+				response["order_id"] = sales_order.name
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Error occured while placing order"
+		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: place_order")
+	finally:
+		return response
+
+@frappe.whitelist()
+def order_details(order_id):
+	"""Return Sales Order Details"""
+	try:
+		response = frappe._dict()
+		if not frappe.db.exists("Sales Order", order_id):
+			response["message"] = "Sales Order not found"
+			frappe.local.response["http_status_code"] = 404
+		else:
+			doc = frappe.get_doc("Sales Order", order_id)
+			response["customer"] = doc.customer
+			response["order_id"] = doc.name
 
 			# item details
 			items = []
+			fields = ["item_code", "description", "qty", "rate",
+				"discount_percentage", "discount_amount", "amount"]
 			for item in doc.get("items"):
 				row_data = {}
-				for f in item_fields:
+				for f in fields:
 					row_data[f] = item.get(f)
 				items.append(row_data)
 			response["items"] = items
@@ -251,99 +262,100 @@ def quotation_details(quote_id):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Failed to fetch Quotation Details"
-		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: quotation_details")
+		response["message"] = "Failed to fetch Sales Order Details"
+		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: order_details")
 	finally:
 		return response
 
 @frappe.whitelist()
-def place_order(quote_id):
+def update_order(order_id, items):
+	"""
+	:params
+		order_id: sales_order
+		items: {
+		item_code:
+		qty:
+	"""
 	try:
+		fields = ["item_code", "description", "qty", "rate", "discount_percentage"]
 		response = frappe._dict()
-		if not frappe.db.exists("Quotation", quote_id):
-			response["message"] = "Quotation not found"
-			frappe.local.response["http_status_code"] = 404
+		items = json.loads(items)
+		if not frappe.db.exists("Sales Order", order_id):
+			response["message"] = "Sales Order not found"
+			frappe.local.response['http_status_code'] = 404
 		else:
-			doc = frappe.get_doc("Quotation", quote_id)
-			doc.workflow_state = "Approved"
-			doc.save()
-			doc.submit()
-
-			# sales order
-			sales_order = make_sales_order(doc.name)
-			if sales_order:
-				sales_order.delivery_date = frappe.utils.today()
-				sales_order.save()
-				response["message"] = "Order Placed Successfully."
-				response["order_id"] = sales_order.name
-	except Exception as e:
-		http_status_code = getattr(e, "http_status_code", 500)
-		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Error occured while placing order"
-		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: place_order")
-	finally:
-		return response
-
-@frappe.whitelist()
-def add_delivery_charges(dt, dn, delivery_charge):
-	"""Add delivery charges in tax table"""
-	try:
-		response = frappe._dict()
-		if not frappe.db.exists(dt, dn):
-			response["message"] = "{} not found".format(dt)
-			frappe.local.response["http_status_code"] = 404
-		else:
-			doc = frappe.get_doc(dt, dn)
-			delivery_account = frappe.db.get_value("Account", {
-				"account_name": "Delivery Charge"
-			}, "name")
-
-			if delivery_account:
-				doc.append("taxes", {
-					"charge_type": "Actual",
-					"account_head": delivery_account,
-					"tax_amount": flt(delivery_charge),
-					"description": "Delivery Charges"
-				})
-				doc.save()
-				if dt == "Quotation":
-					response = quotation_details(doc.name)
-				else:
-					response = order_details(doc.name)
-			else:
-				response["message"] = "Delivery Account not found"
+			if not all([ f in fields for f in items.keys()]) or not items.get("item_code"):
+				response["message"] = "Invalid Data"
 				frappe.local.response["http_status_code"] = 422
+			else:
+				order = frappe.get_doc("Sales Order", order_id)
+				existing_item = False
+				for row in order.get("items"):
+					# update item row
+					if row.get("item_code") == items.get("item_code"):
+						existing_item = True
+						row.update(items)
+				# add new item
+				if not existing_item:
+					order.append("items", items)
+				order.save()
+				frappe.db.commit()
+				response = order_details(order.name)
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to add Delivery Charges"
-		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: add_delivery_charges")
+		response["message"] = "Sales Order update failed"
+		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: update_order")
 	finally:
 		return response
 
-
 @frappe.whitelist()
-def add_discount(dt, dn, discount):
-	"""Add additional Discount percentage"""
+def request_for_quotation(items):
 	try:
 		response = frappe._dict()
-		if not frappe.db.exists(dt, dn):
-			response["message"] = "{} not found".format(dt)
+		items = json.loads(items)
+		rfq = frappe.new_doc("Request for Quotation")
+		# update price list price
+		item_rate = frappe.db.get_value("Item", items.get("item_code"), ["cost_price", "last_purchase_rate"], as_dict=True)
+		items["price_list_rate"] = item_rate.get("cost_price") or item_rate.get("last_purchase_rate") or 0
+		if "discount_percentage" in items:
+			items["margin_type"] = "Percentage"
+		rfq.append("items", items)
+		rfq.flags.ignore_mandatory = True
+		rfq.save()
+		frappe.db.commit()
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "Request For Quotation creation failed".format(str(e))
+		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: request_for_quotation")
+	finally:
+		return response
+
+@frappe.whitelist()
+def get_rfq_details(rfq_id):
+	try:
+		response = frappe._dict()
+		if not frappe.db.exists("Request for Quotation", rfq_id):
+			response["message"] = "Request for Quotation not found"
 			frappe.local.response["http_status_code"] = 404
 		else:
-			# TODO - check apply_discount_on ?
-			doc = frappe.get_doc(dt, dn)
-			doc.apply_discount_on = "Grand Total"
-			doc.additional_discount_percentage = flt(discount)
-			doc.save()
-			if dt == "Quotation":
-				response = quotation_details(doc.name)
-			else:
-				response = order_details(doc.name)
+			doc = frappe.get_doc("Request for Quotation", rfq_id)
+			# item details
+			items = []
+			fields = ["item_code", "item_name", "image_view", "description", "qty",]
+			for item in doc.get("items"):
+				row_data = {}
+				for f in fields:
+					row_data[f] = item.get(f)
+				items.append(row_data)
+			response["items"] = items
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to add Discount"
-		frappe.log_error(message=frappe.get_traceback() , title="Mobile API: add_discount")
+		response["message"] = "Failed to fetch request for quotation Details"
+		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: get_rfq_details")
 	finally:
 		return response
