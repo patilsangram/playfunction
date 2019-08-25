@@ -9,3 +9,4 @@ from .wishlist import add_to_wishlist, delete_wishlist, get_wishlist_details
 from .category import get_categories, get_child_categories
 from .quotation import get_quote_details, add_to_cart, update_cart, delete_cart_item, \
 	place_order, order_details, update_order, request_for_quotation, get_rfq_details
+from .faq import get_faq

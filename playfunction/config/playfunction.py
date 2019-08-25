@@ -43,6 +43,11 @@ def get_data():
 					"name": "Stock Balance",
 					"doctype": "Stock Ledger Entry"
 				},
+				{
+					"type": "doctype",
+					"name": "FAQ",
+					"description": _("Frequently Asked Questions")
+				},
 			]
 		},
 		{
