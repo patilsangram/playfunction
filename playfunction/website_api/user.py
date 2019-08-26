@@ -225,7 +225,7 @@ def verify_mail(data):
 			if user == args.get("email"):
 				user_doc = frappe.get_doc("User",args.get("email"))
 				user_doc.enabled = 1
-				user_doc.save()
+				user_doc.save(ignore_permissions = True)
 				response.message = ("Email Verified")
 				response["status_code"] = 200
 				frappe.local.response['http_status_code'] = 200

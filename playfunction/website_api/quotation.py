@@ -5,7 +5,7 @@ from frappe.utils import has_common, flt
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 item_fields = ["item_code", "item_name","qty", "discount_percentage", "description", "rate", "amount"]
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_quote_details(quote_id):
 	"""
 		return quotation details.
@@ -53,7 +53,7 @@ def get_quote_details(quote_id):
 	finally:
 		return response
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def add_to_cart(customer, items):
 	"""
 	:param data: {
@@ -99,7 +99,7 @@ def add_to_cart(customer, items):
 	finally:
 		return response
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def update_cart(quote_id, items):
 	"""
 	:params 
@@ -148,7 +148,7 @@ def update_cart(quote_id, items):
 	finally:
 		return response
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def delete_cart_item(quote_id, item_code):
 	"""Delete given item_codes from Quote if all deleted then delete Quote"""
 	try:
@@ -186,7 +186,7 @@ def delete_cart_item(quote_id, item_code):
 		return response
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def place_order(quote_id):
 	try:
 		response = frappe._dict()
@@ -214,7 +214,7 @@ def place_order(quote_id):
 	finally:
 		return response
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def order_details(order_id):
 	"""Return Sales Order Details"""
 	try:
@@ -267,7 +267,7 @@ def order_details(order_id):
 	finally:
 		return response
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def update_order(order_id, items):
 	"""
 	:params
@@ -310,7 +310,7 @@ def update_order(order_id, items):
 	finally:
 		return response
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def request_for_quotation(items):
 	try:
 		response = frappe._dict()
@@ -334,7 +334,7 @@ def request_for_quotation(items):
 	finally:
 		return response
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_rfq_details(rfq_id):
 	try:
 		response = frappe._dict()

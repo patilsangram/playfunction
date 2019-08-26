@@ -2,7 +2,7 @@ import frappe
 import json
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def add_to_wishlist(data):
 	"""
 	data:{
@@ -55,7 +55,7 @@ def add_to_wishlist(data):
 	finally:
 		return response
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def delete_wishlist(name,item_code):
 	try:
 		response = frappe._dict()
@@ -93,7 +93,7 @@ def delete_wishlist(name,item_code):
 		return response
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_wishlist_details():
 	try:
 		item_fields = ["item_code", "item_name","qty", "image", "description","rate","age"]
