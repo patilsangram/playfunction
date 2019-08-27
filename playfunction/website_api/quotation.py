@@ -5,7 +5,7 @@ from frappe.utils import has_common, flt
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 item_fields = ["item_code", "item_name","qty", "discount_percentage", "description", "rate", "amount"]
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_quote_details(quote_id):
 	"""
 		return quotation details.
@@ -53,7 +53,7 @@ def get_quote_details(quote_id):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def add_to_cart(customer, items):
 	"""
 	:param data: {
@@ -99,7 +99,7 @@ def add_to_cart(customer, items):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def update_cart(quote_id, items):
 	"""
 	:params 
@@ -148,7 +148,7 @@ def update_cart(quote_id, items):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def delete_cart_item(quote_id, item_code):
 	"""Delete given item_codes from Quote if all deleted then delete Quote"""
 	try:
@@ -186,7 +186,7 @@ def delete_cart_item(quote_id, item_code):
 		return response
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def place_order(quote_id):
 	try:
 		response = frappe._dict()
@@ -196,14 +196,14 @@ def place_order(quote_id):
 		else:
 			doc = frappe.get_doc("Quotation", quote_id)
 			doc.workflow_state = "Approved"
-			doc.save(ignore_permissions = True)
+			doc.save()
 			doc.submit()
 
 			# sales order
 			sales_order = make_sales_order(doc.name)
 			if sales_order:
 				sales_order.delivery_date = frappe.utils.today()
-				sales_order.save(ignore_permissions = True)
+				sales_order.save()
 				response["message"] = "Order Placed Successfully."
 				response["order_id"] = sales_order.name
 	except Exception as e:
@@ -214,7 +214,7 @@ def place_order(quote_id):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def order_details(order_id):
 	"""Return Sales Order Details"""
 	try:
@@ -267,7 +267,7 @@ def order_details(order_id):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def update_order(order_id, items):
 	"""
 	:params
@@ -310,7 +310,7 @@ def update_order(order_id, items):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def request_for_quotation(items):
 	try:
 		response = frappe._dict()
@@ -334,7 +334,7 @@ def request_for_quotation(items):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_rfq_details(rfq_id):
 	try:
 		response = frappe._dict()
