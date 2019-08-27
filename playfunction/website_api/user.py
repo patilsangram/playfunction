@@ -172,7 +172,7 @@ def registration(data):
 			user_doc.enabled = 0
 			user_doc.new_password = args.get("password")
 			user_doc.send_welcome_email = 0
-			user_doc.save(ignore_permissions = True)
+			user_doc.save()
 			if user_doc:
 				key = random_string(32)
 				user_doc.db_set("reset_password_key", key)
@@ -208,7 +208,7 @@ def send_mail(email,key=None):
 	except Exception as e:
 		frappe.log_error(message = frappe.get_traceback() , title = "Website API: registration -send_mail")
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def verify_mail(data):
 	"""
 		data:{
@@ -225,7 +225,7 @@ def verify_mail(data):
 			if user == args.get("email"):
 				user_doc = frappe.get_doc("User",args.get("email"))
 				user_doc.enabled = 1
-				user_doc.save(ignore_permissions = True)
+				user_doc.save()
 				response.message = ("Email Verified")
 				response["status_code"] = 200
 				frappe.local.response['http_status_code'] = 200
@@ -279,7 +279,7 @@ def make_customer(data):
 			customer.city = args.get("city")
 			customer.pincode = args.get("pincode")
 			customer.user = user.email 
-			customer.save(ignore_permissions= True)
+			customer.save()
 			frappe.db.commit()
 			response["status_code"] = 200
 			response["message"] = "Customer successfully created."
