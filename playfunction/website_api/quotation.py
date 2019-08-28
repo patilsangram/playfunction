@@ -49,15 +49,14 @@ def get_cart_details(quote_id):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to fetch Quotation Details"
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: get_quote_details")
+		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: get_cart_details")
 	finally:
 		return response
 
 @frappe.whitelist()
-def add_to_cart(customer, items):
+def add_to_cart(items):
 	"""
 	:param data: {
-		customer:
 		items: {
 			item_code:
 			qty:
@@ -80,7 +79,8 @@ def add_to_cart(customer, items):
 				frappe.local.response["http_status_code"] = 422
 			else:
 				quote = frappe.new_doc("Quotation")
-				quote.party_name = customer
+				quote.party_name = customer.get("customer_name")
+				print "PPPPPPPPPPPPPPPPP",customer.get("customer_name")
 				# update price list price
 				item_rate = frappe.db.get_value("Item", items.get("item_code"), ["cost_price", "last_purchase_rate"], as_dict=True)
 				items["price_list_rate"] = item_rate.get("cost_price") or item_rate.get("last_purchase_rate") or 0
@@ -89,12 +89,12 @@ def add_to_cart(customer, items):
 				quote.append("items", items)
 				quote.save()
 				frappe.db.commit()
-				response = get_quote_details(quote.name)
+				response = get_cart_details(quote.name)
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Quotation Creation failed"
+		response["message"] = "Quotation Creation failed".format(str(e))
 		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: add_to_cart")
 	finally:
 		return response
@@ -138,7 +138,7 @@ def update_cart(quote_id, items):
 					quote.append("items", items)
 				quote.save()
 				frappe.db.commit()
-				response = get_quote_details(quote.name)
+				response = get_cart_details(quote.name)
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
@@ -175,7 +175,7 @@ def delete_cart_item(quote_id, item_code):
 				response["message"] = "Deleted all items"
 				frappe.local.response["http_status_code"] = 200
 			else:
-				response = get_quote_details(quote_id)
+				response = get_cart_details(quote_id)
 			frappe.db.commit()
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
