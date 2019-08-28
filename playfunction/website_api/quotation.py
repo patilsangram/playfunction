@@ -6,7 +6,7 @@ from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 item_fields = ["item_code", "item_name","qty", "discount_percentage", "description", "rate", "amount"]
 @frappe.whitelist()
-def get_quote_details(quote_id):
+def get_cart_details(quote_id):
 	"""
 		return quotation details.
 		items, taxes and total
@@ -312,6 +312,14 @@ def update_order(order_id, items):
 
 @frappe.whitelist()
 def request_for_quotation(items):
+	"""
+	:param data: {
+		items: {
+			item_code:
+			qty:
+		}
+	}
+	"""
 	try:
 		response = frappe._dict()
 		items = json.loads(items)
