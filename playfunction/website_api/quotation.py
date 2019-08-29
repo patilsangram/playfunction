@@ -79,8 +79,7 @@ def add_to_cart(items):
 				frappe.local.response["http_status_code"] = 422
 			else:
 				quote = frappe.new_doc("Quotation")
-				quote.party_name = customer.get("customer_name")
-				print "PPPPPPPPPPPPPPPPP",customer.get("customer_name")
+				quote.party_name = customer
 				# update price list price
 				item_rate = frappe.db.get_value("Item", items.get("item_code"), ["cost_price", "last_purchase_rate"], as_dict=True)
 				items["price_list_rate"] = item_rate.get("cost_price") or item_rate.get("last_purchase_rate") or 0
