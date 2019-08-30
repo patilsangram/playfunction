@@ -9,7 +9,7 @@ def get_expert_list():
 	try:
 		response = frappe._dict()
 		fields = ["full_name", "profession", "bio", "image"]
-		expert_list = frappe.get_all('Playfunction Expert',fields = fields)
+		expert_list = frappe.get_all('Playfunction Expert',fields = fields, limit=None, start=None)
 		response.update({"data":expert_list})
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
@@ -20,15 +20,15 @@ def get_expert_list():
 		return response
 
 @frappe.whitelist(allow_guest=True)
-def get_expert_details(full_name):
+def get_expert_details(expert_id):
 	try:
 		response = frappe._dict()
-		if frappe.db.exists("Playfunction Expert", full_name):
-			doc = frappe.get_doc("Playfunction Expert", full_name)
-			response["full_name"] = doc.get("full_name")
-			response["profession"] = doc.get("profession")
-			response["bio"] = doc.get("bio")
-			response["image"] = doc.get("image")
+		if frappe.db.exists("Playfunction Expert", expert_id):
+			doc = frappe.get_doc("Playfunction Expert", expert_id)
+			response["expert_id"] = doc.full_name
+			response["profession"] = doc.profession
+			response["bio"] = doc.bio
+			response["image"] = doc.image
 		else:
 			response["status_code"] = 404
 			frappe.local.response['http_status_code'] = 404

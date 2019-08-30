@@ -9,7 +9,7 @@ def get_project_list():
 	try:
 		response = frappe._dict()
 		fields = ["project_name", "title", "description", "image"]
-		project_list = frappe.get_all('Playfunction Project',fields = fields)
+		project_list = frappe.get_all('Playfunction Project',fields = fields, limit=None, start=None)
 		response.update({"data":project_list})
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
@@ -20,15 +20,15 @@ def get_project_list():
 		return response
 
 @frappe.whitelist(allow_guest=True)
-def get_project_details(project_name):
+def get_project_details(project_id):
 	try:
 		response = frappe._dict()
-		if frappe.db.exists("Playfunction Project", project_name):
-			doc = frappe.get_doc("Playfunction Project", project_name)
-			response["project_name"] = doc.get("project_name")
-			response["title"] = doc.get("title")
-			response["description"] = doc.get("description")
-			response["image"] = doc.get("image")
+		if frappe.db.exists("Playfunction Project", project_id):
+			doc = frappe.get_doc("Playfunction Project", project_id)
+			response["project_id"] = doc.project_name
+			response["title"] = doc.title
+			response["description"] = doc.description
+			response["image"] = doc.image
 		else:
 			response["status_code"] = 404
 			response["message"] = "Projects not found"

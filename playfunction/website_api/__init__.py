@@ -12,3 +12,4 @@ from .quotation import get_cart_details, add_to_cart, update_cart, delete_cart_i
 from .faq import get_faq
 from .expert import get_expert_list, get_expert_details
 from .projects import get_project_list, get_project_details
+from .blog import get_blog_list, get_blog
