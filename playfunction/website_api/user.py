@@ -25,6 +25,7 @@ def login(data):
 				frappe.response["email"] = frappe.session.user
 				frappe.response["message"] = "Logged In"
 				frappe.response["status_code"] = 200
+				frappe.response["quote_id"] = get_last_quote()
 				frappe.local.response["http_status_code"] = 200
 			else:
 				frappe.response["message"] = _("Invalid User or Email Id")
@@ -40,7 +41,18 @@ def login(data):
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to Login."
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: login")
-	
+
+def get_last_quote():
+	quote_id = ""
+	if frappe.session.user:
+		customer = frappe.db.get_value("Customer",{'user': frappe.session.user},"name")
+		if customer:
+			quote_id = frappe.db.get_value("Quotation", {
+				"party_name": customer,
+				"docstatus": 0
+			}, "name", order_by="creation desc")
+	return quote_id or ""
+
 @frappe.whitelist()
 def logout(usr):
 	"""
