@@ -10,9 +10,13 @@ def get_expert_list(page_index=0, page_size=10):
 	"""Returns expert List"""
 	try:
 		response = frappe._dict()
+		all_records = frappe.get_all("Playfunction Expert")
 		expert_list = frappe.get_all("Playfunction Expert", fields=fields,\
 			start=page_index, limit=page_size, order_by="creation")
-		response.update({"data": expert_list})
+		response.update({
+			"data": expert_list,
+			"total": len(all_records)
+		})
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code

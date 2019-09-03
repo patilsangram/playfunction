@@ -10,9 +10,13 @@ def get_blog_list(page_index=0, page_size=10):
 	"""Returns blog post List"""
 	try:
 		response = frappe._dict()
+		all_records = frappe.get_all("Blog Post")
 		blog_list = frappe.get_all("Blog Post", fields=fields, start=page_index,\
 			limit=page_size, order_by="creation")
-		response.update({"data": blog_list})
+		response.update({
+			"data": blog_list,
+			"total": len(all_records)
+		})
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
