@@ -48,6 +48,21 @@ def get_data():
 					"name": "FAQ",
 					"description": _("Frequently Asked Questions")
 				},
+				{
+					"type": "doctype",
+					"name": "Blog Post",
+					"description": _("Blog Post")
+				},
+				{
+					"type": "doctype",
+					"name": "Playfunction Project",
+					"description": _("Playfunction Project")
+				},
+				{
+					"type": "doctype",
+					"name": "Playfunction Expert",
+					"description": _("Playfunction Expert")
+				}
 			]
 		},
 		{
