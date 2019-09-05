@@ -138,10 +138,14 @@ def order_history(page_index=0, page_size=10):
 			response["message"] = "Customer doesn't exists."
 			frappe.local.response["http_status_code"] = 422
 		else:
+			all_records = frappe.get_all("Sales Order", filters={"customer": customer})
 			fields = ["name as order_id", "transaction_date as date", "delivery_status", "total"]
 			order_list = frappe.get_all("Sales Order", filters={"customer": customer},\
 				fields=fields, start=page_index, limit=page_size, order_by="creation")
-			response.update({"data": order_list})
+			response.update({
+				"data": order_list,
+				"total": len(all_records)
+			})
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
