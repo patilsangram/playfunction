@@ -18,7 +18,7 @@ def get_categories(search=None):
 			select name as category, parent_item_group as parent_category,
 			image from `tabItem Group`
 			where name not in ('All Item Groups', 'Products', 'Raw Material', 
-			'Services', 'Sub Assemblies', 'Consumable') and group_level = 4 {}
+			'Services', 'Sub Assemblies', 'Consumable') and {}
 		""".format(cond)
 
 		categories_data = frappe.db.sql(query, as_dict=True)

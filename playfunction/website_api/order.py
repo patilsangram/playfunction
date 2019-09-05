@@ -1,11 +1,25 @@
 import frappe
 import json
 from frappe import _
+from customer import make_customer_address
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 
 @frappe.whitelist()
-def place_order(quote_id):
+def place_order(quote_id, data=None):
+	"""
+		data: {
+			:name- customer name
+			:phone
+			:email_id
+			:house_no
+			:apartment_no
+			:street_address
+			:city
+			:delivery_collection_point
+			:delivery_city
+		}
+	"""
 	try:
 		response = frappe._dict()
 		if not frappe.db.exists("Quotation", quote_id):
@@ -21,6 +35,11 @@ def place_order(quote_id):
 			sales_order = make_sales_order(doc.name)
 			if sales_order:
 				sales_order.delivery_date = frappe.utils.today()
+				if data:
+					data = json.loads(data)
+					make_customer_address(sales_order.customer, data)
+					sales_order.delivery_collection_point = data.get("delivery_collection_point")
+					sales_order.delivery_city = data.get("delivery_city")
 				sales_order.save()
 				response["message"] = "Order Placed Successfully."
 				response["order_id"] = sales_order.name
