@@ -13,4 +13,4 @@ from .faq import get_faq
 from .expert import get_expert_list, get_expert_details
 from .projects import get_project_list, get_project_details
 from .blog import get_blog_list, get_blog
-from .customer import get_customer_address
+from .customer import get_customer_profile, update_customer_profile

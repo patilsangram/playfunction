@@ -1,7 +1,7 @@
 import frappe
 import json
 from frappe import _
-from customer import make_customer_address
+from customer import update_customer_profile
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 
@@ -9,7 +9,7 @@ from erpnext.selling.doctype.quotation.quotation import make_sales_order
 def place_order(quote_id, data=None):
 	"""
 		data: {
-			:name- customer name
+			:customer_name- customer name
 			:phone
 			:email_id
 			:house_no
@@ -37,7 +37,7 @@ def place_order(quote_id, data=None):
 				sales_order.delivery_date = frappe.utils.today()
 				if data:
 					data = json.loads(data)
-					make_customer_address(sales_order.customer, data)
+					update_customer_profile(data, sales_order.customer)
 					sales_order.delivery_collection_point = data.get("delivery_collection_point")
 					sales_order.delivery_city = data.get("delivery_city")
 				sales_order.save()
