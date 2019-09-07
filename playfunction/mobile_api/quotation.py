@@ -14,7 +14,8 @@ def get_quotation_list():
 	"""Return Quotation List"""
 	try:
 		response = frappe._dict()
-		filters = {}
+		# filter proposal requestes from list
+		filters = {"workflow_state": ["!=", "Proposal"]}
 		fields = ["name as quote_id", "party_name as customer", "transaction_date", "grand_total", "status"]
 		quotation_list = frappe.get_list("Quotation",filters=filters, fields=fields)
 		response["data"] = quotation_list

@@ -54,7 +54,7 @@ def get_cart_details(quote_id):
 		return response
 
 @frappe.whitelist()
-def add_to_cart(items):
+def add_to_cart(items, is_proposal=False):
 	"""
 	:param data: {
 		items: {
@@ -86,6 +86,9 @@ def add_to_cart(items):
 				if "discount_percentage" in items:
 					items["margin_type"] = "Percentage"
 				quote.append("items", items)
+				# proposal
+				if is_proposal:
+					quote.workflow_state = "Proposal"
 				quote.save()
 				frappe.db.commit()
 				response = get_cart_details(quote.name)

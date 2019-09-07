@@ -25,7 +25,9 @@ def login(data):
 				frappe.response["email"] = frappe.session.user
 				frappe.response["message"] = "Logged In"
 				frappe.response["status_code"] = 200
-				frappe.response["quote_id"] = get_last_quote()
+				quote_id, proposal_id = get_last_quote()
+				frappe.response["quote_id"] = quote_id
+				frappe.response["proposal_id"] = proposal_id
 				frappe.local.response["http_status_code"] = 200
 			else:
 				frappe.response["message"] = _("Invalid User or Email Id")
@@ -43,15 +45,24 @@ def login(data):
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: login")
 
 def get_last_quote():
-	quote_id = ""
+	# return customer's last quotation (cart) & proposal ID
+	quote_id = proposal_id = ""
 	if frappe.session.user:
 		customer = frappe.db.get_value("Customer",{'user': frappe.session.user},"name")
 		if customer:
 			quote_id = frappe.db.get_value("Quotation", {
 				"party_name": customer,
+				"docstatus": 0,
+				"workflow_state": ["!=", "Proposal"]
+			}, "name", order_by="creation desc")
+
+			proposal_id = frappe.db.get_value("Quotation", {
+				"party_name": customer,
+				"workflow_state": "Proposal",
 				"docstatus": 0
 			}, "name", order_by="creation desc")
-	return quote_id or ""
+	return quote_id, proposal_id
+
 
 @frappe.whitelist()
 def logout(usr):
