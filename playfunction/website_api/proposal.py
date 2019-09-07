@@ -1,63 +1,96 @@
 import frappe
 import json
 from frappe import _
-
+from customer import update_customer_profile
 
 
 @frappe.whitelist()
-def request_for_quotation(items):
-	"""
-	:param data: {
-		items: {
-			item_code:
-			qty:
-		}
-	}
-	"""
+def get_proposal_list(page_index=0, page_size=10):
 	try:
 		response = frappe._dict()
-		items = json.loads(items)
-		rfq = frappe.new_doc("Request for Quotation")
-		# update price list price
-		item_rate = frappe.db.get_value("Item", items.get("item_code"), ["cost_price", "last_purchase_rate"], as_dict=True)
-		items["price_list_rate"] = item_rate.get("cost_price") or item_rate.get("last_purchase_rate") or 0
-		if "discount_percentage" in items:
-			items["margin_type"] = "Percentage"
-		rfq.append("items", items)
-		rfq.flags.ignore_mandatory = True
-		rfq.save()
-		frappe.db.commit()
+		customer = frappe.db.get_value("Customer",{"user": frappe.session.user},"name")
+		if not customer:
+			response["message"] = "Customer doesn't exists."
+			frappe.local.response["http_status_code"] = 422
+		else:
+			filters = {"party_name": customer, "workflow_state": "Proposal", "docstatus": 0}
+			all_records = frappe.get_all("Quotation", filters=filters)
+			fields = ["name as proposal_id", "transaction_date as date", "grand_total as amount", "status"]
+			proposal_list = frappe.get_all("Quotation", filters=filters,\
+				fields=fields, start=page_index, limit=page_size, order_by="creation")
+			response.update({
+				"data": proposal_list,
+				"total": len(all_records)
+			})
 	except Exception as e:
-		http_status_code = getattr(e, "http_status_code", 500)
-		response["status_code"] = http_status_code
-		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Request For Quotation creation failed".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: request_for_quotation")
+		frappe.local.response['http_status_code'] = getattr(e, "http_status_code", 500)
+		response["message"] = "Unable to fetch Proposal list"
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_proposal_list")
 	finally:
 		return response
 
 @frappe.whitelist()
-def get_rfq_details(rfq_id):
+def get_proposal_details(proposal_id):
 	try:
 		response = frappe._dict()
-		if not frappe.db.exists("Request for Quotation", rfq_id):
-			response["message"] = "Request for Quotation not found"
+		if not frappe.db.exists("Quotation", proposal_id):
+			response["message"] = "Proposal not found"
 			frappe.local.response["http_status_code"] = 404
 		else:
-			doc = frappe.get_doc("Request for Quotation", rfq_id)
-			# item details
-			items = []
-			fields = ["item_code", "item_name", "image_view", "description", "qty",]
-			for item in doc.get("items"):
-				row_data = {}
-				for f in fields:
-					row_data[f] = item.get(f)
-				items.append(row_data)
-			response["items"] = items
+			pass
 	except Exception as e:
-		http_status_code = getattr(e, "http_status_code", 500)
-		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Failed to fetch request for quotation Details"
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: get_rfq_details")
+		frappe.local.response['http_status_code'] = getattr(e, "http_status_code", 500)
+		response["message"] = "Unable to fetch Proposal Details"
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_proposal_details")
+	finally:
+		return response
+
+@frappe.whitelist()
+def send_proposal(quote_id, data=None):
+	"""
+		convert quotation to proposal
+		data: {
+			:customer_name- customer name
+			:phone
+			:email_id
+			:house_no
+			:apartment_no
+			:street_address
+			:city
+			:delivery_collection_point
+			:delivery_city
+		}
+	"""
+	try:
+		response = frappe._dict()
+		quote = frappe.get_doc("Quotation", quote_id)
+		quote.workflow_state = "Proposal"
+		if data:
+			data = json.loads(data)
+			update_customer_profile(data, quote.party_name)
+			quote.delivery_collection_point = data.get("delivery_collection_point")
+			quote.delivery_city = data.get("delivery_city")
+		quote.flags.ignore_mandatory = True
+		quote.save()
+		frappe.db.commit()
+		response["message"] = "Proposal Sent Successfully"
+	except Exception as e:
+		frappe.local.response['http_status_code'] = getattr(e, "http_status_code", 500)
+		response["message"] = "Proposal Creation Failed"
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: send_proposal")
+	finally:
+		return response
+
+@frappe.whitelist()
+def delete_proposal(proposal_id):
+	try:
+		response = frappe._dict()
+		frappe.delete_doc("Quotation", proposal_id)
+		frappe.db.commit()
+		response["message"] = "Proposal Deleted Successfully."
+	except Exception as e:
+		frappe.local.response['http_status_code'] = getattr(e, "http_status_code", 500)
+		response["message"] = "Proposal Deletion Failed"
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: delete_proposal")
 	finally:
 		return response
