@@ -4,13 +4,14 @@ from frappe import _
 
 @frappe.whitelist(allow_guest=True)
 def get_categories(search=None):
+	# TODO: Remove this method after confirmation of get_category_tree
 	"""
 	returns group level 1 and 2 Item Groups/categories
 	:param search: search text
 	"""
 	try:
 		response = frappe._dict()
-		cond = ""
+		cond = " 1=1"
 		if search:
 			cond += " and name like '{0}' or parent_item_group like '{0}'".format("%{}%".format(search))
 
@@ -59,3 +60,47 @@ def get_child_categories(category):
 	data = frappe.get_list("Item Group", fields=fields, filters=filters_, ignore_permissions=True)
 	categories = _get_child(category, data, [])
 	return categories
+
+@frappe.whitelist(allow_guest=True)
+def get_category_tree():
+	"""
+		return item group tree hierarchy of custom item groups(category)
+		in parent-child structure.
+	"""
+	fields = ["name as title", "group_level", "parent_item_group", "is_group as has_child"]
+	erp_item_group = ['All Item Groups', 'Products', 'Raw Material', 'Services', 'Sub Assemblies', 'Consumable']
+	filters = {
+		"group_level": [">", 0],
+		"name": ["not in", erp_item_group]
+	}
+	item_groups = frappe.get_all("Item Group", filters, fields, ignore_permissions=True)
+	group_tree = []
+	for idx, group in enumerate(item_groups):
+		if group.get("group_level") == 1:
+			if group.get("has_child"):
+				childs, item_glenroups = get_children(group.get("title"), group.get("group_level"), item_groups)
+				if len(childs):
+					child_level = "level_" + str(group.get("group_level")+1)
+					group[child_level] = childs
+				else:
+					group["has_child"] = 0
+			group.pop("parent_item_group")
+			group_tree.append(group)
+			item_groups.remove(group)
+	return group_tree
+
+def get_children(category, group_level, data):
+	children = []
+	for idx, group in enumerate(data):
+		if group.get("parent_item_group") == category:
+			if group.get("has_child"):
+				childs, data = get_children(group.get("title"), group.get("group_level"), data)
+				if len(childs):
+					child_level = "level_" + str(group.get("group_level")+1)
+					group[child_level] = childs
+				else:
+					group["has_child"] = 0
+			group.pop("parent_item_group")
+			children.append(group)
+			data.remove(group)
+	return children, data
