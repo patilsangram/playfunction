@@ -87,7 +87,18 @@ def get_category_tree():
 			group.pop("parent_item_group")
 			group_tree.append(group)
 			item_groups.remove(group)
-	return group_tree
+
+	# sequential arrangement
+	sequence_req = ["Therapist", "Parents", "School", "Baby (0-12months)", "Toys", "Outdoor Toys", "Furniture", "Offeres and Sale"]
+	seq_group_tree = []
+
+	for ig in sequence_req:
+		for idx, group in enumerate(group_tree):
+			if ig == group.get("title"):
+				seq_group_tree.append(group)
+				group_tree.remove(group)
+	seq_group_tree.extend(group_tree)
+	return seq_group_tree
 
 def get_children(category, group_level, data):
 	children = []
