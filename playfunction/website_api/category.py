@@ -115,3 +115,10 @@ def get_children(category, group_level, data):
 			children.append(group)
 			data.remove(group)
 	return children, data
+
+@frappe.whitelist(allow_guest=True)
+def age_list():
+	response = frappe._dict()
+	age_records = frappe.get_all("Age", ignore_permissions=True)
+	response["age_list"] = [a.get("name") for a in age_records]
+	return response
