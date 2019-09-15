@@ -174,10 +174,10 @@ def registration(data):
 	"""
 		data:{
 			'email': 'test@gmail.com',
-			'first_name': 'tripti',
-			'last_name':'sharma',
-			'password':' 'admin@123',
-			'mobile_no':'9999999999'
+			'first_name':'test',
+			'last_name':'test',
+			'password':test@123',
+			'mobile_no':'99XXXXXXXX'
 		}
 	"""
 	try:
@@ -197,6 +197,7 @@ def registration(data):
 			user_doc.enabled = 0
 			user_doc.new_password = args.get("password")
 			user_doc.send_welcome_email = 0
+			user_doc.flags.ignore_permissions = True
 			user_doc.save()
 			if user_doc:
 				key = random_string(32)
@@ -207,7 +208,6 @@ def registration(data):
 				frappe.local.response['http_status_code'] = 200
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
-		response.status_code = http_status_code
 		response["message"] = "Registration failed"
 		frappe.local.response["http_status_code"] = http_status_code
 		frappe.log_error(message = frappe.get_traceback() , title = "Website API: registration")
@@ -250,6 +250,7 @@ def verify_mail(data):
 			if user == args.get("email"):
 				user_doc = frappe.get_doc("User",args.get("email"))
 				user_doc.enabled = 1
+				user_doc.flags.ignore_permissions = True
 				user_doc.save()
 				response.message = ("Email Verified")
 				response["status_code"] = 200
@@ -304,14 +305,13 @@ def make_customer(data):
 			customer.city = args.get("city")
 			customer.pincode = args.get("pincode")
 			customer.user = user.email 
+			customer.flags.ignore_permissions = True
 			customer.save()
 			frappe.db.commit()
-			response["status_code"] = 200
 			response["message"] = "Customer successfully created."
 			frappe.local.response['http_status_code'] = 200
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
-		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Customer creation failed"
 	finally:
