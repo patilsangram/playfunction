@@ -3,7 +3,7 @@ import json
 from frappe import _
 
 
-fields = ["name", "title", "content", "blog_category", "image"]
+fields = ["name", "title", "content", "category", "image"]
 
 @frappe.whitelist(allow_guest=True)
 def get_blog_list(page_index=0, page_size=10):
