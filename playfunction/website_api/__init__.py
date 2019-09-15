@@ -5,8 +5,8 @@ from .user import login, logout, forgot_password, update_password, registration,
 	send_mail, verify_mail, make_customer
 from .item import get_category_items, search, get_categorised_item, \
 	get_item_details, recommended_items, related_items
-from .wishlist import add_to_wishlist, delete_wishlist, get_wishlist_details
-from .category import get_categories, get_child_categories, get_category_tree
+from .wishlist import add_to_wishlist, delete_wishlist, get_wishlist_details, wishlist_checkout
+from .category import get_categories, get_child_categories, get_category_tree, age_list
 from .quotation import get_cart_details, add_to_cart, update_cart, delete_cart_item
 from .order import place_order, order_details, update_order, order_history, delete_order_item
 from .faq import get_faq
