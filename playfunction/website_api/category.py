@@ -122,3 +122,10 @@ def age_list():
 	age_records = frappe.get_all("Age", ignore_permissions=True)
 	response["age_list"] = [a.get("name") for a in age_records]
 	return response
+
+@frappe.whitelist(allow_guest=True)
+def manufacturer_list():
+	response = frappe._dict()
+	manufacturers = frappe.get_all("Brand", ignore_permissions=True)
+	response["manufacturer_list"] = [m.get("name") for m in manufacturers]
+	return response
