@@ -157,10 +157,23 @@ def order_history(page_index=0, page_size=10):
 			response["message"] = "Customer doesn't exists."
 			frappe.local.response["http_status_code"] = 422
 		else:
-			all_records = frappe.get_all("Sales Order", filters={"customer": customer})
-			fields = ["name as order_id", "transaction_date as date", "delivery_status", "total"]
-			order_list = frappe.get_all("Sales Order", filters={"customer": customer},\
-				fields=fields, start=page_index, limit=page_size, order_by="creation")
+			order_query = """
+				select
+					so.name as order_id, date(so.transaction_date) as date,
+					so.delivery_status, so.total, dn.tracking_number, dn.company_phone_no
+				from
+					`tabSales Order` so
+				left join
+					`tabDelivery Note Item` dni on dni.against_sales_order = so.name
+				left join
+					`tabDelivery Note` dn on dni.parent = dn.name
+				where so.customer = '{}'
+			""".format(customer)
+
+			all_records = frappe.db.sql(order_query, as_dict=True)
+
+			limit_cond = " limit {}, {}".format(page_index, page_size)
+			order_list = frappe.db.sql(order_query + limit_cond, as_dict=True)
 			response.update({
 				"data": order_list,
 				"total": len(all_records)
