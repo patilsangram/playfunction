@@ -45,6 +45,11 @@ def get_cart_details(quote_id):
 			response["total"] = quote.get("total", 0)
 			response["delivery_charges"] = delivery_charges
 			response["amount_due"] = quote.get("total")
+
+			# proposal_stages
+			proposal_state = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
+			if quote.get("workflow_state") in proposal_state:
+				response["proposal_state"] = quote.get("workflow_state")
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
@@ -88,7 +93,7 @@ def add_to_cart(items, is_proposal=False):
 				quote.append("items", items)
 				# proposal
 				if is_proposal:
-					quote.workflow_state = "Proposal"
+					quote.workflow_state = "Proposal Received"
 				quote.save()
 				frappe.db.commit()
 				response = get_cart_details(quote.name)
@@ -117,7 +122,6 @@ def update_cart(quote_id, items):
 		if not frappe.db.exists("Quotation", quote_id):
 			response["message"] = "Quotation not found"
 			frappe.local.response['http_status_code'] = 404
-
 		else:
 			if not all([ f in item_fields for f in items.keys()]):
 				response["message"] = "Invalid Data"
