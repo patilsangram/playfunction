@@ -29,6 +29,11 @@ def get_cart_details(quote_id):
 				items.append(row_data)
 			response["items"] = items
 
+			#delivery_details
+			response["delivery_collection_point"] = quote.get("delivery_collection_point")
+			response["shipping_type"] = quote.get("shipping_type")
+			response["delivery_city"] = quote.get("delivery_city")
+
 			#check delivery charges
 			delivery_account = frappe.db.get_value("Account", {
 				"account_name": "Delivery Charge"
@@ -39,6 +44,8 @@ def get_cart_details(quote_id):
 				if tax_.get("account_head") == delivery_account:
 					delivery_charges = tax_.get("tax_amount")
 					break;
+
+
 
 			# taxes & total section
 			response["discount"] = quote.get("discount_amount", 0)
