@@ -19,16 +19,6 @@ def get_data():
 				},
 				{
 					"type": "doctype",
-					"name": "Item Category",
-					"description": _("Item Category")
-				},
-				{
-					"type": "doctype",
-					"name": "Item Subcategory",
-					"description": _("Item Subcategory")
-				},
-				{
-					"type": "doctype",
 					"name": "Price List",
 					"description": _("Price List")
 				},

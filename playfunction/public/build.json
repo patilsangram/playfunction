@@ -1,10 +1,8 @@
 {
 	"js/playfunction.desk.min.js": [
-		"public/js/playfunction_selling.js",
+		"public/js/playfunction_selling.js"
 	],
-}
-{
-	"css/playfunction-web.min.css": [
-		"public/css/playfunction_ltr.css",
-	],
+	"css/playfunction.desk.min.css": [
+		"public/css/playfunction_ltr.css"
+	]
 }

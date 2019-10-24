@@ -91,12 +91,12 @@ frappe.pepperi = Class.extend({
 
 		//quotation history
 		$('#quote-history').click(function() {
-			frappe.set_route("List", "Quotation")
+			window.location.href = "/desk#List/Quotation/Report"
 		})
 
 		//quotation list
 		$('#quote-list').click(function() {
-			frappe.set_route("List", "Quotation")
+			window.location.href = "/desk#List/Quotation/List"
 		})
 	},
 
