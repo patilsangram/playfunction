@@ -9,8 +9,8 @@ from frappe.utils import flt
 
 class Wishlist(Document):
 	def validate(self):
-		update_amount(self)
+		self.update_amount()
 
-def update_amount(self):
-	for i in self.get("items"):
-		i.amount = flt(i.qty) * flt(i.rate)
+	def update_amount(self):
+		for i in self.get("items"):
+			i.amount = flt(i.qty) * flt(i.rate)

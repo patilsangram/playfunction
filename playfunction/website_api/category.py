@@ -118,9 +118,17 @@ def get_children(category, group_level, data):
 
 @frappe.whitelist(allow_guest=True)
 def age_list():
+	def sorting(val):
+		if "M" in val:
+			return int(val.split("M")[0])
+		elif "+" in val:
+			return len(val.split("+")[0])
+
 	response = frappe._dict()
 	age_records = frappe.get_all("Age", ignore_permissions=True)
-	response["age_list"] = [a.get("name") for a in age_records]
+	age_list = [a.get("name") for a in age_records]
+	age_list.sort(key=sorting)
+	response["age_list"] = age_list
 	return response
 
 @frappe.whitelist(allow_guest=True)
