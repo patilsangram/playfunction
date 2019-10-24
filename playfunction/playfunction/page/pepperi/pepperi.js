@@ -17,8 +17,23 @@ frappe.pepperi = Class.extend({
 		this.$header = this.$wrapper.find(".pepperi-header");
 		this.$main = this.$wrapper.find(".pepperi-main");
 		this.cur_page = ""
+		this.rtl_setup();
 		this.home();
 		this.bind_events();
+	},
+
+	rtl_setup: function() {
+		if (frappe.utils.is_rtl()) {
+			console.log("RTL Activate....")
+			/*var ls = document.createElement('link');
+			ls.rel="stylesheet";
+			ls.href= "/assets/css/playfunction-web.min.css";
+			document.getElementsByTagName('head')[0].appendChild(ls);*/
+			//$('head').append('<link rel="stylesheet" href="style2.css" type="text/css" />');
+		}
+		else {
+			console.log("RTL Deactivate ....")
+		}
 	},
 
 	home: function() {

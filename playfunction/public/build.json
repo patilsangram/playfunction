@@ -1,11 +1,10 @@
 {
 	"js/playfunction.desk.min.js": [
-		"public/js/playfunction_selling.js"
-	]
+		"public/js/playfunction_selling.js",
+	],
 }
 {
 	"css/playfunction-web.min.css": [
-		"public/css/themify-icons.css",
-		"public/css/bootstrap_4_3_1.css"
-	]
+		"public/css/playfunction_ltr.css",
+	],
 }
