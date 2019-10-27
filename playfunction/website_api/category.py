@@ -77,28 +77,22 @@ def get_category_tree():
 	group_tree = []
 	for idx, group in enumerate(item_groups):
 		if group.get("group_level") == 1:
-			if group.get("has_child"):
-				childs, item_glenroups = get_children(group.get("title"), group.get("group_level"), item_groups)
-				if len(childs):
-					child_level = "level_" + str(group.get("group_level")+1)
-					group[child_level] = childs
-				else:
-					group["has_child"] = 0
+			childs, item_groups = get_children(group.get("title"), group.get("group_level"), item_groups)
+			if len(childs):
+				child_level = "level_" + str(group.get("group_level")+1)
+				group[child_level] = childs
+			else:
+				group["has_child"] = 0
 			group.pop("parent_item_group")
 			group_tree.append(group)
-			item_groups.remove(group)
 
 	# sequential arrangement
-	sequence_req = ["Therapist", "Parents", "School", "Baby (0-12months)", "Toys", "Outdoor Toys", "Furniture", "Offeres and Sale"]
-	seq_group_tree = []
-
-	for ig in sequence_req:
-		for idx, group in enumerate(group_tree):
-			if ig == group.get("title"):
-				seq_group_tree.append(group)
-				group_tree.remove(group)
-	seq_group_tree.extend(group_tree)
-	return seq_group_tree
+	sequence_req = ["Therapist", "Parents", "School", "Baby (0-12months)",\
+		"Toys", "Outdoor Toys", "Furniture", "Offeres and Sale"]
+	result = [
+		g for seq in sequence_req for g in group_tree if g.get("title") == seq
+	]
+	return result
 
 def get_children(category, group_level, data):
 	children = []
