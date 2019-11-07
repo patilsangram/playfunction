@@ -110,17 +110,13 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age=None, manufacture
 	try:
 		response = frappe._dict()
 		cond = " where 1=1"
-		if catalog_level_1:
-			cond += " and c.catalog_level_1 = '{}'".format(catalog_level_1)
 
-		if catalog_level_2:
-			cond += " and c.catalog_level_2 = '{}'".format(catalog_level_2)
+		# catalog_level conditions
+		levels = [catalog_level_1, catalog_level_2, catalog_level_3, catalog_level_4]
 
-		if catalog_level_3:
-			cond += " and c.catalog_level_3 = '{}'".format(catalog_level_3)
-
-		if catalog_level_4:
-			cond += " and c.catalog_level_4 = '{}'".format(catalog_level_4)
+		for idx, level in enumerate(levels):
+			if level:
+				cond += " and c.{} = '{}'".format('catalog_level_' + str(idx+1), level)
 
 		if manufacturer:
 			cond += " and i.brand like '{0}'".format("%{}%".format(manufacturer))
@@ -134,7 +130,7 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age=None, manufacture
 		query = """
 			select
 				i.name as item_code, i.item_name, i.brand, i.age as age_range,
-				i.sp_without_vat as selling_price
+				i.sp_without_vat as selling_price, i.image
 			from
 				`tabItem` i left join `tabCatalog` c on c.parent = i.name
 			{} group by i.name
