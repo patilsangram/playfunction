@@ -51,13 +51,12 @@ def get_category_items(data):
 		""".format(cond)
 		items = frappe.db.sql(query,as_dict=True)
 		response["items"] = items
-		frappe.local.response["http_status_code"] = 200
 		
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to fetch category items: {}".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_category_items")
+		frappe.log_error(message=frappe.get_traceback(), title="Website API: get_category_items")
 	finally:
 		return response
 
@@ -95,13 +94,11 @@ def search(search=None):
 		""".format(cond)
 		items = frappe.db.sql(query,as_dict=True)
 		response["items"] = items
-		frappe.local.response["http_status_code"] = 200
-		
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to fetch details: {}".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title = "Website API: search")
+		frappe.log_error(message=frappe.get_traceback(), title="Website API: search")
 	finally:
 		return response
 
@@ -138,12 +135,11 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age=None, manufacture
 
 		items = frappe.db.sql(query, as_dict=True)
 		response["items"] = items
-		frappe.local.response["http_status_code"] = 200
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to fetch toys: {}".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title = "Website API: get_categorised_item")
+		frappe.log_error(message=frappe.get_traceback(), title="Website API: get_categorised_item")
 	finally:
 		return response
 
@@ -182,7 +178,7 @@ def get_item_details(item_code):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to fetch item_details: {}".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title = "Website API: get_item_details")
+		frappe.log_error(message=frappe.get_traceback(), title="Website API: get_item_details")
 	finally:
 		return response
 
@@ -204,7 +200,7 @@ def recommended_items(item_code):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to fetch item_details: {}".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title = "Website API: recommended_items")
+		frappe.log_error(message=frappe.get_traceback(), title="Website API: recommended_items")
 	finally:
 		return response
 
@@ -240,12 +236,12 @@ def related_items(data):
 				on r.parent = i.name
 			{0} group by i.item_code
 		""".format(cond)
-		items=frappe.db.sql(query,as_dict=True)
+		items = frappe.db.sql(query, as_dict=True)
 		response["items"] = items
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to fetch item_details: {}".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title = "Website API: related_items")
+		frappe.log_error(message=frappe.get_traceback(), title="Website API: related_items")
 	finally:
 		return response
