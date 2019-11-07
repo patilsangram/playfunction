@@ -107,7 +107,7 @@ def get_children(category, group_level, data):
 					group["has_child"] = 0
 			group.pop("parent_item_group")
 			children.append(group)
-			data.remove(group)
+			#data.remove(group)
 	return children, data
 
 @frappe.whitelist(allow_guest=True)
