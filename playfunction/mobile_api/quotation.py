@@ -274,6 +274,7 @@ def place_order(quote_id):
 			sales_order = make_sales_order(doc.name)
 			if sales_order:
 				sales_order.delivery_date = frappe.utils.today()
+				sales_order.mode_of_order = "Mobile"
 				sales_order.save()
 				response["message"] = "Order Placed Successfully."
 				response["order_id"] = sales_order.name
