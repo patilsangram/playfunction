@@ -35,6 +35,7 @@ def place_order(quote_id, data=None):
 			sales_order = make_sales_order(doc.name)
 			if sales_order:
 				sales_order.delivery_date = frappe.utils.today()
+				sales_order.mode_of_order = "Web"
 				if data:
 					data = json.loads(data)
 					update_customer_profile(data, sales_order.customer)
