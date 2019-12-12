@@ -158,7 +158,9 @@ def get_item_details(item_code):
 		else:
 			items = frappe.db.sql("""
 				select
-					i.name as item_code, i.image, i.item_name,i.description,i.age as age_range,i.sp_without_vat as selling_price,
+					i.name as item_code, i.image, i.item_name, i.description,
+					i.age as age_range, i.sp_without_vat as selling_price,
+					(i.sp_without_vat*i.discount_percentage/100.00) as after_discount,
 					group_concat(concat(v.video_file, "#", v.image)) as item_media
 				from
 					`tabItem` i left join `tabItem Media` v on v.parent = i.name
