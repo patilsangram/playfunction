@@ -1,5 +1,7 @@
 import frappe
 from frappe import _
+import json
+from requests import request
 
 
 def stock_availability():
@@ -90,3 +92,42 @@ def stock_availability_mail(sales_orders):
 		frappe.db.commit()
 	except Exception as e:
 		frappe.log_error(message=frappe.get_traceback(), title="Stock availability Scheduler failed")
+
+
+@frappe.whitelist()
+def check_payment_status():
+	"""Scheduler method to check payment status of order(iCredit)"""
+	try:
+		orders = []
+		error_log = {}
+		fields = ["name as order", "sales_tokens"]
+		filters = {
+			"payment_status": ("in", ["Pending", "", None]),
+			"docstatus": ("!=", 2),
+			"mode_of_order": "Web"
+		}
+		due_orders = frappe.get_list("Sales Order", fields=fields, filters=filters)
+		if len(due_orders):
+			url = "https://testicredit.rivhit.co.il/API/PaymentPageRequest.svc/SaleDetails"
+			headers = {"Content-Type": "application/json", "user-agent": "Playfunction App"}
+			method = "POST"
+
+			for order in due_orders:
+				tokens = order.get("sales_tokens")
+				sales_token = json.loads(tokens)["PrivateSaleToken"]
+				data = {"SalePrivateToken": sales_token}
+				response = request(method, url, data=json.dumps(data), headers=headers)
+				# check payment status
+				if response.status_code == 200:
+					response = json.loads(response.text)
+					if not response.get("status") and response.get("Amount") \
+						and response.get("AuthNum"):
+						# TODO: partial payment - response.get("Amount") != order amt
+						frappe.db.set_value("Sales Order", order.get("order"), "payment_status", "Paid")
+				else:
+					# update error log
+					error_log[order.get("order")] = response.text
+		if error_log.keys():
+			frappe.error_log(message=json.dumps(error_log), title="Scheduler Event Failed"))
+	except Exception as e:
+		frappe.log_error(message=frappe.get_traceback() , title="Scheduler Event: check_payment_status")

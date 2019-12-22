@@ -4,6 +4,7 @@ from frappe import _
 from frappe.utils import has_common, flt
 from order import order_details
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
+from playfunction.playfunction.invoice_payment import *
 
 
 item_fields = ["item_code", "item_name","qty", "discount_percentage", "description", "notes", "rate", "amount"]
@@ -276,6 +277,7 @@ def place_order(quote_id):
 				sales_order.delivery_date = frappe.utils.today()
 				sales_order.mode_of_order = "Mobile"
 				sales_order.save()
+				create_rihvit_invoice(sales_order.name)
 				response["message"] = "Order Placed Successfully."
 				response["order_id"] = sales_order.name
 	except Exception as e:
