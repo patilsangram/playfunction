@@ -116,7 +116,8 @@ doc_events = {
 # Scheduled Tasks
 scheduler_events = {
 	"hourly": [
-		"playfunction.playfunction.schedulers.scheduler_events.stock_availability"
+		"playfunction.playfunction.schedulers.scheduler_events.stock_availability",
+		"playfunction.playfunction.schedulers.scheduler_events.check_payment_status"
 	]
 }
 

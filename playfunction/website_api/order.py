@@ -2,6 +2,7 @@ import frappe
 import json
 from frappe import _
 from customer import update_customer_profile
+from playfunction.playfunction.invoice_payment import *
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
 
@@ -18,6 +19,7 @@ def place_order(quote_id, data=None):
 			:city
 			:delivery_collection_point
 			:delivery_city
+			:payment_method
 		}
 	"""
 	try:
@@ -41,7 +43,19 @@ def place_order(quote_id, data=None):
 					update_customer_profile(data, sales_order.customer)
 					sales_order.delivery_collection_point = data.get("delivery_collection_point")
 					sales_order.delivery_city = data.get("delivery_city")
+					sales_order.shipping_type = data.get("shipping")
+					sales_order.shipping_type = data.get("payment_method")
 				sales_order.save()
+
+				# send back payment_url if payment by card
+				# else create Rihvit Invoice
+				payment_url = ""
+				if data.get("payment_method") == "Payment through card":
+					payment_url = get_payment_url(sales_order.name)
+				else:
+					create_rihvit_invoice(sales_order.name)
+
+				response["payment_url"] = payment_url
 				response["message"] = "Order Placed Successfully."
 				response["order_id"] = sales_order.name
 	except Exception as e:
