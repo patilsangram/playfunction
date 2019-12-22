@@ -44,7 +44,7 @@ def place_order(quote_id, data=None):
 					sales_order.delivery_collection_point = data.get("delivery_collection_point")
 					sales_order.delivery_city = data.get("delivery_city")
 					sales_order.shipping_type = data.get("shipping")
-					sales_order.shipping_type = data.get("payment_method")
+					sales_order.payment_method = data.get("payment_method")
 				sales_order.save()
 
 				# send back payment_url if payment by card

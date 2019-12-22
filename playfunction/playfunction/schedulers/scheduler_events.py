@@ -124,10 +124,11 @@ def check_payment_status():
 						and response.get("AuthNum"):
 						# TODO: partial payment - response.get("Amount") != order amt
 						frappe.db.set_value("Sales Order", order.get("order"), "payment_status", "Paid")
+						frappe.db.commit()
 				else:
 					# update error log
 					error_log[order.get("order")] = response.text
 		if error_log.keys():
-			frappe.error_log(message=json.dumps(error_log), title="Scheduler Event Failed"))
+			frappe.error_log(message=json.dumps(error_log), title="Scheduler Event Failed")
 	except Exception as e:
 		frappe.log_error(message=frappe.get_traceback() , title="Scheduler Event: check_payment_status")
