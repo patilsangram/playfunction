@@ -42,7 +42,10 @@ def get_category_items(data):
 		query = """
 			select
 				i.name as item_code, i.item_name, i.image, i.age as age_range,
-				i.sp_without_vat as selling_price
+				i.sp_without_vat as selling_price,
+				if (i.discount_percentage > 0,
+				i.sp_without_vat - (i.sp_without_vat*i.discount_percentage/100.00),
+				i.sp_without_vat) as after_discount,
 			from
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
 			left join
@@ -85,7 +88,7 @@ def search(search=None):
 		query = """
 			select distinct
 				i.name as item_code, i.item_name, i.brand, i.image,i.age as age_range,
-				i.sp_without_vat as selling_price
+				i.sp_without_vat as selling_price,
 			from
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
 			left join
@@ -160,7 +163,9 @@ def get_item_details(item_code):
 				select
 					i.name as item_code, i.image, i.item_name, i.description,
 					i.age as age_range, i.sp_without_vat as selling_price,
-					(i.sp_without_vat*i.discount_percentage/100.00) as after_discount,
+					if (i.discount_percentage > 0,
+					i.sp_without_vat - (i.sp_without_vat*i.discount_percentage/100.00),
+					i.sp_without_vat) as after_discount,
 					group_concat(concat(v.video_file, "#", v.image)) as item_media
 				from
 					`tabItem` i left join `tabItem Media` v on v.parent = i.name
