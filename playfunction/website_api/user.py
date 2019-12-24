@@ -182,28 +182,35 @@ def registration(data):
 	"""
 	try:
 		response = frappe._dict({})
-		args = json.loads(data)	
+		args = json.loads(data)
 		user = frappe.db.exists("User", args.get("email"))
 		if user:
 			response["message"] = "User Already Registered"
 			frappe.local.response['http_status_code'] = 200
 		else:
-			user_doc = frappe.new_doc("User")
-			user_doc.email = args.get("email")
-			user_doc.first_name = args.get("first_name")
-			user_doc.last_name = args.get("last_name")
-			user_doc.mobile_no = args.get("mobile_no")
-			user_doc.enabled = 1
-			user_doc.new_password = args.get("password")
-			user_doc.send_welcome_email = 0
-			user_doc.flags.ignore_permissions = True
-			user_doc.save()
-			if user_doc:
-				key = random_string(32)
-				user_doc.db_set("reset_password_key", key)
-				send_mail(user_doc.name,key)
-				response.message = _("User created with Email Id {} Please check Email for Verification".format(user_doc.name))
-				frappe.local.response['http_status_code'] = 200
+			# Mobile no validation
+			existing_mobile_no = ""
+			if args.get("mobile_no") and frappe.db.get_value("User",
+				{"mobile_no": args.get("mobile_no")}, "name"):
+				response["message"] = _("Given Mobile No is linked with existing user.")
+				frappe.local.response['http_status_code'] = 417
+			else:
+				user_doc = frappe.new_doc("User")
+				user_doc.email = args.get("email")
+				user_doc.first_name = args.get("first_name")
+				user_doc.last_name = args.get("last_name")
+				user_doc.mobile_no = args.get("mobile_no")
+				user_doc.enabled = 1
+				user_doc.new_password = args.get("password")
+				user_doc.send_welcome_email = 0
+				user_doc.flags.ignore_permissions = True
+				user_doc.save()
+				if user_doc:
+					key = random_string(32)
+					user_doc.db_set("reset_password_key", key)
+					send_mail(user_doc.name,key)
+					response.message = _("User created with Email Id {} Please check Email for Verification".format(user_doc.name))
+					frappe.local.response['http_status_code'] = 200
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["message"] = "Registration failed"
