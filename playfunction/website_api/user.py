@@ -185,7 +185,6 @@ def registration(data):
 		args = json.loads(data)	
 		user = frappe.db.exists("User", args.get("email"))
 		if user:
-			response["status_code"] = 200
 			response["message"] = "User Already Registered"
 			frappe.local.response['http_status_code'] = 200
 		else:
@@ -194,7 +193,7 @@ def registration(data):
 			user_doc.first_name = args.get("first_name")
 			user_doc.last_name = args.get("last_name")
 			user_doc.mobile_no = args.get("mobile_no")
-			user_doc.enabled = 0
+			user_doc.enabled = 1
 			user_doc.new_password = args.get("password")
 			user_doc.send_welcome_email = 0
 			user_doc.flags.ignore_permissions = True
@@ -204,7 +203,6 @@ def registration(data):
 				user_doc.db_set("reset_password_key", key)
 				send_mail(user_doc.name,key)
 				response.message = _("User created with Email Id {} Please check Email for Verification".format(user_doc.name))
-				response["status_code"] = 200
 				frappe.local.response['http_status_code'] = 200
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
