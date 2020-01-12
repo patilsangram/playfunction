@@ -136,16 +136,24 @@ def update_order(order_id, items):
 			response["message"] = "Sales Order not found"
 			frappe.local.response['http_status_code'] = 404
 		else:
-			if not all([ f in fields for f in items.keys()]) or not items.get("item_code"):
+			if not items.get("item_code"):
 				response["message"] = "Invalid Data"
 				frappe.local.response["http_status_code"] = 422
 			else:
 				order = frappe.get_doc("Sales Order", order_id)
 				existing_item = False
+				item_details = frappe.db.get_value("Item", items.get("item_code"),\
+					["sp_without_vat", "discount_percentage"], as_dict=True)
+				if item_details.get("discount_percentage") > 0:
+					items["margin_type"] = "Percentage"
+					items["discount_percentage"] = item_details.get("discount_percentage")
+				items["price_list_rate"] = item_details.get("sp_without_vat")
 				for row in order.get("items"):
 					# update item row
 					if row.get("item_code") == items.get("item_code"):
 						existing_item = True
+						updatd_qty = row.get("qty") + items.get("qty")
+						items["qty"] = int(updatd_qty)
 						row.update(items)
 				# add new item
 				if not existing_item:

@@ -46,7 +46,6 @@ def get_cart_details(quote_id):
 					break;
 
 
-
 			# taxes & total section
 			response["discount"] = quote.get("discount_amount", 0)
 			response["total"] = quote.get("total", 0)
@@ -93,10 +92,12 @@ def add_to_cart(items, is_proposal=False):
 				quote = frappe.new_doc("Quotation")
 				quote.party_name = customer
 				# update price list price
-				item_rate = frappe.db.get_value("Item", items.get("item_code"), ["cost_price", "last_purchase_rate"], as_dict=True)
-				items["price_list_rate"] = item_rate.get("cost_price") or item_rate.get("last_purchase_rate") or 0
-				if "discount_percentage" in items:
+				item_details = frappe.db.get_value("Item", items.get("item_code"),\
+					["sp_without_vat", "last_purchase_rate", "discount_percentage"], as_dict=True)
+				items["price_list_rate"] = item_details.get("sp_without_vat") or item_details.get("last_purchase_rate") or 0
+				if item_details.get("discount_percentage") > 0:
 					items["margin_type"] = "Percentage"
+					items["discount_percentage"] = item_details.get("discount_percentage")
 				quote.append("items", items)
 				# proposal
 				if is_proposal:
@@ -135,16 +136,19 @@ def update_cart(quote_id, items):
 				frappe.local.response["http_status_code"] = 422
 			else:
 				quote = frappe.get_doc("Quotation", quote_id)
-				if items.get("discount_percentage"):
+				item_details = frappe.db.get_value("Item", items.get("item_code"),\
+					["sp_without_vat", "discount_percentage"], as_dict=True)
+				if item_details.get("discount_percentage", 0.00) > 0:
 					items["margin_type"] = "Percentage"
-					items["price_list_rate"] = items.get("rate") or \
-						frappe.db.get_value("Item", items.get("item_code"), "cost_price")
-					items["rate"] = 0
+					items["discount_percentage"] = item_details.get("discount_percentage")
+				items["price_list_rate"] = item_details.get("sp_without_vat", 0)
 				existing_item = False
 				for row in quote.get("items"):
 					# update item row
 					if row.get("item_code") == items.get("item_code"):
 						existing_item = True
+						updatd_qty = row.get("qty") + items.get("qty")
+						items["qty"] = int(updatd_qty)
 						row.update(items)
 				# add new item
 				if not existing_item:
