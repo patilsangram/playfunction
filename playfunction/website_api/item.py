@@ -130,7 +130,10 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age=None, manufacture
 		query = """
 			select
 				i.name as item_code, i.item_name, i.brand, i.age as age_range,
-				i.sp_without_vat as selling_price, i.image
+				i.sp_without_vat as selling_price,
+				if (i.discount_percentage > 0,
+				i.sp_without_vat - (i.sp_without_vat*i.discount_percentage/100.00),
+				i.sp_without_vat) as after_discount, i.image
 			from
 				`tabItem` i left join `tabCatalog` c on c.parent = i.name
 			{} group by i.name
