@@ -39,13 +39,31 @@ frappe.ui.form.on("Item", {
 	},
 
 	sp_without_vat:function(frm){
-		if(frm.doc.sp_without_vat > 0) {
-			var with_vat = frm.doc.sp_without_vat*0.17 + frm.doc.sp_without_vat
-			frm.set_value("sp_with_vat", with_vat);
+		frm.events.calculate_selling_price(frm, "sp_without_vat");
+	},
+
+	sp_with_vat:function(frm) {
+		frm.events.calculate_selling_price(frm, "sp_with_vat");
+	},
+
+	calculate_selling_price: function(frm, field) {
+		// calculate sp_with_vat & sp_without_vat on vice versa trigger
+		// added if conditions to avoid loop
+		if(field == "sp_without_vat" && frm.doc.sp_without_vat > 0) {
+			var with_vat = flt(frm.doc.sp_without_vat*0.17 + frm.doc.sp_without_vat, 2)
+			if(with_vat != frm.doc.sp_with_vat) {
+				frm.set_value("sp_with_vat", with_vat);
+			}
+		}
+
+		else if(field == "sp_with_vat" && frm.doc.sp_with_vat > 0) {
+			var without_vat	= flt(frm.doc.sp_with_vat - frm.doc.sp_with_vat*0.17/1.17, 2)
+			if(without_vat != frm.doc.sp_without_vat) {
+				frm.set_value("sp_without_vat", without_vat);
+			}
 		}
 	}
 });
-
 
 
 cur_frm.fields_dict['catalogs'].grid.get_field('catalog_level_1').get_query =function(frm,cdt,cdn){
