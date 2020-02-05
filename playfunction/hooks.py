@@ -111,6 +111,9 @@ doc_events = {
 	"Payment Entry": {
 		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.update_amount_owed",
 	},
+	"Item": {
+		"before_insert": "playfunction.playfunction.custom_script.item.item.item_autoname"
+	}
 }
 
 # Scheduled Tasks
