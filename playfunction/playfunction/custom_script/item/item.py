@@ -15,6 +15,7 @@ def item_autoname(doc, method):
 		i.e. ItemAutoname
 	"""
 	if doc.supplier and len(doc.supplier) >= 3:
-		supplier_chars = doc.supplier[0].upper() + doc.supplier[2].upper()
+		supplier = doc.supplier.replace(" ", "")
+		supplier_chars = supplier[0].upper() + supplier[2].upper()
 		series = getseries("ItemAutoname", 5)
 		doc.item_code = supplier_chars + str(series)
