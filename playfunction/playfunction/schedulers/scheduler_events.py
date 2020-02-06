@@ -100,7 +100,7 @@ def check_payment_status():
 	try:
 		orders = []
 		error_log = {}
-		fields = ["name as order", "sales_tokens"]
+		fields = ["name", "sales_tokens"]
 		filters = {
 			"payment_status": ("in", ["Pending", "", None]),
 			"docstatus": ("!=", 2),
@@ -123,11 +123,11 @@ def check_payment_status():
 					if not response.get("status") and response.get("Amount") \
 						and response.get("AuthNum"):
 						# TODO: partial payment - response.get("Amount") != order amt
-						frappe.db.set_value("Sales Order", order.get("order"), "payment_status", "Paid")
+						frappe.db.set_value("Sales Order", order.get("name"), "payment_status", "Paid")
 						frappe.db.commit()
 				else:
 					# update error log
-					error_log[order.get("order")] = response.text
+					error_log[order.get("name")] = response.text
 		if error_log.keys():
 			frappe.error_log(message=json.dumps(error_log), title="Scheduler Event Failed")
 	except Exception as e:
