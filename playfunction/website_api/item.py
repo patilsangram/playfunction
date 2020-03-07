@@ -173,7 +173,7 @@ def get_item_details(item_code):
 				from
 					`tabItem` i left join `tabItem Media` v on v.parent = i.name
 					and v.type = 'Video'
-				where i.item_code = {}
+				where i.item_code = '{}'
 			""".format(item_code), as_dict=True)
 
 			for i in items:
@@ -204,7 +204,7 @@ def recommended_items(item_code):
 			frappe.local.response["http_status_code"] = 404
 		else:
 			items = frappe.db.sql("""select i.name as item_code, i.item_name, i.image, i.sp_without_vat as selling_price, i.age as age_range,r.item_name,r.item_code,r.image  
-					from `tabItem` i left join `tabRecommend Item` r on r.parent = i.name where i.name = {0} and r.item_code is not null """.format(item_code),as_dict=True)
+					from `tabItem` i left join `tabRecommend Item` r on r.parent = i.name where i.name = '{0}' and r.item_code is not null """.format(item_code),as_dict=True)
 			response["items"] = items
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
@@ -231,7 +231,7 @@ def related_items(data):
 		data = json.loads(data)
 		cond = " where 1=1"
 		if data.get("item_code"):
-			cond += " and (i.item_code = {0})".format(data.get("item_code"))
+			cond += " and (r.parent = '{0}')".format(data.get("item_code"))
 
 		for f in filter_flags:
 			if data.get(f):
@@ -240,10 +240,10 @@ def related_items(data):
 		query = """
 			select
 				i.name as item_code, i.item_name, i.image, i.sp_without_vat as selling_price,
-				i.age as age_range,r.item_name,r.item_code,r.image
+				i.age as age_range
 			from
 				`tabItem` i left join `tabRelated Item` r
-				on r.parent = i.name
+				on r.item_code = i.name
 			{0} group by i.item_code
 		""".format(cond)
 		items = frappe.db.sql(query, as_dict=True)
