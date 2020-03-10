@@ -112,6 +112,10 @@ def get_wishlist_details():
 				row_data = {}
 				for f in item_fields:
 					row_data[f] = row.get(f)
+
+				# selling/before discount price of Item
+				row_data["selling_price"] = frappe.db.get_value("Item",
+					row.get("item_code"), "sp_without_vat") or 0
 				items.append(row_data)
 			response["items"] = items
 		else:
