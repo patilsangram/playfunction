@@ -175,20 +175,20 @@ def get_item_details(item_code):
 
 			# TODO - try this is query itself
 			item_doc = frappe.get_doc("Item", item_code)
-			item_videos = item_images = []
+			item_videoes, item_images = [], []
 			# Item Media
 			for media in item_doc.get("item_media"):
-				if media.get("type") == "Video" and not item_videos:
+				if media.get("type") == "Video" and not item_videoes:
 					item_videoes.append({
 						"video": media.get("video_file"),
 						"thumbnail": media.get("image")
 					})
-				elif media.get("type") == "Image" and not len(item_images) > 2:
+				elif media.get("type") == "Image" and not len(item_images) >= 2:
 					item_images.append({
 						"name": media.get("media_name"),
 						"image": media.get("image")
 					})
-			items.update({"item_videoes": item_videoes, "item_images": item_images})
+			items[0].update({"item_videoes": item_videoes, "item_images": item_images})
 
 			response["items"] = items
 	except Exception as e:
