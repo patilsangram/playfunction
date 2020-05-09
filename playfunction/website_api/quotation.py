@@ -111,6 +111,19 @@ def add_to_cart(items, is_proposal=False):
 				# proposal
 				if is_proposal:
 					quote.workflow_state = "Proposal Received"
+
+				#VAT 17%
+				vat_account = frappe.db.get_value("Account", {
+					"account_name": "VAT 17%"
+				}, ["name", "tax_rate"], as_dict=True)
+
+				quote.taxes_and_charges = vat_account.get("name")
+				vat_tax = {
+					"account_head": vat_account.get("name"),
+					"charge_type": "On Net Total",
+					"rate": vat_account.get("tax_rate")
+				}
+				quote.append("taxes", vat_tax)
 				quote.save()
 				frappe.db.commit()
 				response = get_cart_details(quote.name)
