@@ -120,8 +120,9 @@ def add_to_cart(items, is_proposal=False):
 				quote.taxes_and_charges = vat_account.get("name")
 				vat_tax = {
 					"account_head": vat_account.get("name"),
+					"rate": vat_account.get("tax_rate"),
 					"charge_type": "On Net Total",
-					"rate": vat_account.get("tax_rate")
+					"description": vat_account.get("name")
 				}
 				quote.append("taxes", vat_tax)
 				quote.save()
