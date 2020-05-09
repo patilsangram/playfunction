@@ -42,17 +42,23 @@ def get_cart_details(quote_id):
 				"account_name": "Delivery Charge"
 			}, "name")
 
-			delivery_charges = 0
+			# vat account
+			vat_account = frappe.db.get_value("Account", {
+				"account_name": "VAT 17%"
+			}, "name")
+
+			delivery_charges = sales_tax = 0
 			for tax_ in quote.get("taxes", []):
 				if tax_.get("account_head") == delivery_account:
 					delivery_charges = tax_.get("tax_amount")
-					break;
-
+				elif tax_.get("account_head") == vat_account:
+					sales_tax =  tax_.get("tax_amount")
 
 			# taxes & total section
 			response["discount"] = quote.get("discount_amount", 0)
 			response["total"] = quote.get("total", 0)
 			response["delivery_charges"] = delivery_charges
+			response["sales_tax"] = sales_tax
 			response["amount_due"] = quote.get("total")
 
 			# proposal_stages
@@ -105,6 +111,20 @@ def add_to_cart(items, is_proposal=False):
 				# proposal
 				if is_proposal:
 					quote.workflow_state = "Proposal Received"
+
+				#VAT 17%
+				vat_account = frappe.db.get_value("Account", {
+					"account_name": "VAT 17%"
+				}, ["name", "tax_rate"], as_dict=True)
+
+				quote.taxes_and_charges = vat_account.get("name")
+				vat_tax = {
+					"account_head": vat_account.get("name"),
+					"rate": vat_account.get("tax_rate"),
+					"charge_type": "On Net Total",
+					"description": vat_account.get("name")
+				}
+				quote.append("taxes", vat_tax)
 				quote.save()
 				frappe.db.commit()
 				response = get_cart_details(quote.name)

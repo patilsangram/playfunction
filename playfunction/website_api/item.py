@@ -168,21 +168,28 @@ def get_item_details(item_code):
 					i.age as age_range, i.sp_without_vat as selling_price,
 					if (i.discount_percentage > 0,
 					i.sp_without_vat - (i.sp_without_vat*i.discount_percentage/100.00),
-					i.sp_without_vat) as after_discount,
-					group_concat(concat(v.video_file, "#", v.image)) as item_media
+					i.sp_without_vat) as after_discount
 				from
-					`tabItem` i left join `tabItem Media` v on v.parent = i.name
-					and v.type = 'Video'
-				where i.item_code = '{}'
+					`tabItem` i where i.item_code = '{}'
 			""".format(item_code), as_dict=True)
 
-			for i in items:
-				if i.get("item_media"):
-					item_media = i.pop("item_media")
-					media = [{"video": m.split("#")[0], "thumbnail": m.split("#")[1]} for m in item_media.split(",") ]
-					i["item_videoes"] = media
-				else:
-					i["item_videoes"] = []
+			# TODO - try this is query itself
+			item_doc = frappe.get_doc("Item", item_code)
+			item_videoes, item_images = [], []
+			# Item Media
+			for media in item_doc.get("item_media"):
+				if media.get("type") == "Video" and not item_videoes:
+					item_videoes.append({
+						"video": media.get("video_file"),
+						"thumbnail": media.get("image")
+					})
+				elif media.get("type") == "Image" and not len(item_images) >= 2:
+					item_images.append({
+						"name": media.get("media_name"),
+						"image": media.get("image")
+					})
+			items[0].update({"item_videoes": item_videoes, "item_images": item_images})
+
 			response["items"] = items
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
