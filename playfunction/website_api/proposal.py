@@ -22,7 +22,7 @@ def get_proposal_list(page_index=0, page_size=10):
 			all_records = frappe.get_all("Quotation", filters=filters)
 			fields = ["name as proposal_id", "transaction_date as date", "grand_total as amount", "status", "workflow_state as proposal_state"]
 			proposal_list = frappe.get_all("Quotation", filters=filters,\
-				fields=fields, start=page_index, limit=page_size, order_by="creation")
+				fields=fields, start=page_index, limit=page_size, order_by="creation desc")
 			response.update({
 				"data": proposal_list,
 				"total": len(all_records)

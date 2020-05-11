@@ -190,7 +190,7 @@ def order_history(page_index=0, page_size=10):
 					`tabDelivery Note Item` dni on dni.against_sales_order = so.name
 				left join
 					`tabDelivery Note` dn on dni.parent = dn.name
-				where so.customer = '{}'
+				where so.customer = '{}' order by so.transaction_date desc
 			""".format(customer)
 
 			all_records = frappe.db.sql(order_query, as_dict=True)
