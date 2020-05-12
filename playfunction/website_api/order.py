@@ -43,8 +43,8 @@ def place_order(quote_id, data=None):
 					}, "name")
 					delivery_charge_tax = {
 						"account_head": delivery_account,
-						"rate": 29,
-						"charge_type": "On Net Total",
+						"tax_amount": 29,
+						"charge_type": "Actual",
 						"description": delivery_account
 					}
 					doc.append("taxes", delivery_charge_tax)
