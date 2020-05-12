@@ -30,6 +30,25 @@ def place_order(quote_id, data=None):
 		else:
 			doc = frappe.get_doc("Quotation", quote_id)
 			doc.workflow_state = "Approved"
+			if data:
+				data = json.loads(data)
+				doc.delivery_collection_point = data.get("delivery_collection_point")
+				doc.delivery_city = data.get("delivery_city")
+				doc.shipping_type = data.get("shipping")
+				doc.payment_method = data.get("payment_method")
+
+				# delivery charges
+				if data.get("shipping") == "Fast delivery to the house at subsidized price - NIS 29":
+					delivery_account = frappe.db.get_value("Account", {
+						"account_name": "Delivery Charge"
+					}, "name")
+					delivery_charge_tax = {
+						"account_head": delivery_account,
+						"tax_amount": 29,
+						"charge_type": "Actual",
+						"description": delivery_account
+					}
+					doc.append("taxes", delivery_charge_tax)
 			doc.save()
 			doc.submit()
 
@@ -39,7 +58,6 @@ def place_order(quote_id, data=None):
 				sales_order.delivery_date = frappe.utils.today()
 				sales_order.mode_of_order = "Web"
 				if data:
-					data = json.loads(data)
 					update_customer_profile(data, sales_order.customer)
 					sales_order.delivery_collection_point = data.get("delivery_collection_point")
 					sales_order.delivery_city = data.get("delivery_city")
@@ -81,7 +99,7 @@ def order_details(order_id):
 
 			# item details
 			items = []
-			fields = ["item_code", "description", "qty", "rate",
+			fields = ["item_code", "image", "description", "qty", "rate",
 				"discount_percentage", "discount_amount", "amount"]
 			for item in doc.get("items"):
 				row_data = {}
