@@ -31,6 +31,7 @@ def place_order(quote_id, data=None):
 			doc = frappe.get_doc("Quotation", quote_id)
 			doc.workflow_state = "Approved"
 			if data:
+				data = json.loads(data)
 				doc.delivery_collection_point = data.get("delivery_collection_point")
 				doc.delivery_city = data.get("delivery_city")
 				doc.shipping_type = data.get("shipping")
@@ -57,7 +58,6 @@ def place_order(quote_id, data=None):
 				sales_order.delivery_date = frappe.utils.today()
 				sales_order.mode_of_order = "Web"
 				if data:
-					data = json.loads(data)
 					update_customer_profile(data, sales_order.customer)
 					sales_order.delivery_collection_point = data.get("delivery_collection_point")
 					sales_order.delivery_city = data.get("delivery_city")
