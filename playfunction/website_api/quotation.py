@@ -70,7 +70,7 @@ def get_cart_details(quote_id):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to fetch Quotation Details"
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: get_cart_details")
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_cart_details")
 	finally:
 		return response
 
@@ -134,7 +134,7 @@ def add_to_cart(items, is_proposal=False):
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Quotation Creation failed".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: add_to_cart")
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: add_to_cart")
 	finally:
 		return response
 
@@ -185,7 +185,7 @@ def update_cart(quote_id, items):
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Quotation Update failed"
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: update_cart")
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: update_cart")
 	finally:
 		return response
 
@@ -222,6 +222,6 @@ def delete_cart_item(quote_id, item_code):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to Delete Quote Item"
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: delete_cart_item")
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: delete_cart_item")
 	finally:
 		return response

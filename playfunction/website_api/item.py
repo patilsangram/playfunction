@@ -88,7 +88,7 @@ def search(search=None):
 		query = """
 			select distinct
 				i.name as item_code, i.item_name, i.brand, i.image,i.age as age_range,
-				i.sp_without_vat as selling_price,
+				i.sp_without_vat as selling_price
 			from
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
 			left join
@@ -175,7 +175,7 @@ def get_item_details(item_code):
 
 			# TODO - try this is query itself
 			item_doc = frappe.get_doc("Item", item_code)
-			item_videoes, item_images = 0
+			item_videoes = item_images = 0
 			item_media = []
 			# Item Media
 			for media in item_doc.get("item_media"):
