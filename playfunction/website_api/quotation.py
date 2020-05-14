@@ -59,7 +59,8 @@ def get_cart_details(quote_id):
 			response["total"] = quote.get("grand_total", 0)
 			response["delivery_charges"] = delivery_charges
 			response["sales_tax"] = sales_tax
-			response["amount_due"] = quote.get("grand_total")
+			response["amount_due"] = quote.get("total")
+			response["sub_total"] = quote.get("total")
 
 			# proposal_stages
 			proposal_state = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
