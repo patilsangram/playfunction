@@ -9,6 +9,7 @@ frappe.ui.form.on("Item", {
 		}
 		frm.set_df_property("item_group", "hidden", true);
 		frm.set_df_property("allow_alternative_item", "hidden", true);
+		$('.ql-editor').css("text-align", "right");
 	},
 
 	validate: function(frm) {
