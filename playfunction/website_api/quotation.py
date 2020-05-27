@@ -42,18 +42,25 @@ def get_cart_details(quote_id):
 				"account_name": "Delivery Charge"
 			}, "name")
 
-			delivery_charges = 0
+			# vat account
+			vat_account = frappe.db.get_value("Account", {
+				"account_name": "VAT 17%"
+			}, "name")
+
+			delivery_charges = sales_tax = 0
 			for tax_ in quote.get("taxes", []):
 				if tax_.get("account_head") == delivery_account:
 					delivery_charges = tax_.get("tax_amount")
-					break;
-
+				elif tax_.get("account_head") == vat_account:
+					sales_tax =  tax_.get("tax_amount")
 
 			# taxes & total section
 			response["discount"] = quote.get("discount_amount", 0)
-			response["total"] = quote.get("total", 0)
+			response["total"] = quote.get("grand_total", 0)
 			response["delivery_charges"] = delivery_charges
+			response["sales_tax"] = sales_tax
 			response["amount_due"] = quote.get("total")
+			response["sub_total"] = quote.get("total")
 
 			# proposal_stages
 			proposal_state = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
@@ -63,7 +70,7 @@ def get_cart_details(quote_id):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to fetch Quotation Details"
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: get_cart_details")
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_cart_details")
 	finally:
 		return response
 
@@ -105,6 +112,20 @@ def add_to_cart(items, is_proposal=False):
 				# proposal
 				if is_proposal:
 					quote.workflow_state = "Proposal Received"
+
+				#VAT 17%
+				vat_account = frappe.db.get_value("Account", {
+					"account_name": "VAT 17%"
+				}, ["name", "tax_rate"], as_dict=True)
+
+				quote.taxes_and_charges = vat_account.get("name")
+				vat_tax = {
+					"account_head": vat_account.get("name"),
+					"rate": vat_account.get("tax_rate"),
+					"charge_type": "On Net Total",
+					"description": vat_account.get("name")
+				}
+				quote.append("taxes", vat_tax)
 				quote.save()
 				frappe.db.commit()
 				response = get_cart_details(quote.name)
@@ -113,7 +134,7 @@ def add_to_cart(items, is_proposal=False):
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Quotation Creation failed".format(str(e))
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: add_to_cart")
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: add_to_cart")
 	finally:
 		return response
 
@@ -164,7 +185,7 @@ def update_cart(quote_id, items):
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Quotation Update failed"
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: update_cart")
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: update_cart")
 	finally:
 		return response
 
@@ -201,6 +222,6 @@ def delete_cart_item(quote_id, item_code):
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
 		response["message"] = "Unable to Delete Quote Item"
-		frappe.log_error(message=frappe.get_traceback() , title="Wishlist API: delete_cart_item")
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: delete_cart_item")
 	finally:
 		return response
