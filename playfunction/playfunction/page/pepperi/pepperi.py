@@ -41,11 +41,12 @@ def get_items_and_group_tree(filters):
 
 	discount_query = " ifnull(i.discount_percentage, 0) as discount " \
 		if not customer_discount else "{} as discount ".format(customer_discount)
+		# group_concat(concat(c.category,',',c.subcategory)) as category, 2. p.price_list_rate as price
 	item_details = frappe.db.sql('''
 		select
 			i.item_code, i.item_name, i.image, {},
 			group_concat(c.catalog_level_1) as catalogs,
-			ifnull(b.actual_qty, 0) as qty, d.default_warehouse, p.price_list_rate as price
+			ifnull(b.actual_qty, 0) as qty, d.default_warehouse, i.sp_with_vat as price
 		from
 			tabItem i left join `tabCatalog` c  on c.parent = i.name
 		left join
@@ -80,10 +81,10 @@ def get_item_details(item_code):
 	price_list = "Standard Selling"
 	item_doc = frappe.get_doc("Item", item_code)
 	related_items = item_doc.get("related_item") or []
+	# group_concat(concat(c.category,',',c.subcategory)) as category, 2. p.price_list_rate as price
 	item_details = frappe.db.sql("""
 		select
-			i.item_code, i.item_name, i.image, group_concat(concat(c.category,',',c.subcategory))
-			as category, ifnull(b.actual_qty, 0) as qty, d.default_warehouse, p.price_list_rate as price
+			i.item_code, i.item_name, i.image, ifnull(b.actual_qty, 0) as qty, d.default_warehouse,i.sp_with_vat as price
 		from
 			tabItem i left join `tabCategory List` c  on c.parent = i.name
 		left join
@@ -97,4 +98,3 @@ def get_item_details(item_code):
 	""".format(company, price_list, item_code), as_dict=True)[0]
 	item_details['related_items'] = related_items
 	return item_details
-

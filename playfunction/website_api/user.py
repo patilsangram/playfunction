@@ -14,7 +14,7 @@ def login(data):
 	"""
 	user_data = json.loads(data)
 	try:
-		response = frappe._dict({}) 
+		response = frappe._dict({})
 		if user_data.get("usr") and user_data.get("pwd"):
 			user = frappe.db.exists("User", user_data.get("usr"))
 			if user:
@@ -37,7 +37,7 @@ def login(data):
 			frappe.response["status_code"] = 422
 			frappe.response["message"] = _("Invalid login credentials")
 			frappe.local.response['http_status_code'] = 422
-	except frappe.AuthenticationError,e:
+	except frappe.AuthenticationError as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.response["status_code"] = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
@@ -87,7 +87,7 @@ def logout(usr):
 			frappe.response["message"] = ("Invalid logout user")
 			frappe.response["status_code"] = 422
 			frappe.local.response["http_status_code"] =  422
-	except Exception, e:
+	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.response["status_code"] = http_status_code
 		response["message"] = "Unable to Logout."
@@ -117,7 +117,7 @@ def forgot_password(data):
 			response.message = _("Invalid User")
 			response.status_code = 404
 			frappe.local.response['http_status_code'] = 404
-	except Exception, e:
+	except Exception as e:
 		response["message"] = "Forgot Password failed"
 		http_status_code = getattr(e, "http_status_code", 500)
 		response.status_code = http_status_code
@@ -150,7 +150,7 @@ def update_password(data):
 					return response
 			elif args.get("old_password"):
 				frappe.local.login_manager.check_password(user, args.get("old_password"))
-			
+
 			_update_password(user, args.get("new_password"))
 			frappe.db.set_value("User", user, "reset_password_key", "")
 			response.message = _("Password reset sucessfully")
@@ -160,7 +160,7 @@ def update_password(data):
 			response.message = _("Invalid User")
 			response.status_code = 404
 			frappe.local.response['http_status_code'] = 404
-	except Exception, e:
+	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response.status_code = http_status_code
 		response["message"] = "Update Password failed"
@@ -230,8 +230,8 @@ def send_mail(email,key=None):
 			subject = "Access Key"
 			content = """ This is your access key {} """.format(key)
 			frappe.sendmail(
-				recipients = email, 
-				sender = frappe.session.user, 
+				recipients = email,
+				sender = frappe.session.user,
 				subject = subject,
 				message = content,
 				delayed = 1)
@@ -249,7 +249,7 @@ def verify_mail(data):
 	"""
 	try:
 		response = frappe._dict({})
-		args = json.loads(data)	
+		args = json.loads(data)
 		if frappe.db.exists("User", args.get("email")) and args.get("key"):
 			user = frappe.db.get_value("User", {"reset_password_key":args.get("key")})
 			if user == args.get("email"):
@@ -309,7 +309,7 @@ def make_customer(data):
 			customer.country = args.get("country")
 			customer.city = args.get("city")
 			customer.pincode = args.get("pincode")
-			customer.user = user.email 
+			customer.user = user.email
 			customer.flags.ignore_permissions = True
 			customer.save()
 			frappe.db.commit()

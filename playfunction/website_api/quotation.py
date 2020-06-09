@@ -28,6 +28,8 @@ def get_cart_details(quote_id):
 					row_data[f] = row.get(f)
 				# selling/before discount price of Item
 				row_data["selling_price"] = frappe.db.get_value("Item",
+					row.get("item_code"), "sp_with_vat") or 0
+				sp_without_vat = frappe.db.get_value("Item",
 					row.get("item_code"), "sp_without_vat") or 0
 				items.append(row_data)
 			response["items"] = items
@@ -58,7 +60,9 @@ def get_cart_details(quote_id):
 			response["discount"] = quote.get("discount_amount", 0)
 			response["total"] = quote.get("grand_total", 0)
 			response["delivery_charges"] = delivery_charges
-			response["sales_tax"] = sales_tax
+			# response["sales_tax"] = sales_tax
+			# response["sales_tax"] = quote.get("total")-sp_without_vat
+			response["sales_tax"] = quote.get("total")-sp_without_vat if quote.get("total") != 0 and sp_without_vat !=0 else 0
 			response["amount_due"] = quote.get("total")
 			response["sub_total"] = quote.get("total")
 
@@ -103,8 +107,8 @@ def add_to_cart(items, is_proposal=False):
 				quote.party_name = customer
 				# update price list price
 				item_details = frappe.db.get_value("Item", items.get("item_code"),\
-					["sp_without_vat", "last_purchase_rate", "discount_percentage"], as_dict=True)
-				items["price_list_rate"] = item_details.get("sp_without_vat") or item_details.get("last_purchase_rate") or 0
+					["sp_with_vat", "last_purchase_rate", "discount_percentage"], as_dict=True)
+				items["price_list_rate"] = item_details.get("sp_with_vat") or item_details.get("last_purchase_rate") or 0
 				if item_details.get("discount_percentage") > 0:
 					items["margin_type"] = "Percentage"
 					items["discount_percentage"] = item_details.get("discount_percentage")
@@ -113,18 +117,18 @@ def add_to_cart(items, is_proposal=False):
 				if is_proposal:
 					quote.workflow_state = "Proposal Received"
 
-				#VAT 17%
-				vat_account = frappe.db.get_value("Account", {
-					"account_name": "VAT 17%"
-				}, ["name", "tax_rate"], as_dict=True)
-
-				quote.taxes_and_charges = vat_account.get("name")
-				vat_tax = {
-					"account_head": vat_account.get("name"),
-					"rate": vat_account.get("tax_rate"),
-					"charge_type": "On Net Total",
-					"description": vat_account.get("name")
-				}
+				# #VAT 17%
+				# vat_account = frappe.db.get_value("Account", {
+				# 	"account_name": "VAT 17%"
+				# }, ["name", "tax_rate"], as_dict=True)
+				#
+				# quote.taxes_and_charges = vat_account.get("name")
+				# vat_tax = {
+				# 	"account_head": vat_account.get("name"),
+				# 	"rate": vat_account.get("tax_rate"),
+				# 	"charge_type": "On Net Total",
+				# 	"description": vat_account.get("name")
+				# }
 				quote.append("taxes", vat_tax)
 				quote.save()
 				frappe.db.commit()
@@ -141,7 +145,7 @@ def add_to_cart(items, is_proposal=False):
 @frappe.whitelist()
 def update_cart(quote_id, items):
 	"""
-	:params 
+	:params
 		quote_id: quotation
 		items: {
 		item_code:
@@ -161,11 +165,11 @@ def update_cart(quote_id, items):
 			else:
 				quote = frappe.get_doc("Quotation", quote_id)
 				item_details = frappe.db.get_value("Item", items.get("item_code"),\
-					["sp_without_vat", "discount_percentage"], as_dict=True)
+					["sp_with_vat", "discount_percentage"], as_dict=True)
 				if item_details.get("discount_percentage", 0.00) > 0:
 					items["margin_type"] = "Percentage"
 					items["discount_percentage"] = item_details.get("discount_percentage")
-				items["price_list_rate"] = item_details.get("sp_without_vat", 0)
+				items["price_list_rate"] = item_details.get("sp_with_vat", 0)
 				existing_item = False
 				for row in quote.get("items"):
 					# update item row

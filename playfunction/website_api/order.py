@@ -114,8 +114,8 @@ def order_details(order_id):
 			response["after_discount"] = doc.get("net_total")
 			response["grand_total"] = doc.get("grand_total")
 			response["delivery_charges"] = 0
-			response["vat"] = 0
-
+			# response["vat"] = 0
+			response["vat"] = doc.get("grand_total") -doc.get("net_total")
 			delivery_account = frappe.db.get_value("Account", {
 				"account_name": "Delivery Charge"
 			}, "name")
@@ -161,11 +161,11 @@ def update_order(order_id, items):
 				order = frappe.get_doc("Sales Order", order_id)
 				existing_item = False
 				item_details = frappe.db.get_value("Item", items.get("item_code"),\
-					["sp_without_vat", "discount_percentage"], as_dict=True)
+					["sp_with_vat", "discount_percentage"], as_dict=True)
 				if item_details.get("discount_percentage") > 0:
 					items["margin_type"] = "Percentage"
 					items["discount_percentage"] = item_details.get("discount_percentage")
-				items["price_list_rate"] = item_details.get("sp_without_vat")
+				items["price_list_rate"] = item_details.get("sp_with_vat")
 				for row in order.get("items"):
 					# update item row
 					if row.get("item_code") == items.get("item_code"):

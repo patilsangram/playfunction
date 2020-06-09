@@ -41,7 +41,7 @@ def add_to_wishlist(data):
 			else:
 				wishlist_doc = frappe.new_doc("Wishlist")
 				wishlist_doc.customer = cust
-				wishlist_doc.user = frappe.session.user 
+				wishlist_doc.user = frappe.session.user
 				wishlist_doc.append("items", items)
 				wishlist_doc.save(ignore_permissions= True)
 				frappe.db.commit()
@@ -115,7 +115,7 @@ def get_wishlist_details():
 
 				# selling/before discount price of Item
 				row_data["selling_price"] = frappe.db.get_value("Item",
-					row.get("item_code"), "sp_without_vat") or 0
+					row.get("item_code"), "sp_with_vat") or 0
 				items.append(row_data)
 			response["items"] = items
 		else:

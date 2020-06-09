@@ -7,6 +7,7 @@ from category import get_child_categories
 filter_flags = ["sales_item", "community_center", "best_seller",
 	"gift_ideas", "award_wining", "our_range", "new_item"]
 
+
 @frappe.whitelist(allow_guest=True)
 def get_category_items(data):
 	"""returns items with category
@@ -33,7 +34,8 @@ def get_category_items(data):
 
 		if data.get("search"):
 			cond += " and (i.name like '{0}' or i.item_name like '{0}'\
-				or i.age like '{0}' or i.sp_without_vat like '{0}')".format("%{}%".format(search))
+				or i.age like '{0}' or i.sp_with_vat like '{0}')".format("%{}%".format(search))
+				# i.sp_without_vat selling price without price
 
 		for f in filter_flags:
 			if data.get(f):
@@ -42,10 +44,10 @@ def get_category_items(data):
 		query = """
 			select
 				i.name as item_code, i.item_name, i.image, i.age as age_range,
-				i.sp_without_vat as selling_price,
+				i.sp_with_vat as selling_price,
 				if (i.discount_percentage > 0,
-				i.sp_without_vat - (i.sp_without_vat*i.discount_percentage/100.00),
-				i.sp_without_vat) as after_discount
+				i.sp_with_vat - (i.sp_with_vat*i.discount_percentage/100.00),
+				i.sp_with_vat) as after_discount
 			from
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
 			left join
@@ -54,7 +56,7 @@ def get_category_items(data):
 		""".format(cond)
 		items = frappe.db.sql(query,as_dict=True)
 		response["items"] = items
-		
+
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
@@ -88,7 +90,7 @@ def search(search=None):
 		query = """
 			select distinct
 				i.name as item_code, i.item_name, i.brand, i.image,i.age as age_range,
-				i.sp_without_vat as selling_price
+				i.sp_with_vat as selling_price
 			from
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
 			left join
@@ -125,15 +127,15 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age=None, manufacture
 			cond += " and i.age like '{0}'".format("%{}%".format(age))
 
 		if price_from and price_to:
-			cond += " and i.sp_without_vat between '{}' and '{}'".format(price_from, price_to)
+			cond += " and i.sp_with_vat between '{}' and '{}'".format(price_from, price_to)
 
 		query = """
 			select
 				i.name as item_code, i.item_name, i.brand, i.age as age_range,
-				i.sp_without_vat as selling_price,
+				i.sp_with_vat as selling_price,
 				if (i.discount_percentage > 0,
-				i.sp_without_vat - (i.sp_without_vat*i.discount_percentage/100.00),
-				i.sp_without_vat) as after_discount, i.image
+				i.sp_with_vat - (i.sp_with_vat*i.discount_percentage/100.00),
+				i.sp_with_vat) as after_discount, i.image
 			from
 				`tabItem` i left join `tabCatalog` c on c.parent = i.name
 			{} group by i.name
@@ -156,7 +158,7 @@ def get_item_details(item_code):
 		Returns item details
 	"""
 	try:
-		
+
 		response = frappe._dict()
 		if not frappe.db.exists("Item", item_code):
 			response["data"] = "Item not found"
@@ -165,10 +167,10 @@ def get_item_details(item_code):
 			items = frappe.db.sql("""
 				select
 					i.name as item_code, i.image, i.item_name, i.description,
-					i.age as age_range, i.sp_without_vat as selling_price,
+					i.age as age_range, i.sp_with_vat as selling_price,
 					if (i.discount_percentage > 0,
-					i.sp_without_vat - (i.sp_without_vat*i.discount_percentage/100.00),
-					i.sp_without_vat) as after_discount
+					i.sp_with_vat - (i.sp_with_vat*i.discount_percentage/100.00),
+					i.sp_with_vat) as after_discount
 				from
 					`tabItem` i where i.item_code = '{}'
 			""".format(item_code), as_dict=True)
@@ -217,7 +219,7 @@ def recommended_items(item_code):
 			response["data"] = "Item not found"
 			frappe.local.response["http_status_code"] = 404
 		else:
-			items = frappe.db.sql("""select i.name as item_code, i.item_name, i.image, i.sp_without_vat as selling_price, i.age as age_range,r.item_name,r.item_code,r.image  
+			items = frappe.db.sql("""select i.name as item_code, i.item_name, i.image, i.sp_with_vat as selling_price, i.age as age_range,r.item_name,r.item_code,r.image
 					from `tabItem` i left join `tabRecommend Item` r on r.parent = i.name where i.name = '{0}' and r.item_code is not null """.format(item_code),as_dict=True)
 			response["items"] = items
 	except Exception as e:
@@ -253,7 +255,7 @@ def related_items(data):
 
 		query = """
 			select
-				i.name as item_code, i.item_name, i.image, i.sp_without_vat as selling_price,
+				i.name as item_code, i.item_name, i.image, i.sp_with_vat as selling_price,
 				i.age as age_range
 			from
 				`tabItem` i left join `tabRelated Item` r
