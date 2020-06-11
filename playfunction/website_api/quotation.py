@@ -129,7 +129,7 @@ def add_to_cart(items, is_proposal=False):
 				# 	"charge_type": "On Net Total",
 				# 	"description": vat_account.get("name")
 				# }
-				quote.append("taxes", vat_tax)
+				# quote.append("taxes", vat_tax)
 				quote.save()
 				frappe.db.commit()
 				response = get_cart_details(quote.name)
