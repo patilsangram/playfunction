@@ -7,7 +7,7 @@ item_fields = ["item_code", "item_name","qty", "discount_percentage", "descripti
 
 
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def get_cart_details(quote_id):
 	"""
 		return quotation details.
@@ -32,8 +32,15 @@ def get_cart_details(quote_id):
 				# selling/before discount price of Item
 				row_data["selling_price"] = frappe.db.get_value("Item",
 					row.get("item_code"), "sp_with_vat") or 0
-				sp_without_vat = sp_without_vat + (frappe.db.get_value("Item",
-					row.get("item_code"), "sp_without_vat") * row.get("qty") )
+				item_details = frappe.db.get_value("Item", row.get("item_code"),["sp_with_vat", "last_purchase_rate", "discount_percentage"], as_dict=True)
+				if item_details.get("discount_percentage") > 0:
+					sp_without_vat = sp_without_vat + (frappe.db.get_value("Item",row.get("item_code"), "sp_without_vat") * row.get("qty"))*item_details.get("discount_percentage")/100
+					print(sp_without_vat)
+				else:
+					sp_without_vat =  sp_without_vat + (frappe.db.get_value("Item",row.get("item_code"), "sp_without_vat") * row.get("qty") )
+					print(sp_without_vat)
+
+
 				items.append(row_data)
 			response["items"] = items
 

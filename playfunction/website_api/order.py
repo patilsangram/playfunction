@@ -1,5 +1,6 @@
 import frappe
 import json
+from frappe.utils import has_common, flt
 from frappe import _
 from customer import update_customer_profile
 from playfunction.playfunction.invoice_payment import *
@@ -108,7 +109,6 @@ def order_details(order_id):
 					row_data[f] = item.get(f)
 				items.append(row_data)
 				sp_without_vat = sp_without_vat + (frappe.db.get_value("Item",item.get("item_code"), "sp_without_vat") * item.get('qty'))
-
 			response["items"] = items
 
 			# tax, delivery & totals
@@ -118,7 +118,8 @@ def order_details(order_id):
 			response["grand_total"] = doc.get("grand_total")
 			response["delivery_charges"] = 0
 			# response["vat"] = 0
-			response["vat"] = doc.get("grand_total") -sp_without_vat
+			vat = doc.get("grand_total") -sp_without_vat
+			response["vat"] = flt(vat,2)
 			delivery_account = frappe.db.get_value("Account", {
 				"account_name": "Delivery Charge"
 			}, "name")
