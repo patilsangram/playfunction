@@ -35,15 +35,10 @@ def get_cart_details(quote_id):
 				item_details = frappe.db.get_value("Item", row.get("item_code"),["sp_with_vat", "last_purchase_rate", "discount_percentage"], as_dict=True)
 				if item_details.get("discount_percentage") > 0:
 					sp_without_vat = sp_without_vat + (frappe.db.get_value("Item",row.get("item_code"), "sp_without_vat") * row.get("qty"))*item_details.get("discount_percentage")/100
-					print(sp_without_vat)
 				else:
 					sp_without_vat =  sp_without_vat + (frappe.db.get_value("Item",row.get("item_code"), "sp_without_vat") * row.get("qty") )
-					print(sp_without_vat)
-
-
 				items.append(row_data)
 			response["items"] = items
-
 			#delivery_details
 			response["delivery_collection_point"] = quote.get("delivery_collection_point")
 			response["shipping_type"] = quote.get("shipping_type")
@@ -75,7 +70,7 @@ def get_cart_details(quote_id):
 			# response["sales_tax"] = quote.get("total")-sp_without_vat
 			sales_tax = quote.get("total")-sp_without_vat if quote.get("total") != 0 and sp_without_vat !=0 else 0
 			response["sales_tax"] = flt(sales_tax,2)
-			response["amount_due"] = sp_without_vat
+			response["amount_due"] = flt(sp_without_vat,2)
 			# response["sub_total"] = sp_without_vat
 			response["sub_total"] = quote.get("total")
 			# proposal_stages
