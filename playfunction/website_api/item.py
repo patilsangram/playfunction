@@ -8,7 +8,7 @@ filter_flags = ["sales_item", "community_center", "best_seller",
 	"gift_ideas", "award_wining", "our_range", "new_item"]
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_category_items(data):
 	"""returns items with category
 		data:{
@@ -65,7 +65,7 @@ def get_category_items(data):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def search(search=None):
 	"""
 		returns the details on the basis of search
@@ -107,7 +107,7 @@ def search(search=None):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_categorised_item(catalog_level_1, catalog_level_2, age=None, manufacturer=None, catalog_level_3=None, catalog_level_4=None, price_from=None,price_to=None):
 	try:
 		response = frappe._dict()
@@ -152,7 +152,7 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age=None, manufacture
 		return response
 
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def get_item_details(item_code):
 	"""
 		Returns item details
@@ -208,7 +208,7 @@ def get_item_details(item_code):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def recommended_items(item_code):
 	"""
 		Returns recommended item details
@@ -230,7 +230,7 @@ def recommended_items(item_code):
 	finally:
 		return response
 
-@frappe.whitelist(allow_guest=True)
+@frappe.whitelist()
 def related_items(data):
 	"""
 		Returns related item details

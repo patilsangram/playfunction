@@ -101,11 +101,14 @@ def order_details(order_id):
 			items = []
 			fields = ["item_code", "image", "description", "qty", "rate",
 				"discount_percentage", "discount_amount", "amount"]
+			sp_without_vat = 0
 			for item in doc.get("items"):
 				row_data = {}
 				for f in fields:
 					row_data[f] = item.get(f)
 				items.append(row_data)
+				sp_without_vat = sp_without_vat + (frappe.db.get_value("Item",item.get("item_code"), "sp_without_vat") * item.get('qty'))
+
 			response["items"] = items
 
 			# tax, delivery & totals
@@ -115,20 +118,21 @@ def order_details(order_id):
 			response["grand_total"] = doc.get("grand_total")
 			response["delivery_charges"] = 0
 			# response["vat"] = 0
-			response["vat"] = doc.get("grand_total") -doc.get("net_total")
+			response["vat"] = doc.get("grand_total") -sp_without_vat
 			delivery_account = frappe.db.get_value("Account", {
 				"account_name": "Delivery Charge"
 			}, "name")
 
-			vat_account = frappe.db.get_value("Account", {
-				"account_name": "VAT 17%"
-			}, "name")
+			# vat_account = frappe.db.get_value("Account", {
+			# 	"account_name": "VAT 17%"
+			# }, "name")
 
 			for t in doc.get("taxes"):
 				if t.account_head == delivery_account:
 					response["delivery_charges"] = t.get("tax_amount")
 				elif t.account_head == vat_account:
-					response["vat"] = t.get("tax_amount")
+					pass
+					# response["vat"] = t.get("tax_amount")
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code

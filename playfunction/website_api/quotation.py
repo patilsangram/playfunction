@@ -5,6 +5,7 @@ from frappe.utils import has_common, flt
 
 item_fields = ["item_code", "item_name","qty", "discount_percentage", "description", "rate", "amount", "image"]
 
+
 @frappe.whitelist()
 def get_cart_details(quote_id):
 	"""
@@ -22,6 +23,7 @@ def get_cart_details(quote_id):
 			response["quote_id"] = quote.name
 			items = []
 			# fetch required item details
+			sp_without_vat = 0
 			for row in quote.get("items"):
 				row_data = {}
 				for f in item_fields:
@@ -29,8 +31,8 @@ def get_cart_details(quote_id):
 				# selling/before discount price of Item
 				row_data["selling_price"] = frappe.db.get_value("Item",
 					row.get("item_code"), "sp_with_vat") or 0
-				sp_without_vat = frappe.db.get_value("Item",
-					row.get("item_code"), "sp_without_vat") or 0
+				sp_without_vat = sp_without_vat + (frappe.db.get_value("Item",
+					row.get("item_code"), "sp_without_vat") * row.get("qty") )
 				items.append(row_data)
 			response["items"] = items
 
@@ -64,7 +66,7 @@ def get_cart_details(quote_id):
 			# response["sales_tax"] = quote.get("total")-sp_without_vat
 			response["sales_tax"] = quote.get("total")-sp_without_vat if quote.get("total") != 0 and sp_without_vat !=0 else 0
 			response["amount_due"] = quote.get("total")
-			response["sub_total"] = quote.get("total")
+			response["sub_total"] = sp_without_vat
 
 			# proposal_stages
 			proposal_state = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
@@ -98,8 +100,7 @@ def add_to_cart(items, is_proposal=False):
 			response["message"] = "Customer doesn't exists."
 			frappe.local.response['http_status_code'] = 200
 		else:
-			if not has_common(["item_code", "qty"], items.keys()) or \
-			not all([ f in item_fields for f in items.keys()]):
+			if not has_common(["item_code", "qty"], items.keys()) or not all([ f in item_fields for f in items.keys()]):
 				response["message"] = "Invalid data"
 				frappe.local.response["http_status_code"] = 422
 			else:
@@ -130,7 +131,7 @@ def add_to_cart(items, is_proposal=False):
 				# 	"description": vat_account.get("name")
 				# }
 				# quote.append("taxes", vat_tax)
-				quote.save()
+				quote.save(ignore_permissions=True)
 				frappe.db.commit()
 				response = get_cart_details(quote.name)
 	except Exception as e:
