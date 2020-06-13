@@ -68,7 +68,7 @@ def get_cart_details(quote_id):
 			# response["sales_tax"] = quote.get("total")-sp_without_vat
 			sales_tax = quote.get("total")-sp_without_vat if quote.get("total") != 0 and sp_without_vat !=0 else 0
 			response["sales_tax"] = flt(sales_tax,2)
-			response["amount_due"] = quote.get("total")
+			response["amount_due"] = 0
 			# response["sub_total"] = sp_without_vat
 			response["sub_total"] = quote.get("total")
 			# proposal_stages
