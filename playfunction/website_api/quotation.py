@@ -6,6 +6,7 @@ from frappe.utils import has_common, flt
 item_fields = ["item_code", "item_name","qty", "discount_percentage", "description", "rate", "amount", "image"]
 
 
+
 @frappe.whitelist()
 def get_cart_details(quote_id):
 	"""
