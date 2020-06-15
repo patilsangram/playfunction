@@ -72,7 +72,7 @@ def get_cart_details(quote_id):
 			response["sales_tax"] = flt(sales_tax,2)
 			response["amount_due"] = flt(sp_without_vat,2)
 			# response["sub_total"] = sp_without_vat
-			response["sub_total"] = quote.get("total")
+			response["sub_total"] = 0
 			# proposal_stages
 			proposal_state = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
 			if quote.get("workflow_state") in proposal_state:
