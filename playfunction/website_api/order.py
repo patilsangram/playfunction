@@ -117,23 +117,20 @@ def order_details(order_id):
 			response["after_discount"] = doc.get("net_total")
 			response["grand_total"] = doc.get("grand_total")
 			response["delivery_charges"] = 0
-			# response["vat"] = 0
+			response["vat"] = 0
 			vat = doc.get("grand_total") -sp_without_vat
 			response["vat"] = flt(vat,2)
 			delivery_account = frappe.db.get_value("Account", {
 				"account_name": "Delivery Charge"
 			}, "name")
 
-			# vat_account = frappe.db.get_value("Account", {
-			# 	"account_name": "VAT 17%"
-			# }, "name")
 
 			for t in doc.get("taxes"):
 				if t.account_head == delivery_account:
 					response["delivery_charges"] = t.get("tax_amount")
 				elif t.account_head == vat_account:
 					pass
-					# response["vat"] = t.get("tax_amount")
+
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
