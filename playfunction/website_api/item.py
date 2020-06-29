@@ -90,7 +90,9 @@ def search(search=None):
 		query = """
 			select distinct
 				i.name as item_code, i.item_name, i.brand, i.image,i.age as age_range,
-				i.sp_with_vat as selling_price
+				i.sp_with_vat as selling_price, if (i.discount_percentage > 0,
+				i.sp_with_vat - (i.sp_with_vat*i.discount_percentage/100.00),
+				i.sp_with_vat) as after_discount
 			from
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
 			left join
