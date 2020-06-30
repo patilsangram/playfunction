@@ -18,7 +18,7 @@ def get_categories(search=None):
 		query = """
 			select name as category, parent_item_group as parent_category,
 			image from `tabItem Group`
-			where name not in ('All Item Groups', 'Products', 'Raw Material', 
+			where name not in ('All Item Groups', 'Products', 'Raw Material',
 			'Services', 'Sub Assemblies', 'Consumable') and {}
 		""".format(cond)
 
@@ -67,7 +67,7 @@ def get_category_tree():
 		return item group tree hierarchy of custom item groups(category)
 		in parent-child structure.
 	"""
-	fields = ["name as title", "group_level", "parent_item_group", "is_group as has_child"]
+	fields = ["name as title","item_group_hebrew as title_hb", "group_level", "parent_item_group", "is_group as has_child"]
 	erp_item_group = ['All Item Groups', 'Products', 'Raw Material', 'Services', 'Sub Assemblies', 'Consumable']
 	filters = {
 		"group_level": [">", 0],
