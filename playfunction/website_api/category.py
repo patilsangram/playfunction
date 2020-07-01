@@ -67,7 +67,7 @@ def get_category_tree():
 		return item group tree hierarchy of custom item groups(category)
 		in parent-child structure.
 	"""
-	fields = ["name as title","item_group_hebrew as title_hb", "group_level", "parent_item_group", "is_group as has_child"]
+	fields = ["name as title", "group_level", "parent_item_group", "is_group as has_child"]
 	erp_item_group = ['All Item Groups', 'Products', 'Raw Material', 'Services', 'Sub Assemblies', 'Consumable']
 	filters = {
 		"group_level": [">", 0],
@@ -87,8 +87,8 @@ def get_category_tree():
 			group_tree.append(group)
 
 	# sequential arrangement
-	sequence_req = ["Therapist", "Parents", "School", "Baby (0-12months)",\
-		"Toys", "Outdoor Toys", "Furniture", "Offers & Sale"]
+	sequence_req = ["מטפלים", "הורים", "בתי ספר", "תינוקות (0-12 חודשים )",\
+		"משחקים", "משחקי חצר", "ריהוט", "SALE"]
 	result = [
 		g for seq in sequence_req for g in group_tree if g.get("title") == seq
 	]
