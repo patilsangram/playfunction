@@ -87,8 +87,8 @@ def get_category_tree():
 			group_tree.append(group)
 
 	# sequential arrangement
-	sequence_req = ["מטפלים", "הורים", "בתי ספר", "תינוקות (0-12 חודשים )",\
-	  "משחקים", "מתקני חצר", "ריהוט", "SALE"]
+	sequence_req = ["מטפלים", "הורים", "מוסדות חינוכיים", "תינוקות 0-3",\
+	  "משחקים", "משחקי חצר", "ריהוט", "SALE"]
 	result = [
 		g for seq in sequence_req for g in group_tree if g.get("title") == seq
 	]
