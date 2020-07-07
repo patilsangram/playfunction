@@ -1,7 +1,7 @@
 import frappe
 import json
 from frappe import _
-from customer import update_customer_profile
+from playfunction.website_api.customer import update_customer_profile
 
 
 @frappe.whitelist()

@@ -1,7 +1,7 @@
 import frappe
 import json
 from frappe.utils import flt
-from user import get_last_quote
+from playfunction.website_api.user import get_last_quote
 
 
 @frappe.whitelist()

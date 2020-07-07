@@ -2,7 +2,7 @@ import frappe
 import json
 from frappe.utils import has_common, flt
 from frappe import _
-from customer import update_customer_profile
+from playfunction.website_api.customer import update_customer_profile
 from playfunction.playfunction.invoice_payment import *
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 

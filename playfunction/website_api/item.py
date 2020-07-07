@@ -1,7 +1,7 @@
 import frappe
 from frappe import _
 import json
-from category import get_child_categories
+from playfunction.website_api.category import get_child_categories
 
 
 filter_flags = ["sales_item", "community_center", "best_seller",
