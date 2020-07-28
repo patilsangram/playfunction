@@ -98,10 +98,12 @@ def add_to_cart(items, is_proposal=False):
 		#check customer exists or not for the current user
 		customer = frappe.db.get_value("Customer",{'user':user.name},"name")
 		if not customer:
-			response["message"] = "Customer doesn't exists."
+			# msg = "Customer doesn't exists."
+			response["message"] = ""
 			frappe.local.response['http_status_code'] = 200
 		else:
 			if not has_common(["item_code", "qty"], items.keys()) or not all([ f in item_fields for f in items.keys()]):
+
 				response["message"] = "Invalid data"
 				frappe.local.response["http_status_code"] = 422
 			else:

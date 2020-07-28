@@ -44,12 +44,14 @@ def get_customer_profile(customer=None):
 				customer_address["customer_name"] = frappe.db.get_value("Customer", customer, "customer_name")
 				response["data"] = customer_address
 		else:
-			response["message"] = "Customer doesn't exist"
+			# msg="Customer doesn't exist"
+			response["message"] = "לקוח אינו קיים"
 			frappe.local.response["http_status_code"] = 422
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to fetch Customer Address"
+		# msg = "Unable to fetch Customer Address"
+		response["message"] = "שגיאה בכתובת המגורים"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_customer_profile")
 	finally:
 		return response
@@ -74,7 +76,8 @@ def update_customer_profile(data, customer=None):
 		if not customer:
 			customer = frappe.db.get_value("Customer",{"user": frappe.session.user},"name")
 		if not customer:
-			response["message"] = "Customer doesn't exists."
+			# msg = "Customer doesn't exists."
+			response["message"] = "לקוח אינו קיים"
 			frappe.local.response["http_status_code"] = 422
 		else:
 			if not isinstance(data, dict):
@@ -111,11 +114,13 @@ def update_customer_profile(data, customer=None):
 			if data.get("customer_name"):
 				frappe.db.set_value("Customer", customer, "customer_name", data.get("customer_name"))
 			frappe.db.commit()
-			response["message"] = "Profile Created Successfully."
+			# msg = "Profile Created Successfully."
+			response["message"] = "הפרופיל שלך נוצר בהצלחה!"
 		response = get_customer_profile(customer)
 	except Exception as e:
 		frappe.local.response["http_status_code"] = getattr(e, "http_status_code", 500)
-		response["message"] = "Address Creation failed"
+		# msg = "Address Creation failed"
+		response["message"] = "אופס, משהו בכתובת לא תקין"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: update_customer_profile")
 	finally:
 		return response
