@@ -34,7 +34,7 @@ def login(data):
 			frappe.response["status_code"] = 422
 			frappe.response["message"] = _("Invalid Data")
 			frappe.local.response['http_status_code'] = 422
-	except frappe.AuthenticationError,e:
+	except frappe.AuthenticationError as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.response["status_code"] = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
@@ -65,7 +65,7 @@ def forgot_password(data):
 			response.message = _("Invalid User")
 			response.status_code = 404
 			frappe.local.response['http_status_code'] = 404
-	except Exception, e:
+	except Exception as e:
 		response["message"] = "Forgot Password failed"
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
@@ -106,7 +106,7 @@ def update_password(data):
 			response.message = _("Invalid User")
 			response.status_code = 404
 			frappe.local.response['http_status_code'] = 404
-	except Exception, e:
+	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["message"] = "Update Password failed"
 		frappe.local.response["http_status_code"] = http_status_code
@@ -131,7 +131,7 @@ def change_password(data):
 			response.message = _("Old password does not matched.")
 			response.status_code = 404
 			frappe.local.response['http_status_code'] = 404
-	except Exception, e:
+	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
 		response["message"] = "Unable to change password"

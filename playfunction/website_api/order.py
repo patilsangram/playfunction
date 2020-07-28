@@ -1,7 +1,8 @@
 import frappe
 import json
+from frappe.utils import has_common, flt
 from frappe import _
-from customer import update_customer_profile
+from playfunction.website_api.customer import update_customer_profile
 from playfunction.playfunction.invoice_payment import *
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 
@@ -101,11 +102,13 @@ def order_details(order_id):
 			items = []
 			fields = ["item_code", "image", "description", "qty", "rate",
 				"discount_percentage", "discount_amount", "amount"]
+			sp_without_vat = 0
 			for item in doc.get("items"):
 				row_data = {}
 				for f in fields:
 					row_data[f] = item.get(f)
 				items.append(row_data)
+				sp_without_vat = sp_without_vat + (frappe.db.get_value("Item",item.get("item_code"), "sp_without_vat") * item.get('qty'))
 			response["items"] = items
 
 			# tax, delivery & totals
@@ -115,20 +118,19 @@ def order_details(order_id):
 			response["grand_total"] = doc.get("grand_total")
 			response["delivery_charges"] = 0
 			response["vat"] = 0
-
+			vat = doc.get("grand_total") -sp_without_vat
+			response["vat"] = flt(vat,2)
 			delivery_account = frappe.db.get_value("Account", {
 				"account_name": "Delivery Charge"
 			}, "name")
 
-			vat_account = frappe.db.get_value("Account", {
-				"account_name": "VAT 17%"
-			}, "name")
 
 			for t in doc.get("taxes"):
 				if t.account_head == delivery_account:
 					response["delivery_charges"] = t.get("tax_amount")
 				elif t.account_head == vat_account:
-					response["vat"] = t.get("tax_amount")
+					pass
+
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
@@ -161,11 +163,11 @@ def update_order(order_id, items):
 				order = frappe.get_doc("Sales Order", order_id)
 				existing_item = False
 				item_details = frappe.db.get_value("Item", items.get("item_code"),\
-					["sp_without_vat", "discount_percentage"], as_dict=True)
+					["sp_with_vat", "discount_percentage"], as_dict=True)
 				if item_details.get("discount_percentage") > 0:
 					items["margin_type"] = "Percentage"
 					items["discount_percentage"] = item_details.get("discount_percentage")
-				items["price_list_rate"] = item_details.get("sp_without_vat")
+				items["price_list_rate"] = item_details.get("sp_with_vat")
 				for row in order.get("items"):
 					# update item row
 					if row.get("item_code") == items.get("item_code"):
