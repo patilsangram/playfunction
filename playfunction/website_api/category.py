@@ -23,7 +23,6 @@ def get_categories(search=None):
 		""".format(cond)
 
 		categories_data = frappe.db.sql(query, as_dict=True)
-
 		# grouping in {parent:childs}
 		categories = {}
 		for cat in categories_data:
@@ -67,13 +66,13 @@ def get_category_tree():
 		return item group tree hierarchy of custom item groups(category)
 		in parent-child structure.
 	"""
-	fields = ["name as title", "group_level", "parent_item_group", "is_group as has_child"]
+	fields = ["name as title", "group_level", "parent_item_group", "is_group as has_child","weightage"]
 	erp_item_group = ['All Item Groups', 'Products', 'Raw Material', 'Services', 'Sub Assemblies', 'Consumable']
 	filters = {
 		"group_level": [">", 0],
 		"name": ["not in", erp_item_group]
 	}
-	item_groups = frappe.get_all("Item Group", filters, fields, ignore_permissions=True)
+	item_groups = frappe.get_all("Item Group", filters, fields,order_by="weightage", ignore_permissions=True)
 	group_tree = []
 	for idx, group in enumerate(item_groups):
 		if group.get("group_level") == 1:
@@ -89,6 +88,9 @@ def get_category_tree():
 	# sequential arrangement
 	sequence_req = ["מטפלים", "הורים", "מוסדות חינוכיים", "תינוקות 0-3",\
 	  "משחקים", "מתקני חצר", "ריהוט", "SALE"]
+
+	# sequence_req = ["Therapist", "Parents", "School", "Baby (0-12months)",\
+	# 	"Toys", "Outdoor Toys", "Furniture", "Offers & Sale"]
 	result = [
 		g for seq in sequence_req for g in group_tree if g.get("title") == seq
 	]
