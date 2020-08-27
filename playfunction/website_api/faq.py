@@ -7,7 +7,8 @@ def get_faq():
 		response = frappe.get_all("FAQ Item", fields=["question", "answer"])
 	except Exception as e:
 		frappe.local.response['http_status_code'] = getattr(e, "http_status_code", 500)
-		response = "Failed to fetch FAQ"
+		# msg = "Failed to fetch FAQ"
+		response = "המערכת זיהתה בעיה בקבלת הנתונים"
 		frappe.log_error(message=frappe.get_traceback() , title = "Website API: get_faq")
 	finally:
 		return response

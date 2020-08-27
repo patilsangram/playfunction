@@ -26,7 +26,8 @@ def place_order(quote_id, data=None):
 	try:
 		response = frappe._dict()
 		if not frappe.db.exists("Quotation", quote_id):
-			response["message"] = "Quotation not found"
+			# msg ="Quotation not found"
+			response["message"] = "הצעת המחיר לא נמצאה"
 			frappe.local.response["http_status_code"] = 404
 		else:
 			doc = frappe.get_doc("Quotation", quote_id)
@@ -75,12 +76,14 @@ def place_order(quote_id, data=None):
 					create_rihvit_invoice(sales_order.name)
 
 				response["payment_url"] = payment_url
-				response["message"] = "Order Placed Successfully."
+				# msg = "Order Placed Successfully."
+				response["message"] = "ההזמנה שלך בוצעה בהצלחה!"
 				response["order_id"] = sales_order.name
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Error occured while placing order"
+		# msg = "Error occured while placing order"
+		response["message"] = "שגיאה במהלך ביצוע ההזמנה"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: place_order")
 	finally:
 		return response
@@ -91,7 +94,8 @@ def order_details(order_id):
 	try:
 		response = frappe._dict()
 		if not frappe.db.exists("Sales Order", order_id):
-			response["message"] = "Order not found"
+			response["message"] = "הזמנה לא נמצאה"
+			# msg = "Order not found"
 			frappe.local.response["http_status_code"] = 404
 		else:
 			doc = frappe.get_doc("Sales Order", order_id)
@@ -134,7 +138,8 @@ def order_details(order_id):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Failed to fetch Order Details"
+		# msg = "Failed to fetch Order Details"
+		response["message"] = "המערכת זיהתה בעיה בהזמנה"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: order_details")
 	finally:
 		return response
@@ -153,11 +158,13 @@ def update_order(order_id, items):
 		response = frappe._dict()
 		items = json.loads(items)
 		if not frappe.db.exists("Sales Order", order_id):
-			response["message"] = "Sales Order not found"
+			# msg = "Sales Order not found"
+			response["message"] = "הזמנה לא נמצאה"
 			frappe.local.response['http_status_code'] = 404
 		else:
 			if not items.get("item_code"):
-				response["message"] = "Invalid Data"
+				# msg = "Invalid data"
+				response["message"] = "נתונים לא תקפים"
 				frappe.local.response["http_status_code"] = 422
 			else:
 				order = frappe.get_doc("Sales Order", order_id)
@@ -185,7 +192,8 @@ def update_order(order_id, items):
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Sales Order update failed"
+		# msg = "Sales Order update failed"
+		response["message"] = "עדכון המוצר בהזמנה נכשל"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: update_order")
 	finally:
 		return response
@@ -197,7 +205,8 @@ def order_history(page_index=0, page_size=10):
 		response = frappe._dict()
 		customer = frappe.db.get_value("Customer",{"user": frappe.session.user},"name")
 		if not customer:
-			response["message"] = "Customer doesn't exists."
+			# msg = "Cuustomer doesn't exists"
+			response["message"] = "לקוח לא קיים במערכת"
 			frappe.local.response["http_status_code"] = 422
 		else:
 			order_query = """
@@ -224,7 +233,8 @@ def order_history(page_index=0, page_size=10):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to fetch order list"
+		# msg = "Unable to fetch order list"
+		response["message"] = "המערכת זיהתה בעיה בהזמנה"
 		frappe.log_error(message=frappe.get_traceback(), title="Website API: get_order_list")
 	finally:
 		return response
@@ -243,7 +253,8 @@ def delete_order_item(order_id, item_code):
 		if not isinstance(item_code, list):
 			item_code = [item_code]
 		if not frappe.db.exists("Sales Order", order_id):
-			response["message"] = "Order not found"
+			# msg ="Order not found"
+			response["message"] = "הזמנה לא נמצאה"
 			frappe.local.response['http_status_code'] = 404
 		else:
 			order = frappe.get_doc("Sales Order", order_id)
@@ -256,7 +267,8 @@ def delete_order_item(order_id, item_code):
 			order.save()
 			if not len(order.get("items", [])):
 				frappe.delete_doc("Sales Order", order_id)
-				response["message"] = "Deleted all items"
+				# msg = "Deleted all items"
+				response["message"] = "כל המוצרים הוסרו בהצלחה!"
 				frappe.local.response["http_status_code"] = 200
 			else:
 				response = order_details(order_id)
@@ -264,7 +276,8 @@ def delete_order_item(order_id, item_code):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to Delete Order Item"
+		response["message"] = "אין אפשרות להסיר את המוצר מההזמנה"
+		# msg = "Unable to Delete Order Item"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: delete_order_item")
 	finally:
 		return response

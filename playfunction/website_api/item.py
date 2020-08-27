@@ -60,7 +60,8 @@ def get_category_items(data):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to fetch category items: {}".format(str(e))
+		# msg = "Unable to fetch category items: {}"
+		response["message"] = " {} : המערכת זיהתה בעיה בהתחברות לקטגוריה".format(str(e))
 		frappe.log_error(message=frappe.get_traceback(), title="Website API: get_category_items")
 	finally:
 		return response
@@ -104,7 +105,8 @@ def search(search=None):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to fetch details: {}".format(str(e))
+		# msg = "Unable to fetch details: {}"
+		response["message"] = "{} : המערכת זיהתה בעיה בקבלת הנתונים".format(str(e))
 		frappe.log_error(message=frappe.get_traceback(), title="Website API: search")
 	finally:
 		return response
@@ -148,7 +150,8 @@ def get_categorised_item(catalog_level_1, catalog_level_2, age=None, manufacture
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to fetch toys: {}".format(str(e))
+		# msg = "Unable to fetch toys: {}"
+		response["message"] = "{} : המערכת זיהתה בעיה".format(str(e))
 		frappe.log_error(message=frappe.get_traceback(), title="Website API: get_categorised_item")
 	finally:
 		return response
@@ -163,7 +166,8 @@ def get_item_details(item_code):
 
 		response = frappe._dict()
 		if not frappe.db.exists("Item", item_code):
-			response["data"] = "Item not found"
+			response["data"] = "פריט לא נמצא"
+			# Item not found
 			frappe.local.response["http_status_code"] = 404
 		else:
 			items = frappe.db.sql("""
@@ -205,7 +209,8 @@ def get_item_details(item_code):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to fetch item_details: {}".format(str(e))
+		# msg = "Unable to fetch item_details: {}"
+		response["message"] = "{} : פרטי המוצר לא נמצאו".format(str(e))
 		frappe.log_error(message=frappe.get_traceback(), title="Website API: get_item_details")
 	finally:
 		return response
@@ -218,7 +223,8 @@ def recommended_items(item_code):
 	try:
 		response = frappe._dict()
 		if not frappe.db.exists("Item", item_code):
-			response["data"] = "Item not found"
+			# msg = "Item not found"
+			response["data"] = "פריט לא נמצא"
 			frappe.local.response["http_status_code"] = 404
 		else:
 			items = frappe.db.sql("""select i.name as item_code, i.item_name, i.image, i.sp_with_vat as selling_price, i.age as age_range,r.item_name,r.item_code,r.image
@@ -227,7 +233,8 @@ def recommended_items(item_code):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to fetch item_details: {}".format(str(e))
+		# msg = "Unable to fetch item_details: {}"
+		response["message"] = "{} : פרטי המוצר לא נמצאו".format(str(e))
 		frappe.log_error(message=frappe.get_traceback(), title="Website API: recommended_items")
 	finally:
 		return response
@@ -269,7 +276,9 @@ def related_items(data):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to fetch item_details: {}".format(str(e))
+		# msg = "Unable to fetch item_details: {}"
+		response["message"] = "{} : פרטי המוצר לא נמצאו".format(str(e))
+		# response["message"] = "Unable to fetch item_details: {}".format(str(e))
 		frappe.log_error(message=frappe.get_traceback(), title="Website API: related_items")
 	finally:
 		return response

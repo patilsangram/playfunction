@@ -39,7 +39,8 @@ def get_categories(search=None):
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to fetch categories: {}".format(str(e))
+		# msg = "Unable to fetch categories:"
+		response["message"] = "{} : איו אפשרות לקבל את המידע על הקטגוריה הספציפית".format(str(e))
 	finally:
 		return response
 

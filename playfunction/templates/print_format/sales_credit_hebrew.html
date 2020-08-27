@@ -1,0 +1,173 @@
+<div class="container-fluid">
+	{%- from "templates/print_formats/standard_macros.html" import add_header, render_field -%}
+
+		<div id="header-html" >
+      <div style="margin-left:35px;margin-top:-8px;">
+				<img id="logo_img" src="/files/logo.png" style="height:130px;width:170px;" >
+			</div>
+			<div id="header" style="margin-right: -40px" >
+			 <b> חשבונית מס זיכוי</b>
+			</div>
+  		</div>
+
+    <div class="row" style="margin-left:20px;margin-right:20px;">
+      <div class="col-xs-4">
+        <div class="text-right">
+          <font size=2>  </font>
+          <p style="margin-top: 1px; margin-left: 27%; font-size:2">{{ frappe.utils.formatdate(doc.get_formatted('posting_date'), "dd/mm/yyyy") }}
+            <font size=4> <b> : תאריך</b>	</font>
+          </p>
+          <hr align="right"  style="width:100%; color: #000000; margin-top: 10px;" />
+          <p style="margin-top: 1px; margin-left: 27%; font-size:2">
+            <span> #1214324 </span>
+            <font size=4> <b>  : מספרכם </b>	</font>
+          </p>
+          <p style="margin-top: 1px; margin-left: 27%; font-size:2">
+            <span>15/788723 </span>
+            <font size=4> <b>  : מספר</b></font>
+            </p>
+            <p style="margin-top: 1px; margin-left: 27%; font-size:2">
+              <span>15/788723 </span>
+              <font size=4> <b> :מקביל לחשבונית מס </b></font>
+              </p>
+        </div>
+          <!--<p style="text-decoration: underline;text-underline-position: under; "><small>Proposal is valid for 14 days from the date shown</small></p>-->
+
+      </div>
+      <div class="col-xs-8">
+        <div class="pull-right text-right">
+          <font size=4><b>לכבוד</b></font><br>
+          <font size=2><b>{{ doc.customer }}</b></font>
+          <p>{{ doc.address_display}}</p>
+        </div>
+      </div>
+    </div>
+		<br><br>
+
+		<div class="row" style="margin-left:20px;margin-right:20px;">
+			<div class="col-xs-12">
+				<table style="width:100%;direction:rtl;font-size: medium;">
+					<thead>
+						<tr>
+							<th style="text-align:right;border:1px solid;">{{ _("#") }}</th>
+							<th style="text-align:right;border:1px solid;">{{ _("מס' פריט") }}</th>
+							<!--<th></th>-->
+							<th colspan="2" style="text-align:right;border-top:1px solid;">{{ _("תאור פריטט") }}</th>
+							<th style="border-top:1px solid;"></th>
+							<th style="text-align:right;border:1px solid;">{{ _("כמות") }}</th>
+							<th style="text-align:right;border:1px solid;">{{ _("ש''ח ליחידה") }}</th>
+							<th style="text-align:right;border:1px solid;">{{ _("סה''כ ש''ח") }}</th>
+							<!-- <th style="text-align:right;">{{ _("Cost with Disc.") }}</th> -->
+							<!-- <th style="text-align:right;border:1px solid;">{{ _("סך הכל נט") }}</th> -->
+						</tr>
+					</thead>
+					<tbody>
+						{% set cnt=namespace(count=1) %}
+						{% for item in doc.items %}
+						<tr>
+							<td style="text-align:right;border:1px solid;">{{ cnt.count }}</td>
+							{% set cnt.count=cnt.count+1 %}
+							<td style="text-align:right;border:1px solid;">{{ item.item_code }}</td>
+							<!-- <td style="text-align:right;"><img id="item_img" src= '{{ item.image }}'></td> -->
+							<td colspan="3" style="text-align:right;border:1px solid;" >{{ item.item_name }}</td>
+							<td style="text-align:right;border:1px solid;">
+								{% if item.qty < 0 %}
+								( {{ item.qty }} )
+								{% else %}
+								{{item.qty}}
+								{% endif %}
+							</td>
+							<td style="text-align:right;border:1px solid;">{{ '%0.2f' % item.price_list_rate|float }}</td>
+							<td style="text-align: right;border:1px solid;">{{ '%0.2f' % item.amount|float }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+					<tfoot style="text-align: right;line-height:10pt;">
+						<tr>
+							<td></td>
+						</tr>
+						<tr >
+							<td colspan="5"></td>
+							<td> {{ doc.total_qty }}</td>
+							<td style="font-size: 12" colspan="1"><b> {{ _("סך הכל ללא מע\"מ:") }}</b></td>
+							<td><b>{{ '%0.2f' % doc.total|float }}</b></td>
+						</tr>
+						<tr>
+							<td colspan="6"></td>
+							<td colspan="1"><b> {{ _("הנחה:") }}</b></td>
+							{% set disc=doc.total*doc.additional_discount_percentage/100 %}
+							<td><b>{{ '%0.2f' % disc|float }}</b></td>
+						</tr>
+						<tr>
+							<td colspan="6"></td>
+							<td colspan="1"> <b>{{ _("סה\"כ לאחר הנחה:") }}</b></td>
+							{% set total_aftr_disc=doc.total-disc %}
+							<td><b>{{ '%0.2f' % total_aftr_disc|float }}</b></td>
+						</tr>
+						<tr>
+							<td colspan="6"></td>
+							<td colspan="1"><b>{{ _("מע\"מ:") }}</b> <b class='small'>{{ _("17%") }}</b></td>
+							{% set tax=0 %}
+							{%  if doc.taxes_and_charges %}
+								{% set word = doc.taxes_and_charges.split(' ') %}
+								{% if word[0]=="VAT" and word[1]=="17" %}
+									{% set tax=total_aftr_disc*0.17 %}
+								{% endif %}
+							{% endif %}
+							<td><b>{{ '%0.2f' % tax|float }}</b></td>
+						</tr>
+						<tr>
+							<td colspan="6"></td>
+							<td id="total" colspan="1"> <b>{{ _("סה\"כ לתשלום") }}</b></td>
+							{% set grand_total=total_aftr_disc+tax %}
+							<td id="total"><b>{{ '%0.2f' % grand_total|float }}</b></td>
+						</tr>
+					</tfoot>
+				</table>
+			</div>
+		</div>
+		<div>
+
+		<div id="footer-html" class="visible-pdf">
+			{% if not no_letterhead and footer %}
+				<div class="letter-head-footer">
+					{{ footer }}
+				</div>
+			{% endif %}
+			<div class="row" style="direction:rtl;margin-right:20px;">
+				<div class="col-xs-12" id="confirm" style="direction:rtl;">
+
+					<b><p> : שם המקבל ___________________ חתימה  __________________ תאריך _____________</p></b>
+					<br><br>
+					<p> <b>מפיק המסמך : </b></p>
+					<p> <b> פליי פאנקשן ישראל בע"מ ____________</b> </p>
+				</div>
+				<!--  -->
+			</div>
+
+		<hr style="border: 3px solid orange;">
+		<div class="">
+			<div class="row" style="direction:rtl;margin-right:10px;">
+				<small>
+					<div class="col-xs-12">
+						<div class="col-xs-3">
+							<span style="float:left;">
+								<font size=2><b>ח.פ.</b> 514972330 &emsp;&emsp;</font>
+								<!-- <b>  טלפון :</b> 2-650-6262 -->
+							</span>
+						</div>
+						<div class="col-xs-3">
+							<span style="float:left;">
+								<!-- <b>Business no.:</b> ח.פ. 514972330 &emsp;&emsp; -->
+								<font size=2><b>  טלפון :</b> 02-650-6262</font>
+							</span>
+						</div>
+						<div class="col-xs-6" style="float:right;margin-right:10px;">
+							<font size=2><b>פליי פאנקשן ישראל בע"מ</b> תכלת מרדכי 21 משרד מספר 1202 ירושלים 9439645 &emsp;&emsp;</font>
+						</div>
+					</div>
+				</small>
+			</div>
+		</div>
+
+</div>

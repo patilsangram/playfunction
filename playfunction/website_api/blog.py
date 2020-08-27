@@ -21,7 +21,8 @@ def get_blog_list(page_index=0, page_size=10):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to fetch blog list".format(str(e))
+		# msg = "Unable to fetch blog list"
+		response["message"] = "{} המערכת זיהתה בעיה בהשגת הנתונים".format(str(e))
 		frappe.log_error(message=frappe.get_traceback() , title="website API: get_blog_list")
 	finally:
 		return response
@@ -37,11 +38,13 @@ def get_blog(blog_id):
 			response["data"] = blog_data
 		else:
 			frappe.local.response['http_status_code'] = 404
-			response["message"] = "Blog Not found"
+			response["message"] = "בלוג לא נמצא"
+			# msg = "Blog not found"
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to fetch blog Details: {}".format(str(e))
+		# msg = "Unable to fetch blog Details: {}"
+		response["message"] = "{} : המערכת זיהתה בעיה בהשגת הנתונים".format(str(e))
 		frappe.log_error(message=frappe.get_traceback(), title="website API: get_blog")
 	finally:
 		return response

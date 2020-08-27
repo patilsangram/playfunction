@@ -20,7 +20,8 @@ def get_project_list(page_index=0, page_size=10):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to fetch order list"
+		# msg = "Unable to fetch Project list"
+		response["message"] = "המערכת זיהתה בעיה בהצגת הפרויקט"
 		frappe.log_error(message = frappe.get_traceback() , title = "Website API: get_project_list")
 	finally:
 		return response
@@ -33,12 +34,14 @@ def get_project_details(project_id):
 			project_data = frappe.db.get_value("Playfunction Project", project_id, fields, as_dict=True)
 			response["data"] = project_data
 		else:
-			response["message"] = "Given Project ID not found"
+			# msg = "Given Project ID not found"
+			response["message"] = "המערכת זיהתה בעיה בהצגת הפרויקט"
 			frappe.local.response["http_status_code"] = 404
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to fetch Project Details: {}".format(str(e))
+		# msg = "Unable to fetch Project Details:"
+		response["message"] = "{} המערכת זיהתה בעיה בהצגת הפרויקט".format(str(e))
 		frappe.log_error(message = frappe.get_traceback() , title = "Website API: get_project_details")
 	finally:
 		return response

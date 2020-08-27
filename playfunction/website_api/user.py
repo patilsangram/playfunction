@@ -23,25 +23,28 @@ def login(data):
 				frappe.local.login_manager.post_login()
 				frappe.response["sid"] = frappe.session.sid
 				frappe.response["email"] = frappe.session.user
-				frappe.response["message"] = "Logged In"
+				frappe.response["message"] = "מחובר/ת"
 				frappe.response["status_code"] = 200
 				quote_id, proposal_id = get_last_quote()
 				frappe.response["quote_id"] = quote_id
 				frappe.response["proposal_id"] = proposal_id
 				frappe.local.response["http_status_code"] = 200
 			else:
-				frappe.response["message"] = _("Invalid User or Email Id")
+				# msg = "Invalid Username or Password"
+				frappe.response["message"] = _("משתמש או דוא\"ל לא תקין")
 				frappe.response["status_code"] = 404
 				frappe.local.response['http_status_code'] = 404
 		else:
 			frappe.response["status_code"] = 422
-			frappe.response["message"] = _("Invalid login credentials")
+			# msg = "Invalid credential"
+			frappe.response["message"] = _("שם משתמש או סיסמא לא תקינים")
 			frappe.local.response['http_status_code'] = 422
 	except frappe.AuthenticationError as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.response["status_code"] = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
-		response["message"] = "Unable to Login."
+		# ms = "Unable to login"
+		response["message"] = "בעיה בהתחברות לחשבון"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: login")
 
 def get_last_quote():
@@ -76,11 +79,13 @@ def logout(usr):
 			if frappe.db.exists("User", usr):
 				frappe.local.login_manager.logout(usr)
 				frappe.db.commit()
-				frappe.response["message"] = _("You have been successfully logged out")
+				# msg ="You have been successfully logged out"
+				frappe.response["message"] = _("התנתקת מהחשבון בהצלחה")
 				frappe.response["status_code"] = 200
 				frappe.local.response["http_status_code"] = 200
 			else:
-				frappe.response["message"] = ("User Not Found")
+				# msg ="User does not exist."
+				frappe.response["message"] = ("שם משתמש אינו קיים")
 				frappe.response["status_code"] = 404
 				frappe.local.response["http_status_code"] =  404
 		else:
@@ -90,7 +95,8 @@ def logout(usr):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.response["status_code"] = http_status_code
-		response["message"] = "Unable to Logout."
+		# msg = "Unable to Logout"
+		response["message"] = "אין אפשרות להתנתק מהחשבון"
 		frappe.local.response["http_status_code"] = http_status_code
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: logout")
 
@@ -114,11 +120,13 @@ def forgot_password(data):
 			response.status_code = 200
 			frappe.local.response['http_status_code'] = 200
 		else:
-			response.message = _("Invalid User")
+			# msg = "Invalid User"
+			response.message = _(" שם משתמש אינו קיים")
 			response.status_code = 404
 			frappe.local.response['http_status_code'] = 404
 	except Exception as e:
-		response["message"] = "Forgot Password failed"
+		# msg = "Forgot Password failed"
+		response["message"] = "שכחת את הסיסמא אינו תקף"
 		http_status_code = getattr(e, "http_status_code", 500)
 		response.status_code = http_status_code
 		frappe.local.response["http_status_code"] = http_status_code
@@ -131,7 +139,7 @@ def update_password(data):
 	"""
 		data: {
 			'usr': 'test@gmail.com',
-			'key': 'AR2xs49BkdNPUmBnfjHCou6QAOxx7wFj',
+			'key': 'AR2xs49BkdNPUmBnfjHCou6QAOxx7wFj',Forgot Password failed
 			'new_password': 'test@1234',
 			'old_password': 'test@12'
 		}
@@ -144,7 +152,8 @@ def update_password(data):
 			if args.get("key"):
 				user = frappe.db.get_value("User", {"reset_password_key":args.get("key")})
 				if not user:
-					response.message = _("Password reset key is expired")
+					# msg ="Password reset key is expired"
+					response.message = _("פג תוקף סיסמא זמנית")
 					response.status_code = 417
 					frappe.local.response['http_status_code'] = 417
 					return response
@@ -153,17 +162,20 @@ def update_password(data):
 
 			_update_password(user, args.get("new_password"))
 			frappe.db.set_value("User", user, "reset_password_key", "")
-			response.message = _("Password reset sucessfully")
+			# msg = "Password reset sucessfully"
+			response.message = _("הסיסמא שונתה בהצלחה!")
 			response.status_code = 200
 			frappe.local.response['http_status_code'] = 200
 		else:
-			response.message = _("Invalid User")
+			# msg = "Invalid User"
+			response.message = _(" שם משתמש לא קיים ")
 			response.status_code = 404
 			frappe.local.response['http_status_code'] = 404
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		response.status_code = http_status_code
-		response["message"] = "Update Password failed"
+		# msg = "Update Password Failed"
+		response["message"] = "עדכון הסיסמא נכשל"
 		frappe.local.response["http_status_code"] = http_status_code
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: update_password")
 	finally:
@@ -185,14 +197,16 @@ def registration(data):
 		args = json.loads(data)
 		user = frappe.db.exists("User", args.get("email"))
 		if user:
-			response["message"] = "User Already Registered"
+			# msg = "User Already Registered"
+			response["message"] = "המשתמש כבר רשום"
 			frappe.local.response['http_status_code'] = 200
 		else:
 			# Mobile no validation
 			existing_mobile_no = ""
 			if args.get("mobile_no") and frappe.db.get_value("User",
 				{"mobile_no": args.get("mobile_no")}, "name"):
-				response["message"] = _("Given Mobile No is linked with existing user.")
+				# msg = "Given Mobile No is linked with existing user."
+				response["message"] = _("נתוני הטלפון הנייד לא מקושרים למשתמש הקיים")
 				frappe.local.response['http_status_code'] = 417
 			else:
 				user_doc = frappe.new_doc("User")
@@ -209,11 +223,13 @@ def registration(data):
 					key = random_string(32)
 					user_doc.db_set("reset_password_key", key)
 					send_mail(user_doc.name,key)
-					response.message = _("User created with Email Id {} Please check Email for Verification".format(user_doc.name))
+					# msg = "User created with Email Id {} Please check Email for Verification"
+					response.message = _("משתמש נוצר עם מזהה דוא\"ל {} אנא בדוק אם יש אימות בדוא\"ל שלך".format(user_doc.name))
 					frappe.local.response['http_status_code'] = 200
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
-		response["message"] = "Registration failed"
+		# msg = "Registration failed"
+		response["message"] = "ההרשמה נכשלה"
 		frappe.local.response["http_status_code"] = http_status_code
 		frappe.log_error(message = frappe.get_traceback() , title = "Website API: registration")
 	finally:
@@ -227,6 +243,7 @@ def send_mail(email,key=None):
 	try:
 		user = frappe.db.exists("User", email)
 		if user:
+			# msg = "Access Key"
 			subject = "Access Key"
 			content = """ This is your access key {} """.format(key)
 			frappe.sendmail(
@@ -257,15 +274,18 @@ def verify_mail(data):
 				user_doc.enabled = 1
 				user_doc.flags.ignore_permissions = True
 				user_doc.save()
-				response.message = ("Email Verified")
+				# msg = "Email Verified"
+				response.message = ("דוא\"ל אומת בהצלחה !")
 				response["status_code"] = 200
 				frappe.local.response['http_status_code'] = 200
 			else:
+
 				response.message = _("Invalid Access Key")
 				response.status_code = 417
 				frappe.local.response['http_status_code'] = 417
 		else:
-			response.message = ("Invalid User")
+			# msg ="Invalid User"
+			response.message = ("שם משתמש לא קיים")
 			response["status_code"] = 404
 			frappe.local.response['http_status_code'] = 404
 	except Exception as e:
@@ -273,7 +293,8 @@ def verify_mail(data):
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Mail Verification failed"
+		# msg = "Mail Verification failed"
+		response["message"] = "בעיה באימות דוא\"ל"
 	finally:
 		return response
 
@@ -296,7 +317,8 @@ def make_customer(data):
 		customer = frappe.db.get_value("Customer",{'user':user.name},"name")
 		if customer:
 			response["status_code"] = 200
-			response["message"] = "Customer already exists."
+			# msg = "Customer already exists."
+			response["message"] = "שם משתמש כבר קיים"
 			frappe.local.response['http_status_code'] = 200
 		else:
 			customer = frappe.new_doc("Customer")
@@ -313,11 +335,13 @@ def make_customer(data):
 			customer.flags.ignore_permissions = True
 			customer.save()
 			frappe.db.commit()
-			response["message"] = "Customer successfully created."
+			# msg = "Customer successfully created"
+			response["message"] = ".הלקוח נוצר בהצלחה"
 			frappe.local.response['http_status_code'] = 200
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Customer creation failed"
+		# msg = "Customer creation failed"
+		response["message"] = "שגיאה ביצירת פרטי לקוח"
 	finally:
 		return response
