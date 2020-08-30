@@ -13,17 +13,17 @@
 			<div class="row" style="margin-left:20px;margin-right:20px;">
 				<div class="col-xs-4">
 	        <div class="text-right">
-						<p style="margin-top: 1px; margin-left: 27%; font-size:4"> <font size=4> {{ frappe.utils.formatdate(doc.get_formatted('posting_date'), "dd/mm/yyyy") }}</font>
-								<font size=5> <b> : תאריך</b> </font>
+						<p style="margin-top: 1px; margin-left: 27%; font-size:4"> <font size=3> {{ frappe.utils.formatdate(doc.get_formatted('posting_date'), "dd/mm/yyyy") }}</font>
+								<font size=4> <b> : תאריך</b> </font>
 						</p>
-						<hr align="right"  style="width:100%; color: #000000; margin-top: 10px;" />
+						<hr align="right"  style="width:100%; border: 1px solid black; margin-top: 10px;line-height:1px;" />
 						<p style="margin-top: 1px; margin-left: 27%; font-size:4">
-							<font size=4><span> #1214324 </span></font>
-							<font size=5><b>  : מספרכם </b></font>
+							<font size=3><span> #1214324 </span></font>
+							<font size=4><b>  : מספרכם </b></font>
 						</p>
 						<p style="margin-top: 1px; margin-left: 27%; font-size:4">
-							<font size=4><span>15/788723 </span></font>
-							<font size=5><b>  : מספר</b></font>
+							<font size=3><span>15/788723 </span></font>
+							<font size=4><b>  : מספר</b></font>
 							</p>
 	        </div>
 	          <!--<p style="text-decoration: underline;text-underline-position: under; "><small>Proposal is valid for 14 days from the date shown</small></p>-->
@@ -31,60 +31,58 @@
 	      </div>
 				<div class="col-xs-8">
 	        <div class="pull-right text-right">
-						<font size=5><b> :לכבוד</b></font><br>
-						<font size=4><b>{{ doc.customer }}</b></font>
-						<font size=4><p>{{ doc.address_display}}</p></font>
+						<font size=4><b> :לכבוד</b></font><br>
+						<font size=3><b>{{ doc.customer }}</b></font>
+						<font size=3><p>{{ doc.address_display}}</p></font>
 	        </div>
 	      </div>
 			</div>
 
-		<br><br>
-
 		<div class="row" style="margin-left:20px;margin-right:20px;margin-bottom:10px;">
 			<div class="col-xs-12">
-				<table style="width:100%;direction:rtl;text-align:right;font-size: medium;">
+				<table class="table" style="width:100%;direction:rtl;text-align:right;">
 					<thead>
 						<tr>
-							<th style="text-align:right;border:1px solid;">{{ _("#") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("מס' פריט") }}</th>
-							<!--<th></th>-->
-							<th style="text-align:right;border-top:1px solid;">{{ _("תאור פריט") }}</th>
-							<th style="border-top:1px solid;"></th>
-							<th style="text-align:right;border:1px solid;">{{ _("כמות") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _( "ברוטו ליחידה") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("%הנחה") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("נטו ליחידה") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("סה\"כ נטו") }}</th>
+							<td style="text-align:right;"> <font size=2> <b>{{ _("#") }}</b> </font> </td>
+							<td style="text-align:right;"> <font size=2><b>{{ _("מס' פריט") }}</b>  </font> </td>
+							<!--<td></td>-->
+							<td style="text-align:right;"> <font size=2><b>{{ _("תאור פריט") }}</b>  </font> </td>
+							<td ></td>
+							<td style="text-align:right;"> <font size=2><b>{{ _("כמות") }}</b>  </font> </td>
+							<td style="text-align:right;"> <font size=2><b>{{ _( "ברוטו ליחידה") }}</b>  </font> </td>
+							<td style="text-align:right;"> <font size=2><b>{{ _("%הנחה") }}</b>  </font> </td>
+							<td style="text-align:right;"> <font size=2><b>{{ _("נטו ליחידה") }}</b>  </font>  </td>
+							<td style="text-align:right;"> <font size=2><b>{{ _("סה\"כ נטו") }}</b>  </font> </td>
 						</tr>
 					</thead>
 					<tbody>
 						{% set cnt=namespace(count=1) %}
 						{% for item in doc.items %}
 						<tr>
-							<td style="text-align:right;border:1px solid;">{{ cnt.count }}</td>
+							<td style="text-align:right;">{{ cnt.count }}</td>
 							{% set cnt.count=cnt.count+1 %}
-							<td style="text-align:right;border:1px solid;">{{ item.item_code }}</td>
+							<td style="text-align:right;">{{ item.item_code }}</td>
 							<!-- <td style="text-align:right;"><img id="item_img" src= '{{ item.image }}'></td> -->
-							<td colspan="2" style="text-align:right;border:1px solid;" >{{ item.item_name }}</td>
-							<td style="text-align:right;border:1px solid;">{{ item.qty }}</td>
-							<td style="text-align:right;border:1px solid;">{{ '%0.2f' % item.price_list_rate|float }}</td>
-							<td style="text-align:right;border:1px solid;">{{item.discount_percentage }}%</td>
+							<td colspan="2" style="text-align:right;" >{{ item.item_name }}</td>
+							<td style="text-align:right;">{{ item.qty }}</td>
+							<td style="text-align:right;">{{ '%0.2f' % item.price_list_rate|float }}</td>
+							<td style="text-align:right;">{{item.discount_percentage }}%</td>
 							{% if item.discount_percentage > 0 %}
-							<td style="text-align:right;border:1px solid;">{{ '%0.2f' % (item.rate*item.discount_percentage/100)|float }}</td>
+							<td style="text-align:right;">{{ '%0.2f' % (item.rate*item.discount_percentage/100)|float }}</td>
 							{% else %}
-							<td style="text-align:right;border:1px solid;">{{ '%0.2f' % item.rate|float }}</td>
+							<td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td>
 							{% endif%}
 							{% if item.discount_percentage > 0 %}
-							<!-- <td style="text-align:right;border:1px solid;">{{ '%0.2f' % (item.rate*item.discount_percentage/100)|float }}</td> -->
-							<td style="text-align: right;border:1px solid;">{{ '%0.2f' % (item.amount*item.discount_percentage/100)|float }}</td>
+							<!-- <td style="text-align:right;">{{ '%0.2f' % (item.rate*item.discount_percentage/100)|float }}</td> -->
+							<td style="text-align: right;">{{ '%0.2f' % (item.amount*item.discount_percentage/100)|float }}</td>
 							{% else %}
-							<td style="text-align: right;border:1px solid;">{{ '%0.2f' % (item.amount)|float }}</td>
-							<!-- <td style="text-align:right;border:1px solid;">{{ '%0.2f' % item.rate|float }}</td> -->
+							<td style="text-align: right;">{{ '%0.2f' % (item.amount)|float }}</td>
+							<!-- <td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td> -->
 							{% endif%}
 						</tr>
 						{% endfor %}
 					</tbody>
-					<tfoot style="text-align: right;line-height:10pt;">
+					<tfoot style="text-align: right;line-height:5pt;">
 						<tr>
 							<td></td>
 						</tr>
@@ -134,18 +132,18 @@
 			<div class="row" style="margin-left:20px;margin-right:20px;margin-bottom:10px;margin-top:400px;">
 				<!-- <div class="col-xs-12" style="margin-top:20px;" > -->
 				<p style="direction:rtl;margin-right:2px"> <font size=3><b>פרטי תשלום: חשבונית מס קבלה</b></font> </p>
-					<table style="width:100%;margin-bottom:100px;font-size: medium;">
+					<table style="width:100%;margin-bottom:100px;">
 						<thead>
 							<tr>
-								<th style="text-align:right;border:1px solid; ">{{ _("#") }}</th>
-								<th style="text-align:right;border:1px solid; ">{{ _("פרטים") }}</th>
-								<th style="text-align:right;border:1px solid;">{{ _("סוג תשלום") }}</th>
-								<th style="text-align:right;border:1px solid;">{{ _("מס\' שיק") }}</th>
-								<th style="text-align:right;border:1px solid;">{{ _("ת. פרעון") }}</th>
-								<th style="text-align:right; border:1px solid;">{{ _("בנק") }}</th>
-								<th style="text-align:right; border:1px solid;">{{ _("סניף") }}</th>
-								<th style="text-align:right; border:1px solid;">{{ _("מספר חשבון") }}</th>
-								<th style="text-align:right; border:1px solid;">{{ _("סכום") }}</th>
+								<td style="text-align:right; "> <b>{{ _("#") }}</b> </td>
+								<td style="text-align:right; "> <b>{{ _("פרטים") }}</b> </td>
+								<td style="text-align:right;"> <b>{{ _("סוג תשלום") }}</b> </td>
+								<td style="text-align:right;"> <b>{{ _("מס\' שיק") }}</b> </td>
+								<td style="text-align:right;"> <b>{{ _("ת. פרעון") }}</b> </td>
+								<td style="text-align:right; "> <b>{{ _("בנק") }}</b> </td>
+								<td style="text-align:right; "> <b>{{ _("סניף") }}</b> </td>
+								<td style="text-align:right; "> <b></b> </td>
+								<td style="text-align:right; "> <b>{{ _("סכום") }}</b> </td>
 							</tr>
 						</thead>
 						<tbody>
@@ -157,16 +155,16 @@
 								{% set pay_entry=frappe.db.get_value("Payment Entry", {"name":pay_ref['parent']} , ["mode_of_payment", "reference_no","posting_date","bank","paid_from","bank_account_no"], as_dict=true) %}
 
 							<tr>
-								<td style="text-align:right; border:1px solid;">{{ cnt.count }}</td>
+								<td style="text-align:right;">{{ cnt.count }}</td>
 								{% set cnt.count=cnt.count+1 %}
-								<td style="text-align:right; border:1px solid;">{{ pay_ref.reference_name }}</td>
-								<td style="text-align:right; border:1px solid;" >{{ pay_entry.mode_of_payment }}</td>
-								<td style="text-align:right;border:1px solid;">{{ pay_entry.reference_no }}</td>
-								<td style="text-align:right;border:1px solid;">{{ pay_entry.posting_date }}</td>
-								<td style="text-align:right; border:1px solid;">{{ pay_entry.bank }}</td>
-								<td style="text-align:right; border:1px solid;">{{ pay_entry.paid_from }}</td>
-								<td style="text-align:right; border:1px solid;">{{ pay_entry.bank_account_no }}</td>
-								<td style="text-align:right; border:1px solid;">{{ pay_ref.allocated_amount }}</td>
+								<td style="text-align:right;">{{ pay_ref.reference_name }}</td>
+								<td style="text-align:right;" >{{ pay_entry.mode_of_payment }}</td>
+								<td style="text-align:right;">{{ pay_entry.reference_no }}</td>
+								<td style="text-align:right;">{{ pay_entry.posting_date }}</td>
+								<td style="text-align:right;">{{ pay_entry.bank }}</td>
+								<td style="text-align:right;">{{ pay_entry.paid_from }}</td>
+								<td style="text-align:right;">{{ pay_entry.bank_account_no }}</td>
+								<td style="text-align:right;">{{ pay_ref.allocated_amount }}</td>
 
 								{% set t.total=t.total+pay_ref.allocated_amount %}
 							</tr>
@@ -202,23 +200,23 @@
 
 		<hr style="border: 3px solid orange;margin-bottom:10px;">
 		<!-- <div class=""> -->
-		<div class="row" style="direction:rtl;margin-left:20px;margin-right:20px;margin-bottom:-90px;">
+		<div class="row" style="direction:rtl;margin-left:20px;margin-right:20px;margin-top:20px;margin-bottom:-90px;">
 			<small>
 				<div class="col-xs-12">
-					<div class="col-xs-3">
-						<span style="float:left;">
-							<font size=2><b>ח.פ.</b> 514972330 &emsp;&emsp;</font>
+					<div class="col-xs-2">
+						<span style="">
+							<font size=1><b>ח.פ.</b> 514972330 &emsp;&emsp;</font>
 							<!-- <b>  טלפון :</b> 2-650-6262 -->
 						</span>
 					</div>
 					<div class="col-xs-3">
-						<span style="float:left;">
+						<span style="">
 							<!-- <b>Business no.:</b> ח.פ. 514972330 &emsp;&emsp; -->
-							<font size=2><b>  טלפון :</b> 02-650-6262</font>
+							<font size=1><b>  טלפון :</b> 02-650-6262</font>
 						</span>
 					</div>
-					<div class="col-xs-6">
-						<font size=2><b>פליי פאנקשן ישראל בע"מ</b> תכלת מרדכי 21 משרד מספר 1202 ירושלים 9439645 &emsp;&emsp;</font>
+					<div class="col-xs-7" style="text-align:right;">
+						<font size=1><b>פליי פאנקשן ישראל בע"מ</b> תכלת מרדכי 21 משרד מספר 1202 ירושלים 9439645 </font>
 					</div>
 				</div>
 			</small>
