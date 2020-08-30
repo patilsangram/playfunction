@@ -17,7 +17,7 @@
           <p style="margin-top: 1px; margin-left: 27%; font-size:2">{{ frappe.utils.formatdate(doc.get_formatted('posting_date'), "dd/mm/yyyy") }}
             <font size=4> <b> : תאריך</b>	</font>
           </p>
-          <hr align="right"  style="width:100%; color: #000000; margin-top: 10px;" />
+          <hr align="right"  style="width:100%; border: 1px solid black; margin-top: 10px;" />
           <p style="margin-top: 1px; margin-left: 27%; font-size:2">
             <span> #1214324 </span>
             <font size=4> <b>  : מספרכם </b>	</font>
@@ -49,36 +49,40 @@
 				<table style="width:100%;direction:rtl;font-size: medium;">
 					<thead>
 						<tr>
-							<th style="text-align:right;border:1px solid;">{{ _("#") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("מס' פריט") }}</th>
-							<!--<th></th>-->
-							<th colspan="2" style="text-align:right;border-top:1px solid;">{{ _("תאור פריטט") }}</th>
-							<th style="border-top:1px solid;"></th>
-							<th style="text-align:right;border:1px solid;">{{ _("כמות") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("ש''ח ליחידה") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("סה''כ ש''ח") }}</th>
+							<td style="text-align:right;"> <b>{{ _("#") }}</b> </td>
+							<td style="text-align:right;"> <b>{{ _("מס' פריט") }}</b> </td>
+							<!--<td></td>-->
+							<td colspan="2" style="text-align:right;"> <b>{{ _("תאור פריטט") }}</b> </td>
+							<td style=""></td>
+							<td style="text-align:right;"> <b>{{ _("כמות") }}</b> </td>
+							<td style="text-align:right;"> <b> {{ _("ש''ח ליחידה") }} </b> </td>
+							<td style="text-align:right;"> <b>{{ _("סה''כ ש''ח") }}</b> </td>
 							<!-- <th style="text-align:right;">{{ _("Cost with Disc.") }}</th> -->
-							<!-- <th style="text-align:right;border:1px solid;">{{ _("סך הכל נט") }}</th> -->
+							<!-- <th style="text-align:right;">{{ _("סך הכל נט") }}</th> -->
 						</tr>
 					</thead>
 					<tbody>
 						{% set cnt=namespace(count=1) %}
 						{% for item in doc.items %}
 						<tr>
-							<td style="text-align:right;border:1px solid;">{{ cnt.count }}</td>
+							<td style="text-align:right;">{{ cnt.count }}</td>
 							{% set cnt.count=cnt.count+1 %}
-							<td style="text-align:right;border:1px solid;">{{ item.item_code }}</td>
+							<td style="text-align:right;">{{ item.item_code }}</td>
 							<!-- <td style="text-align:right;"><img id="item_img" src= '{{ item.image }}'></td> -->
-							<td colspan="3" style="text-align:right;border:1px solid;" >{{ item.item_name }}</td>
-							<td style="text-align:right;border:1px solid;">
+							<td colspan="3" style="text-align:right;" >{{ item.item_name }}</td>
+							<td style="text-align:right;">
 								{% if item.qty < 0 %}
 								( {{ item.qty }} )
 								{% else %}
 								{{item.qty}}
 								{% endif %}
 							</td>
-							<td style="text-align:right;border:1px solid;">{{ '%0.2f' % item.price_list_rate|float }}</td>
-							<td style="text-align: right;border:1px solid;">{{ '%0.2f' % item.amount|float }}</td>
+							<td style="text-align:right;">{{ '%0.2f' % item.price_list_rate|float }}</td>
+							{% if item.amount < 0 %}
+							<td style="text-align: right;">( {{ '%0.2f' % item.amount |float }})</td>
+							{% else %}
+							<td style="text-align: right;">{{ '%0.2f' % item.amount|float }}</td>
+							{% endif %}
 						</tr>
 						{% endfor %}
 					</tbody>
@@ -88,9 +92,19 @@
 						</tr>
 						<tr >
 							<td colspan="5"></td>
-							<td> {{ doc.total_qty }}</td>
+							<td>
+								{% if  doc.total_qty < 0 %}
+								( {{  doc.total_qty }} )
+								{% else %}
+								{{ doc.total_qty}}
+								{% endif %}
+								</td>
 							<td style="font-size: 12" colspan="1"><b> {{ _("סך הכל ללא מע\"מ:") }}</b></td>
+							{% if doc.total < 0 %}
+							<td><b>({{ '%0.2f' % doc.total|float }})</b></td>
+							{% else %}
 							<td><b>{{ '%0.2f' % doc.total|float }}</b></td>
+							{% endif %}
 						</tr>
 						<tr>
 							<td colspan="6"></td>
@@ -102,7 +116,13 @@
 							<td colspan="6"></td>
 							<td colspan="1"> <b>{{ _("סה\"כ לאחר הנחה:") }}</b></td>
 							{% set total_aftr_disc=doc.total-disc %}
-							<td><b>{{ '%0.2f' % total_aftr_disc|float }}</b></td>
+							<td><b>
+								{% if total_aftr_disc < 0 %}
+								( {{ total_aftr_disc }} )
+								{% else %}
+								{{total_aftr_disc}}
+								{% endif %}
+								</b></td>
 						</tr>
 						<tr>
 							<td colspan="6"></td>
@@ -120,7 +140,13 @@
 							<td colspan="6"></td>
 							<td id="total" colspan="1"> <b>{{ _("סה\"כ לתשלום") }}</b></td>
 							{% set grand_total=total_aftr_disc+tax %}
-							<td id="total"><b>{{ '%0.2f' % grand_total|float }}</b></td>
+							<td id="total"><b>
+								{% if total_aftr_disc < 0 %}
+								( {{ total_aftr_disc }} )
+								{% else %}
+								{{total_aftr_disc}}
+								{% endif %}
+							</b></td>
 						</tr>
 					</tfoot>
 				</table>
@@ -147,23 +173,23 @@
 
 		<hr style="border: 3px solid orange;">
 		<div class="">
-			<div class="row" style="direction:rtl;margin-right:10px;">
+			<div class="row" style="direction:rtl;margin-right:10px;margin-left:10px">
 				<small>
 					<div class="col-xs-12">
-						<div class="col-xs-3">
+						<div class="col-xs-2">
 							<span style="float:left;">
-								<font size=2><b>ח.פ.</b> 514972330 &emsp;&emsp;</font>
+								<font size=1><b>ח.פ.</b> 514972330 &emsp;&emsp;</font>
 								<!-- <b>  טלפון :</b> 2-650-6262 -->
 							</span>
 						</div>
 						<div class="col-xs-3">
-							<span style="float:left;">
+							<span style="">
 								<!-- <b>Business no.:</b> ח.פ. 514972330 &emsp;&emsp; -->
-								<font size=2><b>  טלפון :</b> 02-650-6262</font>
+								<font size=1><b>  טלפון :</b> 02-650-6262</font>
 							</span>
 						</div>
-						<div class="col-xs-6" style="float:right;margin-right:10px;">
-							<font size=2><b>פליי פאנקשן ישראל בע"מ</b> תכלת מרדכי 21 משרד מספר 1202 ירושלים 9439645 &emsp;&emsp;</font>
+						<div class="col-xs-7" style="float:right;">
+							<font size=1><b>פליי פאנקשן ישראל בע"מ</b> תכלת מרדכי 21 משרד מספר 1202 ירושלים 9439645 &emsp;&emsp;</font>
 						</div>
 					</div>
 				</small>
