@@ -14,17 +14,17 @@
     <div class="row" style="margin-left:20px;margin-right:20px;">
       <div class="col-xs-4">
         <div class="text-right">
-					<p style="margin-top: 1px; margin-left: 27%; font-size:4"> <font size=4> {{ frappe.utils.formatdate(doc.get_formatted('transaction_date'), "dd/mm/yyyy") }}</font>
-							<font size=5> <b> : תאריך</b> </font>
+					<p style="margin-top: 1px; margin-left: 27%; font-size:4"> <font size=3> {{ frappe.utils.formatdate(doc.get_formatted('transaction_date'), "dd/mm/yyyy") }}</font>
+							<font size=4> <b> : תאריך</b> </font>
 					</p>
-					<hr align="right"  style="width:100%; color: #000000; margin-top: 10px;" />
+					<hr align="right"  style="width:100%; border: 1px solid black; margin-top: 10px;" />
 					<p style="margin-top: 1px; margin-left: 27%; font-size:4">
-						<font size=4><span> #1214324 </span></font>
-						<font size=5><b>  : מספרכם </b></font>
+						<font size=3><span> #1214324 </span></font>
+						<font size=4><b>  : מספרכם </b></font>
 					</p>
 					<p style="margin-top: 1px; margin-left: 27%; font-size:4">
-						<font size=4><span>15/788723 </span></font>
-						<font size=5><b>  : מספר</b></font>
+						<font size=3><span>15/788723 </span></font>
+						<font size=4><b>  : מספר</b></font>
 						</p>
         </div>
           <!--<p style="text-decoration: underline;text-underline-position: under; "><small>Proposal is valid for 14 days from the date shown</small></p>-->
@@ -32,61 +32,60 @@
       </div>
       <div class="col-xs-8">
         <div class="pull-right text-right">
-					<font size=5><b> :לכבוד</b></font><br>
-					<font size=4><b>{{ doc.party_name }}</b></font>
-					<font size=4><p>{{ doc.address_display}}</p></font>
+					<font size=4><b> :לכבוד</b></font><br>
+					<font size=3><b>{{ doc.party_name }}</b></font>
+					<font size=3><p>{{ doc.address_display}}</p></font>
 
         </div>
       </div>
     </div>
-		<br><br>
 
 		<div class="row" style="margin-left:20px;margin-right:20px;direction:rtl;">
 			<div class="col-xs-12">
-				<table style="width:100%;direction:rtl;">
+				<table class="table" style="width:100%;direction:rtl;">
 					<thead>
 						<tr>
-							<th style="text-align:right;border:1px solid;">{{ _("#") }}</th>
-							<th style="text-align:right; border:1px solid;">{{ _("מס' פריט") }}</th>
-							<th style="border:1px solid;"></th>
-							<th style="text-align:right;border-top:1px solid;">{{ _("תאור פריט") }}</th>
-							<th style="border-top:1px solid;"></th>
+							<td style="text-align:right;"> <b> {{ _("#") }} </b> </td>
+							<td style="text-align:right; "> <b>{{ _("מס' פריט") }}</b> </td>
+							<td style=""></td>
+							<td style="text-align:right;"> <b>{{ _("תאור פריט") }}</b> </td>
+							<td style=""></td>
 
-							<th style="text-align:right;border:1px solid;">{{ _("כמות") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("ברוטו ליחידה") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("%הנחה") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("נטו ליחידה") }}</th>
-							<th style="text-align:right;border:1px solid;">{{ _("סה\"כ נטו") }}</th>
+							<td style="text-align:right;"> <b>{{ _("כמות") }}</b> </td>
+							<td style="text-align:right;"> <b>{{ _("ברוטו ליחידה") }}</b> </td>
+							<td style="text-align:right;"> <b>{{ _("%הנחה") }}</b> </td>
+							<td style="text-align:right;"> <b>{{ _("נטו ליחידה") }}</b> </td>
+							<td style="text-align:right;"> <b>{{ _("סה\"כ נטו") }}</b> </td>
 						</tr>
 					</thead>
 					<tbody>
 						{% set cnt=namespace(count=1) %}
 						{% for item in doc.items %}
 						<tr>
-							<td style="text-align:right;border:1px solid;">{{ cnt.count }}</td>
+							<td style="text-align:right;">{{ cnt.count }}</td>
 							{% set cnt.count=cnt.count+1 %}
-							<td style="text-align:right;border:1px solid;">{{ item.item_code }}</td>
-							<td style="text-align:right;border:1px solid;"><img id="item_img" src= '{{ item.image }}'></td>
-							<td style="text-align:right;border:1px solid;" colspan="2">{{ item.item_name }}</td>
-							<td style="text-align:right;border:1px solid;">{{ item.qty }}</td>
-							<td style="text-align:right;border:1px solid;">{{ '%0.2f' % item.price_list_rate|float }}</td>
-							<td style="text-align:right;border:1px solid;">{{ item.discount_percentage }}%</td>
+							<td style="text-align:right;">{{ item.item_code }}</td>
+							<td style="text-align:right;height: 60px;width: 60px !important;"><img id="item_img" src= '{{ item.image }}'></td>
+							<td style="text-align:right;" colspan="2">{{ item.item_name }}</td>
+							<td style="text-align:right;">{{ item.qty }}</td>
+							<td style="text-align:right;">{{ '%0.2f' % item.price_list_rate|float }}</td>
+							<td style="text-align:right;">{{ item.discount_percentage }}%</td>
 							{% if item.discount_percentage > 0 %}
-							<td style="text-align:right;border:1px solid;">{{ '%0.2f' % (item.rate*item.discount_percentage/100)|float }}</td>
+							<td style="text-align:right;">{{ '%0.2f' % (item.rate*item.discount_percentage/100)|float }}</td>
 							{% else %}
-							<td style="text-align:right;border:1px solid;">{{ '%0.2f' % item.rate|float }}</td>
+							<td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td>
 							{% endif%}
 							{% if item.discount_percentage > 0 %}
-							<!-- <td style="text-align:right;border:1px solid;">{{ '%0.2f' % (item.rate*item.discount_percentage/100)|float }}</td> -->
-							<td style="text-align: right;border:1px solid;">{{ '%0.2f' % (item.amount*item.discount_percentage/100)|float }}</td>
+							<!-- <td style="text-align:right;">{{ '%0.2f' % (item.rate*item.discount_percentage/100)|float }}</td> -->
+							<td style="text-align: right;">{{ '%0.2f' % (item.amount*item.discount_percentage/100)|float }}</td>
 							{% else %}
-							<td style="text-align: right;border:1px solid;">{{ '%0.2f' % (item.amount)|float }}</td>
-							<!-- <td style="text-align:right;border:1px solid;">{{ '%0.2f' % item.rate|float }}</td> -->
+							<td style="text-align: right;">{{ '%0.2f' % (item.amount)|float }}</td>
+							<!-- <td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td> -->
 							{% endif%}
 						</tr>
 						{% endfor %}
 					</tbody>
-					<tfoot style="text-align: right;line-height:10pt;">
+					<tfoot style="text-align: right;line-height:5pt;">
             <tr>
               <td></td>
             </tr>
@@ -138,41 +137,41 @@
 						{{ footer }}
 					</div>
 				{% endif %}
-				<div  class="row" style="direction:rtl;margin-right:10px;margin-bottom:10px">
+				<div  class="row" style="direction:rtl;margin-right:27px;margin-bottom:10px;">
 					<div class="col-xs-12" id="confirm" style="direction:rtl;">
 						<b><p> : שם המקבל ___________________ חתימה  __________________ תאריך _____________</p></b>
 						<br><br>
 						<p> <b>מפיק המסמך : </b></p>
 						<p> <b> פליי פאנקשן ישראל בע"מ ____________</b> </p>
 					</div>
-
+					</div>
 				<div  class="row">
 				<div class="col-xs-12" style="direction:rtl;margin-bottom:0px;margin-top:30px;margin-right:10px;">
 
 				</div>
 			</div>
 			<hr style="border: 3px solid orange;margin-right:-20px;">
-			<div class="row" style="direction:rtl;margin-left:20px;margin-right:10px;margin-bottom:-50px;">
+			<div class="row" style="direction:rtl;margin-left:20px;margin-right:10px;margin-bottom:0px;">
 				<small>
 					<div class="col-xs-12">
 						<div class="col-xs-3">
 							<span style="float:left;">
-								<font size=2><b>ח.פ.</b> 514972330 &emsp;&emsp;</font>
+								<font size=1><b>ח.פ.</b> 514972330 &emsp;&emsp;</font>
 								<!-- <b>  טלפון :</b> 2-650-6262 -->
 							</span>
 						</div>
 						<div class="col-xs-3">
 							<span style="float:left;">
 								<!-- <b>Business no.:</b> ח.פ. 514972330 &emsp;&emsp; -->
-								<font size=2><b>  טלפון :</b> 02-650-6262</font>
+								<font size=1><b>  טלפון :</b> 02-650-6262</font>
 							</span>
 						</div>
 						<div class="col-xs-6">
-							<font size=2><b>פליי פאנקשן ישראל בע"מ</b> תכלת מרדכי 21 משרד מספר 1202 ירושלים 9439645 &emsp;&emsp;</font>
+							<font size=1><b>פליי פאנקשן ישראל בע"מ</b> תכלת מרדכי 21 משרד מספר 1202 ירושלים 9439645 &emsp;&emsp;</font>
 						</div>
 					</div>
 				</small>
 			</div>
-			</div>
+
 
 	</div>
