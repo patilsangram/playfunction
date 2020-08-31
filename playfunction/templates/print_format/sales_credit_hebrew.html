@@ -49,14 +49,14 @@
 				<table style="width:100%;direction:rtl;font-size: medium;">
 					<thead>
 						<tr>
-							<td style="text-align:right;"> <b>{{ _("#") }}</b> </td>
-							<td style="text-align:right;"> <b>{{ _("מס' פריט") }}</b> </td>
+							<td style="text-align:right;"> <font size=2><b>{{ _("#") }}</b></font> </td>
+							<td style="text-align:right;"> <font size=2><b>{{ _("מס' פריט") }}</b></font> </td>
 							<!--<td></td>-->
-							<td colspan="2" style="text-align:right;"> <b>{{ _("תאור פריטט") }}</b> </td>
+							<td colspan="2" style="text-align:right;"> <font size=2><b>{{ _("תאור פריטט") }}</b></font> </td>
 							<td style=""></td>
-							<td style="text-align:right;"> <b>{{ _("כמות") }}</b> </td>
-							<td style="text-align:right;"> <b> {{ _("ש''ח ליחידה") }} </b> </td>
-							<td style="text-align:right;"> <b>{{ _("סה''כ ש''ח") }}</b> </td>
+							<td style="text-align:right;"> <font size=2><b>{{ _("כמות") }}</b></font> </td>
+							<td style="text-align:right;"> <font size=2><b> {{ _("ש''ח ליחידה") }} </b></font> </td>
+							<td style="text-align:right;"> <font size=2><b>{{ _("סה''כ ש''ח") }}</b></font> </td>
 							<!-- <th style="text-align:right;">{{ _("Cost with Disc.") }}</th> -->
 							<!-- <th style="text-align:right;">{{ _("סך הכל נט") }}</th> -->
 						</tr>
@@ -65,68 +65,68 @@
 						{% set cnt=namespace(count=1) %}
 						{% for item in doc.items %}
 						<tr>
-							<td style="text-align:right;">{{ cnt.count }}</td>
+							<td style="text-align:right;"><font size=2>{{ cnt.count }}</font></td>
 							{% set cnt.count=cnt.count+1 %}
-							<td style="text-align:right;">{{ item.item_code }}</td>
+							<td style="text-align:right;"><font size=2>{{ item.item_code }}</font></td>
 							<!-- <td style="text-align:right;"><img id="item_img" src= '{{ item.image }}'></td> -->
-							<td colspan="3" style="text-align:right;" >{{ item.item_name }}</td>
-							<td style="text-align:right;">
+							<td colspan="3" style="text-align:right;" ><font size=2>{{ item.item_name }}</font></td>
+							<td style="text-align:right;"><font size=2>
 								{% if item.qty < 0 %}
 								( {{ item.qty }} )
 								{% else %}
 								{{item.qty}}
-								{% endif %}
+								{% endif %}</font>
 							</td>
-							<td style="text-align:right;">{{ '%0.2f' % item.price_list_rate|float }}</td>
+							<td style="text-align:right;"><font size=2>{{ '%0.2f' % item.price_list_rate|float }}</font></td>
 							{% if item.amount < 0 %}
-							<td style="text-align: right;">( {{ '%0.2f' % item.amount |float }})</td>
+							<td style="text-align: right;"><font size=2>( {{ '%0.2f' % item.amount |float }})</font></td>
 							{% else %}
-							<td style="text-align: right;">{{ '%0.2f' % item.amount|float }}</td>
+							<td style="text-align: right;"><font size=2>{{ '%0.2f' % item.amount|float }}</font></td>
 							{% endif %}
 						</tr>
 						{% endfor %}
 					</tbody>
-					<tfoot style="text-align: right;line-height:10pt;">
+					<tfoot style="text-align: right;line-height:8pt;">
 						<tr>
 							<td></td>
 						</tr>
 						<tr >
 							<td colspan="5"></td>
-							<td>
+							<td><font size=2>
 								{% if  doc.total_qty < 0 %}
 								( {{  doc.total_qty }} )
 								{% else %}
 								{{ doc.total_qty}}
-								{% endif %}
+								{% endif %}</font>
 								</td>
-							<td style="font-size: 12" colspan="1"><b> {{ _("סך הכל ללא מע\"מ:") }}</b></td>
+							<td style="font-size: 12" colspan="1"><font size=2><b> {{ _("סך הכל ללא מע\"מ:") }}</b></font></td>
 							{% if doc.total < 0 %}
-							<td><b>({{ '%0.2f' % doc.total|float }})</b></td>
+							<td><font size=2><b>({{ '%0.2f' % doc.total|float }})</b></font></td>
 							{% else %}
-							<td><b>{{ '%0.2f' % doc.total|float }}</b></td>
+							<td><font size=2><b>{{ '%0.2f' % doc.total|float }}</b></font></td>
 							{% endif %}
 						</tr>
 						<tr>
 							<td colspan="6"></td>
-							<td colspan="1"><b> {{ _("הנחה:") }}</b></td>
+							<td colspan="1"><font size=2><b> {{ _("הנחה:") }}</b></font></td>
 							{% set disc=doc.total*doc.additional_discount_percentage/100 %}
-							<td><b>{{ '%0.2f' % disc|float }}</b></td>
+							<td><font size=2><b>{{ '%0.2f' % disc|float }}</b></font></td>
 						</tr>
 						<tr>
 							<td colspan="6"></td>
-							<td colspan="1"> <b>{{ _("סה\"כ לאחר הנחה:") }}</b></td>
+							<td colspan="1"><font size=2> <b>{{ _("סה\"כ לאחר הנחה:") }}</b></font></td>
 							{% set total_aftr_disc=doc.total-disc %}
-							<td><b>
+							<td><font size=2><b>
 								{% if total_aftr_disc < 0 %}
 								( {{ total_aftr_disc }} )
 								{% else %}
 								{{total_aftr_disc}}
-								{% endif %}
+								{% endif %}</font>
 								</b></td>
 						</tr>
 						<tr>
 							<td colspan="6"></td>
-							<td colspan="1"><b>{{ _("מע\"מ:") }}</b> <b class='small'>{{ _("17%") }}</b></td>
+							<td colspan="1"><font size=2><b>{{ _("מע\"מ:") }}</b> <b class='small'>{{ _("17%") }}</b></font></td>
 							{% set tax=0 %}
 							{%  if doc.taxes_and_charges %}
 								{% set word = doc.taxes_and_charges.split(' ') %}
@@ -134,19 +134,19 @@
 									{% set tax=total_aftr_disc*0.17 %}
 								{% endif %}
 							{% endif %}
-							<td><b>{{ '%0.2f' % tax|float }}</b></td>
+							<td><font size=2><b>{{ '%0.2f' % tax|float }}</b></font></td>
 						</tr>
 						<tr>
 							<td colspan="6"></td>
-							<td id="total" colspan="1"> <b>{{ _("סה\"כ לתשלום") }}</b></td>
+							<td id="total" colspan="1"><font size=2> <b>{{ _("סה\"כ לתשלום") }}</b></font></td>
 							{% set grand_total=total_aftr_disc+tax %}
-							<td id="total"><b>
+							<td id="total"><font size=2><b>
 								{% if total_aftr_disc < 0 %}
 								( {{ total_aftr_disc }} )
 								{% else %}
 								{{total_aftr_disc}}
 								{% endif %}
-							</b></td>
+							</b></font></td>
 						</tr>
 					</tfoot>
 				</table>
@@ -170,7 +170,11 @@
 				</div>
 				<!--  -->
 			</div>
+			<div  class="row">
+			<div class="col-xs-12" style="direction:rtl;margin-bottom:0px;margin-top:30px;margin-right:10px;">
 
+			</div>
+		</div>
 		<hr style="border: 3px solid orange;">
 		<div class="">
 			<div class="row" style="direction:rtl;margin-right:10px;margin-left:10px">
