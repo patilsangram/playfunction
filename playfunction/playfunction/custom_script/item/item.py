@@ -19,3 +19,15 @@ def item_autoname(doc, method):
 		supplier_chars = supplier[0].upper() + supplier[2].upper()
 		series = getseries("ItemAutoname", 5)
 		doc.item_code = supplier_chars + str(series)
+
+def validate(doc,method):
+	if frappe.db.exists("Item Price",{"item_code":doc.name,"selling":1}):
+		item_price_doc = frappe.get_doc("Item Price",{"item_code":doc.name})
+		item_price_doc.price_list_rate = doc.sp_with_vat
+		item_price_doc.save()
+	else:
+		new_item_price_doc = frappe.new_doc("Item Price")
+		new_item_price_doc.item_code = doc.name
+		new_item_price_doc.price_list = "Selling_price_with_vat"
+		new_item_price_doc.price_list_rate = doc.sp_with_vat
+		new_item_price_doc.save()
