@@ -112,6 +112,7 @@ doc_events = {
 		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.update_amount_owed",
 	},
 	"Item": {
+		"validate":"playfunction.playfunction.custom_script.item.item.validate",
 		"before_insert": "playfunction.playfunction.custom_script.item.item.item_autoname"
 	}
 }
@@ -153,4 +154,3 @@ scheduler_events = {
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "playfunction.event.get_events"
 # }
-

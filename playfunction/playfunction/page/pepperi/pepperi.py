@@ -15,18 +15,17 @@ def get_items_and_group_tree(filters):
 	# return item groups hierarchy and item list
 	company = erpnext.get_default_company() or frappe.db.get_all("Company")[0].get("name")
 	filters = json.loads(filters)
-	price_list = "Standard Selling"
 	customer_discount = frappe.db.get_value("Customer", {"user": frappe.session.user}, "discount_percentage") or 0
+	# customer_dic =
+	price_list = frappe.db.get_value("Customer", {"user": frappe.session.user}, "default_price_list") or "Standard Selling"
+	# price_list = "Standard Selling"
 	cond = " "
 
 	item_group = filters.get("item_group")
 	filters_ = {"group_level": (">", 1)}
 	fields = ['name','parent_item_group as parent','is_group as expandable']
 	data = frappe.get_list("Item Group", fields=fields, filters=filters_)
-
 	item_groups, group_list = get_children(item_group, data, [item_group])
-
-
 	# item group/catalog condition
 	if filters.get("child_item_group") and filters.get("child_item_group") != 'All':
 		group_list = [filters.get("child_item_group")]
@@ -39,7 +38,7 @@ def get_items_and_group_tree(filters):
 		fil = "'%{0}%'".format(filters.get("search_txt"))
 		cond += """ and (i.item_code like %s or i.item_name like %s)"""%(fil, fil)
 
-	discount_query = " ifnull(i.discount_percentage, 0) as discount " \
+	discount_query = " ifnull(pr.discount_percentage, 0) as discount " \
 		if not customer_discount else "{} as discount ".format(customer_discount)
 		# group_concat(concat(c.category,',',c.subcategory)) as category, 2. p.price_list_rate as price
 	item_details = frappe.db.sql('''
@@ -55,6 +54,7 @@ def get_items_and_group_tree(filters):
 			`tabBin` b on b.item_code = i.item_code and d.default_warehouse = b.warehouse
 		left join
 			`tabItem Price` p on p.item_code = i.item_code and p.price_list = "{}"
+		join`tabPricing Rule` pr on pr.item_group = i.item_group
 		where i.is_pepperi_item = 1 {}
 		group by i.name
 	'''.format(discount_query, company, price_list,cond), as_dict=True)
