@@ -1,6 +1,19 @@
 import frappe, json
 from frappe.utils import today, flt
 
+def submit(doc, method):
+	receipient = frappe.get_doc("Notification","Quotation")
+	cc = []
+	for i in receipient.recipients:
+		cc.append(i.cc)
+	frappe.sendmail(
+                    recipients = frappe.db.get_value("Customer",{"name":doc.party_name},"user"),
+                    cc = cc,
+                    subject = receipient.subject,
+                    message = frappe.render_template(receipient.message,{"doc":doc})
+                    # attachments= print_att
+                    )
+
 @frappe.whitelist()
 def checkout_order(data,doctype):
 	try:

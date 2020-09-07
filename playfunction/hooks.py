@@ -114,7 +114,19 @@ doc_events = {
 	"Item": {
 		"after_insert":"playfunction.playfunction.custom_script.item.item.validate",
 		"before_insert": "playfunction.playfunction.custom_script.item.item.item_autoname"
-	}
+	},
+	"Sales Order": {
+		"on_submit": "playfunction.playfunction.custom_script.sales_order.sales_order.submit",
+	},
+	"Sales Invoice": {
+		"on_submit": "playfunction.playfunction.custom_script.sales_invoice.sales_invoice.submit",
+	},
+	"Quotation": {
+		"on_submit": "playfunction.playfunction.custom_script.quotation.quotation.submit",
+	},
+	"Delivery Note": {
+		"on_submit": "playfunction.playfunction.custom_script.delivery_note.delivery_note.submit",
+	},
 }
 
 # Scheduled Tasks
