@@ -7,10 +7,10 @@
 <div class="col-sm-12" style="width:80%;">
   <table class="table" style="direction:rtl;">
     <tr>
-      <th> <b callspan=2>Product</b> </th>
-      <th> <b>Qty</b></th>
-      <th> <b>Rate</b> </th>
-      <th> <b>Total</b> </th>
+      <th> <b callspan=2>תאור מוצר</b> </th>
+      <th> <b>כמות</b></th>
+      <th> <b>מחיר</b> </th>
+      <th> <b>סה"כ</b> </th>
 
     </tr>
     {% for i in doc.items%}
@@ -29,7 +29,7 @@
     {% endfor%}
     <tfoot>
       <tr>
-        <td>  <b>Total Amount</b>  </td>
+        <td>  <b>סה"כ לתשלום</b>  </td>
         <td> <b>{{doc.total}}</b> </td>
 
       </tr>
@@ -44,8 +44,14 @@
 <p>לכל שאלה או בקשה, אל תהססו לפנות אלינו בדוא"ל.
 כל ההזמנות כפפות לתנאי השירות ותקנון האתר.</p>
 </div>
-<div class="col-sm-12" style="direction:rtl;width:80%">
-  <table class="table">
+<div class="col-sm-12" style="direction:rtl;">
+  <p>שימו לב, אין להגיב למייל זה .
+בכל מקרה של שאלה או בקשה, אתם מוזמנים ליצור איתנו קשר באמצעות כתובת הדוא"ל שלנו info@playfunction.co.il</p>
+<p>או באמצעות שירות הלקוחות הידידותי שלנו .</p>
+<p>נשמח לסייע לכם תמיד, <br>
+הצוות של פליי פאנקשן</p>
+
+  <!-- <table class="table">
     <thead>
       <th>Delivery Address</th>
       <th>Billing Address</th>
@@ -64,5 +70,5 @@
         United Kingdom
       </td>
     </tbody>
-  </table>
+  </table> -->
 </div>
