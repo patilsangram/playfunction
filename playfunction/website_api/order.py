@@ -38,7 +38,6 @@ def place_order(quote_id, data=None):
 				doc.delivery_city = data.get("delivery_city")
 				doc.shipping_type = data.get("shipping")
 				doc.payment_method = data.get("payment_method")
-
 				# delivery charges
 				# if data.get("shipping") == "Fast delivery to the house at subsidized price - NIS 29":
 				if data.get("shipping") == "משלוח מהיר עד הבית/ארגון במחיר מסובסד -29 ש\"ח":
@@ -53,7 +52,7 @@ def place_order(quote_id, data=None):
 					}
 					doc.append("taxes", delivery_charge_tax)
 			doc.save()
-			doc.submit()
+			# doc.submit()
 
 			# sales order
 			sales_order = make_sales_order(doc.name)
