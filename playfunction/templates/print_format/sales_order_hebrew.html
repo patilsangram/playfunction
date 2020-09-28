@@ -68,13 +68,13 @@
 							<td style="text-align:right;">{{ '%0.2f' % item.price_list_rate|float }}</td>
 							<td style="text-align:right;">{{item.discount_percentage }}%</td>
 							{% if item.discount_percentage > 0 %}
-							<td style="text-align:right;">{{ '%0.2f' % (item.rate*item.discount_percentage/100)|float }}</td>
+							<td style="text-align:right;">{{ '%0.2f' % (item.rate)|float }}</td>
 							{% else %}
 							<td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td>
 							{% endif%}
 							{% if item.discount_percentage > 0 %}
 							<!-- <td style="text-align:right;">{{ '%0.2f' % (item.rate*item.discount_percentage/100)|float }}</td> -->
-							<td style="text-align: right;">{{ '%0.2f' % (item.amount*item.discount_percentage/100)|float }}</td>
+							<td style="text-align: right;">{{ '%0.2f' % (item.amount)|float }}</td>
 							{% else %}
 							<td style="text-align: right;">{{ '%0.2f' % (item.amount)|float }}</td>
 							<!-- <td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td> -->
