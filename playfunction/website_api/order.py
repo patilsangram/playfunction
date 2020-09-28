@@ -74,7 +74,7 @@ def place_order(quote_id, data=None):
 
 				print("--- before saving the sales order ------")
 				sales_order.save()
-
+				print("----- sales order saved")
 				# send back payment_url if payment by card
 				# else create Rihvit Invoice
 				payment_url = ""
