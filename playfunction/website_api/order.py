@@ -39,6 +39,7 @@ def place_order(quote_id, data=None):
 				doc.shipping_type = data.get("shipping")
 				doc.payment_method = data.get("payment_method")
 				# delivery charges
+
 				# if data.get("shipping") == "Fast delivery to the house at subsidized price - NIS 29":
 				if data.get("shipping") == "משלוח מהיר עד הבית/ארגון במחיר מסובסד -29 ש\"ח":
 					delivery_account = frappe.db.get_value("Account", {
@@ -52,19 +53,25 @@ def place_order(quote_id, data=None):
 					}
 					doc.append("taxes", delivery_charge_tax)
 			doc.save()
-			# doc.submit()
-
+			doc.submit()
+			print("----- Quotation created ------")
 			# sales order
 			sales_order = make_sales_order(doc.name)
+			print("----- after make sales order ------")
 			if sales_order:
+				print("----- sales order created --- first if condition-----")
 				sales_order.delivery_date = frappe.utils.today()
 				sales_order.mode_of_order = "Web"
 				if data:
+					print("-----if data is available ---second if condition----")
 					update_customer_profile(data, sales_order.customer)
+					print("------after update customer profile-------")
 					sales_order.delivery_collection_point = data.get("delivery_collection_point")
 					sales_order.delivery_city = data.get("delivery_city")
 					sales_order.shipping_type = data.get("shipping")
 					sales_order.payment_method = data.get("payment_method")
+
+				print("--- before saving the sales order ------")
 				sales_order.save()
 
 				# send back payment_url if payment by card
