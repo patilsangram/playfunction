@@ -25,6 +25,7 @@ def place_order(quote_id, data=None):
 	"""
 	try:
 		response = frappe._dict()
+		print("-----------------------------place order ------------------------------------",quote_id)
 		if not frappe.db.exists("Quotation", quote_id):
 			# msg ="Quotation not found"
 			response["message"] = "הצעת המחיר לא נמצאה"
