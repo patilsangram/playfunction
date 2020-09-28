@@ -40,7 +40,8 @@ def place_order(quote_id, data=None):
 				doc.payment_method = data.get("payment_method")
 
 				# delivery charges
-				if data.get("shipping") == "Fast delivery to the house at subsidized price - NIS 29":
+				# if data.get("shipping") == "Fast delivery to the house at subsidized price - NIS 29":
+				if data.get("shipping") == "משלוח מהיר עד הבית/ארגון במחיר מסובסד -29 ש\"ח":
 					delivery_account = frappe.db.get_value("Account", {
 						"account_name": "Delivery Charge"
 					}, "name")
@@ -70,7 +71,7 @@ def place_order(quote_id, data=None):
 				# send back payment_url if payment by card
 				# else create Rihvit Invoice
 				payment_url = ""
-				if data.get("payment_method") == "Payment through card":
+				if data.get("payment_method") == "תשלום באמצעות קוד ":
 					payment_url = get_payment_url(sales_order.name)
 				else:
 					create_rihvit_invoice(sales_order.name)
