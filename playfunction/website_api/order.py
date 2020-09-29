@@ -25,7 +25,6 @@ def place_order(quote_id, data=None):
 	"""
 	try:
 		response = frappe._dict()
-		print("-----------------------------place order ------------------------------------",quote_id)
 		if not frappe.db.exists("Quotation", quote_id):
 			# msg ="Quotation not found"
 			response["message"] = "הצעת המחיר לא נמצאה"
@@ -55,30 +54,25 @@ def place_order(quote_id, data=None):
 					doc.append("taxes", delivery_charge_tax)
 			doc.save()
 			doc.submit()
-			print("----- Quotation created ------")
 			# sales order
 			sales_order = make_sales_order(doc.name)
-			print("----- after make sales order ------")
 			if sales_order:
-				print("----- sales order created --- first if condition-----")
 				sales_order.delivery_date = frappe.utils.today()
 				sales_order.mode_of_order = "Web"
 				if data:
-					print("-----if data is available ---second if condition----")
 					update_customer_profile(data, sales_order.customer)
-					print("------after update customer profile-------")
 					# sales_order.delivery_collection_point = data.get("delivery_collection_point")
 					# sales_order.delivery_city = data.get("delivery_city")
-					# sales_order.shipping_type = data.get("shipping")
-					# sales_order.payment_method = data.get("payment_method")
-
-				print("--- before saving the sales order ------")
+					try:
+						sales_order.shipping_type = data.get("shipping")
+						sales_order.payment_method = data.get("payment_method")
+					except Exception as e :
+						frappe.log_error(message=frappe.get_traceback() , title="Error in payment method")
 				sales_order.save()
-				print("----- sales order saved")
 				# send back payment_url if payment by card
 				# else create Rihvit Invoice
 				payment_url = ""
-				if data.get("payment_method") == "תשלום באמצעות קוד ":
+				if data.get("payment_method") == "תשלום באמצעות קוד":
 					payment_url = get_payment_url(sales_order.name)
 				else:
 					create_rihvit_invoice(sales_order.name)
