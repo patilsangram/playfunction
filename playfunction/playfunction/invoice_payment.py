@@ -4,7 +4,7 @@ from requests import request
 
 """
 This is common payment APIs file for mobile, website and ERP payment flow
-1. For website: 
+1. For website:
 	1.1 Get payment url
 	1.2 Store Private/Public Sales Token
 	1.3 Check Payment Status
@@ -31,7 +31,7 @@ def get_rihvit_api_token(rihvit_settings):
 		}
 		api_token = ""
 		headers = {"Content-Type": "application/json"}
-		response = request("POST", url, data=json.loads(data), headers=headers)
+		response = request("POST", url, data=json.dumps(data), headers=headers)
 		if response.status_code == 200:
 			response = json.loads(response.text)
 			api_token = response.get("data")["api_token"]
@@ -54,12 +54,9 @@ def create_rihvit_invoice(order_id):
 		order = frappe.get_doc("Sales Order", order_id)
 		rihvit_settings = frappe.get_doc("Rihvit Settings", "Rihvit Settings")
 		customer = frappe.get_doc("Customer", order.get("customer"))
-		
-
 		# Rihvit API token - check in settings if not generate new one
 		if not rihvit_settings.get("api_token"):
 			get_rihvit_api_token(rihvit_settings)
-
 		# sales order item
 		items = []
 		for i in order.get("items"):
@@ -75,22 +72,22 @@ def create_rihvit_invoice(order_id):
 		url = "https://api.rivhit.co.il/online/RivhitOnlineAPI.svc/Document.New"
 		headers = {"Content-Type": "application/json"}
 		data = {
-			"api_token": rihvit_settings.get("api_token"), 
+			"api_token": rihvit_settings.get("api_token"),
 			"document_type": 1,
-			"customer_id": customer.get("customer_id"),
+			"customer_id": 0,
 			"last_name": customer.get("customer_name"),
 			"first_name": customer.get("customer_name"),
 			"price_include_vat": True,
 			"currency_id":1,
 			"items": items
 		}
-
 		response = request("POST", url, data=json.dumps(data), headers=headers)
 		if response.status_code == 200:
 			so = frappe.get_doc("Sales Order", order_id)
 			so.rihvit_invoice = response.text
 			so.save()
 			frappe.db.commit()
+			frappe.log_error(message= "Rihvit Invoice Success", title="API: Rihvit API Success")
 			return "Success"
 		else:
 			error_log = json.dumps({order_id: response.text})
@@ -102,7 +99,7 @@ def create_rihvit_invoice(order_id):
 
 @frappe.whitelist()
 def get_payment_url(order_id):
-	"""This method will pass order data (customer details, item data) 
+	"""This method will pass order data (customer details, item data)
 	to the GetUrl API (iCredit) and get payment url
 
 	:param order_id: Sales Order No.
