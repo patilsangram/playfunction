@@ -72,7 +72,9 @@ def place_order(quote_id, data=None):
 				# send back payment_url if payment by card
 				# else create Rihvit Invoice
 				payment_url = ""
-				if data.get("payment_method") == "תשלום באמצעות קוד":
+				# card = "תשלום באמצעות כרטיס אשראי", // credit by credit card
+				# institution = "תשלום באמצעות קוד"  // credit by code‎
+				if data.get("payment_method") == "תשלום באמצעות כרטיס אשראי":
 					payment_url = get_payment_url(sales_order.name)
 				else:
 					create_rihvit_invoice(sales_order.name)
