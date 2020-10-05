@@ -81,8 +81,8 @@ def place_order(quote_id, data=None):
 
 				response["payment_url"] = payment_url
 				# msg = "Order Placed Successfully."
-				response["message"] = "Order Placed Successfully."
-				# response["message"] = "ההזמנה שלך בוצעה בהצלחה!"
+				# response["message"] = "Order Placed Successfully."
+				response["message"] = "ההזמנה שלך בוצעה בהצלחה!"
 				response["order_id"] = sales_order.name
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
