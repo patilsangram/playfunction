@@ -30,7 +30,7 @@ def get_items_and_group_tree(filters):
 	if filters.get("child_item_group") and filters.get("child_item_group") != 'All':
 		group_list = [filters.get("child_item_group")]
 
-	group_tuple = "(" + ",".join('"{}"'.format(i) for i in group_list) + ")"
+	group_tuple = '(' + ','.join("'{}'".format(i) for i in group_list) + ')'
 	cond += """ and (c.catalog_level_1 in {groups} or c.catalog_level_2 in {groups}
 		or c.catalog_level_3 in {groups} or c.catalog_level_4 in {groups} )""".format(groups=group_tuple)
 
