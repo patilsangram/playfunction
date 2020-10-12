@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import frappe, json, erpnext
 
 
@@ -20,7 +22,6 @@ def get_items_and_group_tree(filters):
 	price_list = frappe.db.get_value("Customer", {"user": frappe.session.user}, "default_price_list") or "Standard Selling"
 	# price_list = "Standard Selling"
 	cond = " "
-
 	item_group = filters.get("item_group")
 	filters_ = {"group_level": (">", 1)}
 	fields = ['name','parent_item_group as parent','is_group as expandable']
@@ -29,18 +30,26 @@ def get_items_and_group_tree(filters):
 	# item group/catalog condition
 	if filters.get("child_item_group") and filters.get("child_item_group") != 'All':
 		group_list = [filters.get("child_item_group")]
-
-	group_tuple = '(' + ','.join("'{}'".format(i) for i in group_list) + ')'
+	group_tuple = []
+	if len(group_list)>1:
+		for i in group_list:
+			if i.find('"')>1:
+				splited_list = i.split('"')
+				i = '"\\'.join(splited_list)
+			group_tuple.append(i)
+		group_tuple = tuple(group_tuple)
+	else:
+		group_tuple = '(' + ','.join('"{}"'.format(i) for i in group_list) + ')'
 	cond += """ and (c.catalog_level_1 in {groups} or c.catalog_level_2 in {groups}
 		or c.catalog_level_3 in {groups} or c.catalog_level_4 in {groups} )""".format(groups=group_tuple)
-
 	if filters.get("search_txt"):
 		fil = "'%{0}%'".format(filters.get("search_txt"))
 		cond += """ and (i.item_code like %s or i.item_name like %s)"""%(fil, fil)
 
-	discount_query = " ifnull(pr.discount_percentage, 0) as discount " \
-		if not customer_discount else "{} as discount ".format(customer_discount)
-		# group_concat(concat(c.category,',',c.subcategory)) as category, 2. p.price_list_rate as price
+	discount_query = """ CASE
+							WHEN pr.item_group IS NOT NULL THEN pr.discount_percentage
+						 ELSE {}
+						END as discount """.format(customer_discount)
 	item_details = frappe.db.sql('''
 		select
 			i.item_code, i.item_name, i.image, {},
@@ -54,11 +63,10 @@ def get_items_and_group_tree(filters):
 			`tabBin` b on b.item_code = i.item_code and d.default_warehouse = b.warehouse
 		left join
 			`tabItem Price` p on p.item_code = i.item_code and p.price_list = "{}"
-		join`tabPricing Rule` pr on pr.item_group = i.item_group
+		left join`tabPricing Rule` pr on pr.item_group = i.item_group
 		where i.is_pepperi_item = 1 {}
 		group by i.name
 	'''.format(discount_query, company, price_list,cond), as_dict=True)
-
 	data = {"item_groups": item_groups, "items": item_details}
 	return data
 
