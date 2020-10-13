@@ -37,7 +37,7 @@ def get_items_and_group_tree(filters):
 				splited_list = i.split('"')
 				i = '"\\'.join(splited_list)
 			group_tuple.append(i)
-		group_tuple = tuple(group_tuple)
+		group_tuple = str(tuple(group_tuple))
 	else:
 		group_tuple = '(' + ','.join('"{}"'.format(i) for i in group_list) + ')'
 	cond += """ and (c.catalog_level_1 in {groups} or c.catalog_level_2 in {groups}
@@ -66,7 +66,7 @@ def get_items_and_group_tree(filters):
 		left join`tabPricing Rule` pr on pr.item_group = i.item_group
 		where i.is_pepperi_item = 1 {}
 		group by i.name
-	'''.format(discount_query, company, price_list,cond), as_dict=True)
+	'''.format(discount_query, company, price_list,cond), as_dict=True,debug=True)
 	data = {"item_groups": item_groups, "items": item_details}
 	return data
 
