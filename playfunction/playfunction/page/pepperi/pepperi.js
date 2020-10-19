@@ -540,12 +540,14 @@ frappe.pepperi = Class.extend({
 		var me = this;
 		var data = []
 		var total = 0
+		var total_after_discount = 0
 		var cart_data = me.get_localstorage_data("items");
 		$.each(cart_data.items || [], function(k,v) {
 			let row = {"item_code": k, "qty": v[0], "price": v[1], "discount": v[2], "img": v[3]}
 			total += parseFloat(v[1] || 0) > 0 ? parseFloat(v[1]) * parseInt(v[0]) : 0.00
+			total_after_discount += parseFloat(v[1] || 0) > 0 ? parseFloat(v[1]-(v[1]*v[2]/100)) * parseInt(v[0]) : 0.00
 			data.push(row)
 		})
-		return {"items": data, "total": total}
+		return {"items": data, "total": total,"total_after_discount":total_after_discount}
 	}
 })
