@@ -143,7 +143,7 @@ frappe.pepperi = Class.extend({
 						"data": r.message, "item_group": filters["item_group"],
 						"child_item_group": filters["child_item_group"], "total": 0
 					}))
-					$('.pepperi-content').html(frappe.render_template('scope_items', 
+					$('.pepperi-content').html(frappe.render_template('scope_items',
 						{"data": r.message, "local": localdata})
 					)
 					me.search_item();
@@ -158,7 +158,7 @@ frappe.pepperi = Class.extend({
 					me.back_to_item_grid();
 				}
 				else {
-					$('.pepperi-content').html(frappe.render_template('scope_items', 
+					$('.pepperi-content').html(frappe.render_template('scope_items',
 						{"data": r.message, "local": localdata})
 					)
 					me.show_item_details();
@@ -221,7 +221,10 @@ frappe.pepperi = Class.extend({
 				},
 				callback: function(r) {
 					if(!r.exc && r.message) {
-						frappe.set_route("Form", doctype, r.message);
+						frappe.msgprint(__(doctype+" is created Successfully"))
+						setTimeout(() => {}, 10000);
+						window.location.reload();
+						// frappe.set_route("Form", doctype, r.message);
 					}
 					else {
 						frappe.msgprint(__("Something went wrong while placing order."))
@@ -292,7 +295,7 @@ frappe.pepperi = Class.extend({
 				<img id='zoom-view' src=%(img)s \
 				style='transform: translate(0px, 0px) rotate(0deg) scale(0.8); height:440px;'>\
 				</div>", {"img": image})
-	        
+
 			html_field.append(html)
 			dialog.fields_dict.plus.input.onclick = function() {
 				image_max_min(0.2, dialog);
