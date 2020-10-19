@@ -6,13 +6,13 @@
 		</div>
 		<div class="col-xs-8">
 			<div class="row">
-				<span class="cart-label">Sub Total:</span>{{ data.total }}
+				<span class="cart-label">Sub Total:</span>{{ data.total.toFixed(2)}}
 			</div>
 			<div class="row">
 				<span class="cart-label">Tax 0%: </span>0.00
 			</div>
 			<div class="row">
-				<span class="cart-label">Total: </span>{{ data.total }}
+				<span class="cart-label">Total: </span>{{ data.total.toFixed(2)}}
 			</div>
 		</div>
 	</div><hr>
@@ -27,14 +27,15 @@
 						<span class="cart-label">Desc: </span>{{ item.item_code }}
 					</div>
 					<div class="row">
-						<span class="cart-label">Unit Price: </span>{{ item.price }}
+						<span class="cart-label">Unit Price: </span>{{ item.price.toFixed(2) }}
 					</div>
 					<div class="row">
 						<span class="cart-label">Item Discount: </span>{{ item.discount }}
 					</div>
 					<div class="row">
 						<span class="cart-label">Total Price After Discount: </span>
-						{{ item.price - (item.price *flt(item.discount) / 100) }}
+						{% disc_price =item.price - (item.price *flt(item.discount) / 100) %}
+						{{  disc_price.toFixed(2) }}
 					</div>
 					<div class="row">
 						<span class="cart-label">Qty: </span>{{ item.qty }}
