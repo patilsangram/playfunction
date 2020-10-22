@@ -60,29 +60,30 @@
 					</thead>
 					<tbody>
 						{% set cnt=namespace(count=1) %}
+						{% set disc =namespace(discount=0) %}
+						{% set total_sp_without_vat =namespace(total_sp_without_vat=0) %}
 						{% for item in doc.items %}
 						<tr>
 							<td style="text-align:right;">{{ cnt.count }}</td>
 							{% set cnt.count=cnt.count+1 %}
 							<td style="text-align:right;">{{ item.item_code }}</td>
+							{% set sp_without_vat = frappe.db.get_value("Item", item.item_code, "sp_without_vat") %}
+							{% set total_sp_without_vat.total_sp_without_vat =(total_sp_without_vat.total_sp_without_vat+(sp_without_vat* item.qty))%}
 							<!-- <td style="text-align:right;"><img id="item_img" src= '{{ item.image }}'></td> -->
 							<td colspan="2" style="text-align:right;" >{{ item.item_name }}</td>
 							<td style="text-align:right;">{{ item.qty }}</td>
 							<td style="text-align:right;">{{ '%0.2f' % item.price_list_rate|float }}</td>
 							<td style="text-align:right;">{{item.discount_percentage }}%</td>
+
 							{% if item.discount_percentage > 0 %}
-							<td style="text-align:right;">{{ '%0.2f' % (item.rate)|float }}</td>
+
+							{% set disc.discount = disc.discount + (item.price_list_rate*item.discount_percentage*item.qty/100) %}
+							<td style="text-align:right;">{{ '%0.2f' % (sp_without_vat-(sp_without_vat*item.discount_percentage/100))|float }}</td>
 							{% else %}
-							<td style="text-align:right;">{{ '%0.2f' % item.price_list_rate|float }}</td>
+							<td style="text-align:right;">0</td>
 							{% endif%}
-							{% if item.discount_percentage > 0 %}
-							<td style="text-align:right;">{{ '%0.2f' % (item.qty*item.rate)|float }}</td>
-							<!-- <td style="text-align: right;">{{ '%0.2f' % (item.amount)|float }}</td> -->
-							{% else %}
 							<td style="text-align: right;">{{ '%0.2f' % (item.amount)|float }}</td>
 							<!-- <td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td> -->
-							{% endif%}
-
 							<!-- <td style="text-align: right;">{{ '%0.2f' % item.amount|float }}</td> -->
 						</tr>
 						{% endfor %}
@@ -96,37 +97,31 @@
 							 <td style="text-decoration:underline;">{{doc.total_qty}} </td>
 							 <td></td>
 							<td style="font-size: 12" colspan="2"><b> {{ _("סך הכל ללא מע\"מ:") }}</b></td>
-							<td><b>{{ '%0.2f' % doc.total|float }}</b></td>
+							<td><b>{{ '%0.2f' % total_sp_without_vat.total_sp_without_vat|float }}</b></td>
 						</tr>
 						<tr>
 							<td colspan="6"></td>
 							<td colspan="2"><b> {{ _("הנחה:") }}</b></td>
-							{% set disc=doc.total*doc.additional_discount_percentage/100 %}
-							<td><b>{{ '%0.2f' % disc|float }}</b></td>
+
+							<td><b>{{ '%0.2f' % disc.discount|float }}</b></td>
 						</tr>
 						<tr>
 							<td colspan="6"></td>
 							<td colspan="2"> <b>{{ _("סה\"כ לאחר הנחה:") }}</b></td>
-							{% set total_aftr_disc=doc.total-disc %}
+							{% set total_aftr_disc=total_sp_without_vat.total_sp_without_vat-disc.discount %}
 							<td><b>{{ '%0.2f' % total_aftr_disc|float }}</b></td>
 						</tr>
 						<tr>
 							<td colspan="6"></td>
 							<td colspan="2"><b>{{ _("מע\"מ:") }}</b> <b class='small'>{{ _("17%") }}</b></td>
-							{% set tax=0 %}
-							{%  if doc.taxes_and_charges %}
-								{% set word = doc.taxes_and_charges.split(' ') %}
-								{% if word[0]=="VAT" and word[1]=="17" %}
-									{% set tax=total_aftr_disc*0.17 %}
-								{% endif %}
-							{% endif %}
+							{% set tax = 0 %}
+							{% set tax = total_aftr_disc*0.17 %}
 							<td><b>{{ '%0.2f' % tax|float }}</b></td>
 						</tr>
 						<tr>
 							<td colspan="6"></td>
 							<td id="total" colspan="2"> <b>{{ _("סה\"כ לתשלום") }}</b></td>
-							{% set grand_total=total_aftr_disc+tax %}
-							<td id="total"><b>{{ '%0.2f' % grand_total|float }}</b></td>
+							<td id="total"><b>{{ '%0.2f' % doc.rounded_total|float }}</b></td>
 						</tr>
 					</tfoot>
 				</table>

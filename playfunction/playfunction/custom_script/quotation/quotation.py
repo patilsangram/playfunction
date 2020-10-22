@@ -2,19 +2,24 @@ import frappe, json
 from frappe.utils import today, flt
 
 def submit(doc, method):
-	receipient = frappe.get_doc("Notification","Quotation")
-	cc = []
-	print_doc = frappe.get_print('Quotation', doc.name, doc = None, print_format = receipient.print_format,as_pdf=1)
-	print_att = [{'fname':doc.name +".pdf",'fcontent':print_doc}]
-	for i in receipient.recipients:
-		cc.append(i.cc)
-	frappe.sendmail(
-                    recipients = frappe.db.get_value("Customer",{"name":doc.party_name},"user"),
-                    cc = cc,
-                    subject = receipient.subject,
-                    message = frappe.render_template(receipient.message,{"doc":doc}),
-                    attachments= print_att
-                    )
+	try:
+		receipient = frappe.get_doc("Notification","Quotation")
+		cc = []
+		print_doc = frappe.get_print('Quotation', doc.name, doc = None, print_format = receipient.print_format,as_pdf=1)
+		print_att = [{'fname':doc.name +".pdf",'fcontent':print_doc}]
+		for i in receipient.recipients:
+			cc.append(i.cc)
+		frappe.sendmail(
+		# recipients = "pratik.m@indictrans.in",
+		recipients = frappe.db.get_value("Customer",{"name":doc.party_name},"user"),
+		cc = cc,
+		subject = receipient.subject,
+		message = frappe.render_template(receipient.message,{"doc":doc}),
+		attachments= print_att
+		)
+	except Exception as e:
+		frappe.log_error(message=frappe.get_traceback() , title="Error while sending mail: Quotation")
+		raise e
 
 @frappe.whitelist()
 def checkout_order(data,doctype):
@@ -31,9 +36,21 @@ def checkout_order(data,doctype):
 				doc.delivery_date = today()
 			else:
 				doc.party_name = customer
+				#VAT 17%
+				doc.taxes_and_charges = "VAT 17%"
+				vat_account = frappe.db.get_value("Account", {
+				"account_name": "VAT 17%"
+				}, ["name", "tax_rate"], as_dict=True)
+				doc.taxes_and_charges = vat_account.get("name")
+				vat_tax = {
+				"account_head": vat_account.get("name"),
+				"charge_type": "On Net Total",
+				"rate": vat_account.get("tax_rate")
+				}
+				doc.append("taxes", vat_tax)
 			for k, v in cart_items.items():
 				discount = frappe.get_value("Item",{'item_code':k},"discount_percentage")
-				row = {"item_code": k, "qty": v[0], "price_list_rate": v[1], "discount_percentage": v[2]}
+				row = {"item_code": k, "qty": v[0], "discount_percentage": v[2]}
 				# discount_percentage
 				if v[2] and v[1] > 0:
 					row.update({"discount_amount": flt(v[1]) * flt(v[2]) / 100})
@@ -46,7 +63,9 @@ def checkout_order(data,doctype):
 			frappe.msgprint("Please add items to cart first")
 			return False
 	except Exception as e:
+		frappe.log_error(message=frappe.get_traceback() , title="Error in Checkout from Pepperi")
 		frappe.msgprint("Something went wrong ..")
+
 		return False
 
 
