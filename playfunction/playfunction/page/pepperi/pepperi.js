@@ -221,12 +221,9 @@ frappe.pepperi = Class.extend({
 				},
 				callback: function(r) {
 					if(!r.exc && r.message) {
-						frappe.msgprint(__(doctype+" is created Successfully"))
-						setTimeout(() => {}, 10000);
-						window.location.reload();
-						// frappe.set_route("Form", doctype, r.message);
-					}
-					else {
+						frappe.msgprint((doctype+" is created Successfully"));
+						setInterval(function(){window.location.reload();},3000);
+					}else {
 						frappe.msgprint(__("Something went wrong while placing order."))
 					}
 				}
