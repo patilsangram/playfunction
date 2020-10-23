@@ -75,9 +75,15 @@ def place_order(quote_id, data=None):
 				# card = "תשלום באמצעות כרטיס אשראי", // credit by credit card
 				# institution = "תשלום באמצעות קוד"  // credit by code‎
 				if data.get("payment_method") == "תשלום באמצעות כרטיס אשראי":
-					payment_url = get_payment_url(sales_order.name)
+					try:
+						payment_url = get_payment_url(sales_order.name)
+					except Exception as e:
+						frappe.log_error(message=frappe.get_traceback() , title="Error in getting URL: Place order Function")
 				else:
-					create_rihvit_invoice(sales_order.name)
+					try:
+						create_rihvit_invoice(sales_order.name)
+					except Exception as e:
+						frappe.log_error(message=frappe.get_traceback() , title="Error in Creating Rihvit invoice: Place order function")
 
 				response["payment_url"] = payment_url
 				# msg = "Order Placed Successfully."
