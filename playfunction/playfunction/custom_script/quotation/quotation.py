@@ -5,13 +5,14 @@ def submit(doc, method):
 	try:
 		receipient = frappe.get_doc("Notification","Quotation")
 		cc = []
+		party_name = doc.party_name if doc.party_name != "" else ""
 		print_doc = frappe.get_print('Quotation', doc.name, doc = None, print_format = receipient.print_format,as_pdf=1)
 		print_att = [{'fname':doc.name +".pdf",'fcontent':print_doc}]
 		for i in receipient.recipients:
 			cc.append(i.cc)
 		frappe.sendmail(
 		# recipients = "pratik.m@indictrans.in",
-		recipients = frappe.db.get_value("Customer",{"name":doc.party_name},"user"),
+		recipients = frappe.db.get_value("Customer",{"name":party_name},"user"),
 		cc = cc,
 		subject = receipient.subject,
 		message = frappe.render_template(receipient.message,{"doc":doc}),
@@ -36,18 +37,6 @@ def checkout_order(data,doctype):
 				doc.delivery_date = today()
 			else:
 				doc.party_name = customer
-				#VAT 17%
-				doc.taxes_and_charges = "VAT 17%"
-				vat_account = frappe.db.get_value("Account", {
-				"account_name": "VAT 17%"
-				}, ["name", "tax_rate"], as_dict=True)
-				doc.taxes_and_charges = vat_account.get("name")
-				vat_tax = {
-				"account_head": vat_account.get("name"),
-				"charge_type": "On Net Total",
-				"rate": vat_account.get("tax_rate")
-				}
-				doc.append("taxes", vat_tax)
 			for k, v in cart_items.items():
 				discount = frappe.get_value("Item",{'item_code':k},"discount_percentage")
 				row = {"item_code": k, "qty": v[0], "discount_percentage": v[2]}
@@ -56,6 +45,18 @@ def checkout_order(data,doctype):
 					row.update({"discount_amount": flt(v[1]) * flt(v[2]) / 100})
 				doc.append("items",row)
 			doc.set_missing_values()
+			#VAT 17%
+			doc.taxes_and_charges = "VAT 17%"
+			vat_account = frappe.db.get_value("Account", {
+			"account_name": "VAT 17%"
+			}, ["name", "tax_rate"], as_dict=True)
+			doc.taxes_and_charges = vat_account.get("name")
+			vat_tax = {
+			"account_head": vat_account.get("name"),
+			"charge_type": "On Net Total",
+			"rate": vat_account.get("tax_rate")
+			}
+			doc.append("taxes", vat_tax)
 			doc.flags.ignore_mandatory = True
 			doc.save(ignore_permissions=True)
 			return doc.name
