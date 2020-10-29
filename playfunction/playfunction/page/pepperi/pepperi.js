@@ -118,7 +118,10 @@ frappe.pepperi = Class.extend({
 		$('.item_catlog').click(function() {
 			var item_group = $(this).attr("data-item-cat")
 			localStorage.setItem('item_group', item_group);
+			localStorage.removeItem("search_txt");
+			// me.render_item_grid(true)
 			me.render_item_grid()
+
 		})
 	},
 
@@ -228,6 +231,8 @@ frappe.pepperi = Class.extend({
 						$.each(keys, function(i, key) {
 							localStorage.removeItem(key);
 						})
+						localStorage.removeItem("search_txt");
+						me.render_item_grid(true)
 					}else {
 						frappe.msgprint(__("Something went wrong while placing order."))
 					}
