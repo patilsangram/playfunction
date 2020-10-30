@@ -121,7 +121,6 @@ frappe.pepperi = Class.extend({
 			localStorage.removeItem("search_txt");
 			// me.render_item_grid(true)
 			me.render_item_grid()
-
 		})
 	},
 
@@ -133,6 +132,7 @@ frappe.pepperi = Class.extend({
 			method: "playfunction.playfunction.page.pepperi.pepperi.get_items_and_group_tree",
 			args: {"filters": filters},
 			callback: function(r) {
+				me.localdata = JSON.parse(localStorage.getItem("items")) || {}
 				let localdata = JSON.parse(localStorage.getItem("items")) || {}
 				if(!update_grid) {
 					me.$main.empty()
@@ -196,7 +196,7 @@ frappe.pepperi = Class.extend({
 	gotocart: function() {
 		var me = this;
 		$('#goToCartBtn').click(function() {
-
+			me.localdata = JSON.parse(localStorage.getItem("items")) || {}
 			me.cur_page = "Cart"
 			let data = me.prepare_cart_data();
 			$('.backbtn').removeClass('hide');
@@ -205,8 +205,9 @@ frappe.pepperi = Class.extend({
 			data.total=me.cart_details.total
 			data.total_after_discount = me.cart_details.total_after_discount
 
-			$('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data}))
+			$('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data,"local":me.localdata}))
 			$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
+			me.unit_qty_change()
 			me.checkout()
 		})
 	},
@@ -333,19 +334,48 @@ frappe.pepperi = Class.extend({
 		update_cart_qty(this, 0)
 		// decrease-qty
 		$('.qty-minus').click(function() {
-			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
-			if (qty && parseInt(qty) > 0) {
-				update_cart_qty(this, -1)
-			}
+			update_cart_qty(this, -1)
+
 		})
 		// increase-qty
 		$('.qty-plus').click(function() {
 			update_cart_qty(this, 1)
 		})
+		// decrease-qty-cart
+		$('.qty-minus-cart').click(function() {
+			update_cart_qty(this, -1)
+			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
+			if (qty && parseInt(qty) > 0) {
+				let data = me.prepare_cart_data();
+				data.total=me.cart_details.total
+				data.total_after_discount = me.cart_details.total_after_discount
+				// $('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data,"local":me.localdata}))
+				$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
+				// me.unit_qty_change()
+			}
+		})
+		// increase-qty in cart
+		$('.qty-plus-cart').click(function() {
+			update_cart_qty(this, 1)
+			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
+			if (qty && parseInt(qty) > 0) {
+				let data = me.prepare_cart_data();
+				data.total=me.cart_details.total
+				data.total_after_discount = me.cart_details.total_after_discount
+				// $('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data,"local":me.localdata}))
+				$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
+				// me.unit_qty_change()
+			}
+		})
 		// qty-change
 		$('.unitqty').change(function() {
 			update_cart_qty(this)
 		})
+		$('.delete_item').click(function() {
+			alert()
+			// update_cart_qty(this)
+		})
+
 	},
 
 	item_group_trigger: function() {
