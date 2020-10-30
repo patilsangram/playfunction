@@ -38,6 +38,9 @@ def get_items_and_group_tree(filters):
 		groups_join = '(' + ','.join('"{}"'.format(i) for i in group_list) + ')'
 	cond = """ and (c.catalog_level_1 in ({groups}) or c.catalog_level_2 in ({groups})
 or c.catalog_level_3 in ({groups}) or c.catalog_level_4 in ({groups}) )""".format(groups=groups_join)
+	if filters.get("search_txt"):
+		fil = "'%{0}%'".format(filters.get("search_txt"))
+		cond += """ and (i.item_code like %s or i.item_name like %s)"""%(fil, fil)
 	query = """SELECT
 		i.item_code, i.item_name, i.image,{},
 		group_concat(c.catalog_level_1) as catalogs,

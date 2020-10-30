@@ -2,7 +2,7 @@
 <div class="cart-main">
 	<div class="row cart-row total-row">
 		<div class="col-xs-4 cart-remark">
-			
+
 		</div>
 		<div class="col-xs-8">
 
@@ -30,11 +30,34 @@
 						{{  disc_price.toFixed(2) }}
 					</div>
 					<div class="row">
-						<span class="cart-label">Qty: </span>{{ item.qty }}
+						<span class="cart-label">Qty: </span>
+					</div>
+					<div class="row">
+						<div class="gQs" data-item="{{ item.item_code }}" data-price="{{ item.price || 0}}" data-discount="{{ item.discount }}"
+						data-img="{{ item.image }}">
+							<span  class="qty-minus-cart">
+								<i class="fa fa-minus"></i>
+							</span>
+							{% if (item.item_code in local) { %}
+								<input  autocomplete="off" class="ellipsis custom-qs-field unitqty" name="UnitsQty" title="{{ local[item.item_code][0] }}" value="{{ local[item.item_code][0] }}" type="number">
+							{% } else { %}
+								<input  autocomplete="off" class="ellipsis custom-qs-field unitqty" name="UnitsQty" title="0" value="0"  type="number">
+							{% } %}
+							<span  class="qty-plus-cart">
+								<i  aria-hidden="true" class="fa fa-plus"></i>
+							</span>
+						</div>
 					</div>
 				</div>
 				<div class="col-xs-2">
-					<i aria-hidden="true" class="fa fa-ellipsis-h fa-lg"></i>
+					<div class="row">
+						<i aria-hidden="true" class="fa fa-ellipsis-h fa-lg"></i>
+					</div>
+					<div class="row">
+						<div class="delete_item">
+							<i class="fa fa-trash " aria-hidden="true"></i>
+ 						</div>
+					</div>
 				</div>
 			</div><hr>
 		{% }); %}
