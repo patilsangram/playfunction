@@ -353,6 +353,9 @@ frappe.pepperi = Class.extend({
 				$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
 				// me.unit_qty_change()
 			}
+			else{
+				$('.total_details').html(frappe.render_template("total_cart_details", {"total": 0,"total_after_discount":0}));
+			}
 		})
 		// increase-qty in cart
 		$('.qty-plus-cart').click(function() {
@@ -372,7 +375,8 @@ frappe.pepperi = Class.extend({
 			update_cart_qty(this)
 		})
 		$('.delete_item').click(function() {
-			alert()
+			// alert(item_code)
+			// localStorage.removeItem(this);
 			// update_cart_qty(this)
 		})
 
