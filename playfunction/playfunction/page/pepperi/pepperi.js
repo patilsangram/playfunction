@@ -225,8 +225,15 @@ frappe.pepperi = Class.extend({
 				},
 				callback: function(r) {
 					if(!r.exc && r.message) {
-						frappe.msgprint((doctype+" is created Successfully"));
-						setInterval(function(){window.location.reload();},3000);
+						if(doctype == "Sales Order")
+						{
+							msg = "תודה על ההזמנה שבצעת בפליי פאנקשן! הודעה זו מאשרת את קבלת ההזמנה . מייל עם עדכון לגבי המשך התהליך ישלח אליך בהקדם ."
+						}
+						if(doctype == "Quotation"){
+							msg = "תודה על בקשתך להצעת מחיר בפליי פאנקשן! הודעה זו מאשרת את קבלת ההצעה. הצעת מחיר תשלח לכתובת הדוא\"ל שציינת בהקדם האפשרי"
+						}
+						frappe.msgprint(msg);
+						setInterval(function(){window.location.reload();},5000);
 						//clear localStorage
 						keys = ["items","filters","search_txt","category","item_group","child_item_group"]
 						$.each(keys, function(i, key) {
@@ -343,9 +350,9 @@ frappe.pepperi = Class.extend({
 		})
 		// decrease-qty-cart
 		$('.qty-minus-cart').click(function() {
-			update_cart_qty(this, -1)
 			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
 			if (qty && parseInt(qty) > 0) {
+				update_cart_qty(this, -1)
 				let data = me.prepare_cart_data();
 				data.total=me.cart_details.total
 				data.total_after_discount = me.cart_details.total_after_discount
@@ -354,7 +361,10 @@ frappe.pepperi = Class.extend({
 				// me.unit_qty_change()
 			}
 			else{
-				$('.total_details').html(frappe.render_template("total_cart_details", {"total": 0,"total_after_discount":0}));
+				let data = me.prepare_cart_data();
+				data.total=me.cart_details.total
+				data.total_after_discount = me.cart_details.total_after_discount
+				$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
 			}
 		})
 		// increase-qty in cart

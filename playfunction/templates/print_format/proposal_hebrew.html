@@ -64,6 +64,7 @@
 						{% set cnt=namespace(count=1) %}
 						{% set disc =namespace(discount=0) %}
 						{% set total_sp_without_vat =namespace(total_sp_without_vat=0) %}
+
 						{% for item in doc.items %}
 						<tr>
 							<td style="text-align:right;">{{ cnt.count }}</td>
@@ -123,6 +124,15 @@
 							{% set tax = total_aftr_disc*0.17 %}
 							<td><b>{{ '%0.2f' % tax|float }}</b></td>
 						</tr>
+						{% for tax in doc.taxes %}
+							{% if tax.account_head != "VAT 17% - PF"%}
+							<tr>
+								<td colspan="7"></td>
+								<td colspan="2"><b>{{ _("Delivery Charges") }}</b> <b class='small'></b></td>
+								<td><b>{{ '%0.2f' % tax.tax_amount|float }}</b></td>
+							</tr>
+							{% endif %}
+						{% endfor %}
 						<tr>
 							<td colspan="7"></td>
 							<td id="total" colspan="2"> <b>{{ _("סך הכל") }}</b></td>
