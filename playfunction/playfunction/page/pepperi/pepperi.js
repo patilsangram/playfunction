@@ -202,13 +202,11 @@ frappe.pepperi = Class.extend({
 			$('.backbtn').removeClass('hide');
 			$('.pepCheckout').removeClass('hide');
 			$('#goToCartBtn').hide();
-			data.total=me.cart_details.total
-			data.total_after_discount = me.cart_details.total_after_discount
-
 			$('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data,"local":me.localdata}))
 			$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
 			me.unit_qty_change()
 			me.checkout()
+			me.delete_from_cart()
 		})
 	},
 
@@ -323,7 +321,17 @@ frappe.pepperi = Class.extend({
 			dialog.show();
 		})
 	},
+	delete_from_cart: function(){
+		var me = this;
+		$('.delete_item').click(function() {
+			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
+			// update_cart_qty(this,-qty)
+			var item_code = $(this).closest("div.gQs").attr("data-item");
+			me.update_cart(item_code, 0, 0, 0,"")
+			$('#goToCartBtn').click()
 
+		})
+	},
 	unit_qty_change: function() {
 		var me = this;
 		update_cart_qty = function(el,update_qty=false) {
@@ -341,54 +349,43 @@ frappe.pepperi = Class.extend({
 		update_cart_qty(this, 0)
 		// decrease-qty
 		$('.qty-minus').click(function() {
+			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
+			if (qty && parseInt(qty) > 0) {
 			update_cart_qty(this, -1)
-
+			// let data = me.prepare_cart_data();
+			// $('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
+		};
 		})
 		// increase-qty
 		$('.qty-plus').click(function() {
 			update_cart_qty(this, 1)
+			// let data = me.prepare_cart_data();
+			// $('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
 		})
 		// decrease-qty-cart
 		$('.qty-minus-cart').click(function() {
 			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
+			console.log("--- qty ---outside---");
+			console.log(qty);
 			if (qty && parseInt(qty) > 0) {
 				update_cart_qty(this, -1)
-				let data = me.prepare_cart_data();
-				data.total=me.cart_details.total
-				data.total_after_discount = me.cart_details.total_after_discount
-				// $('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data,"local":me.localdata}))
-				$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
+				// let data = me.prepare_cart_data();
+				// $('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
 				// me.unit_qty_change()
-			}
-			else{
-				let data = me.prepare_cart_data();
-				data.total=me.cart_details.total
-				data.total_after_discount = me.cart_details.total_after_discount
-				$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
 			}
 		})
 		// increase-qty in cart
 		$('.qty-plus-cart').click(function() {
 			update_cart_qty(this, 1)
 			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
-			if (qty && parseInt(qty) > 0) {
-				let data = me.prepare_cart_data();
-				data.total=me.cart_details.total
-				data.total_after_discount = me.cart_details.total_after_discount
-				// $('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data,"local":me.localdata}))
-				$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
-				// me.unit_qty_change()
-			}
+			console.log("--- qty ---");
+			console.log(qty);
 		})
 		// qty-change
 		$('.unitqty').change(function() {
 			update_cart_qty(this)
 		})
-		$('.delete_item').click(function() {
-			// alert(item_code)
-			// localStorage.removeItem(this);
-			// update_cart_qty(this)
-		})
+
 
 	},
 
@@ -574,6 +571,12 @@ frappe.pepperi = Class.extend({
 		})
 		$('.total-cnt').text("Qty : "+ String(total_qty))
 		localStorage.setItem('items', JSON.stringify(items));
+
+		// Total Cart details update
+		let data = me.prepare_cart_data();
+		$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
+
+
 	},
 
 	get_localstorage_data: function(key=false) {
@@ -602,7 +605,7 @@ frappe.pepperi = Class.extend({
 			total_after_discount += parseFloat(v[1] || 0) > 0 ? parseFloat(v[1]-(v[1]*v[2]/100)) * parseInt(v[0]) : 0.00
 			data.push(row)
 		})
-		me.cart_details = {"items": data, "total": total,"total_after_discount":total_after_discount}
+		// me.cart_details = {"items": data, "total": total,"total_after_discount":total_after_discount}
 		return {"items": data, "total": total,"total_after_discount":total_after_discount}
 	}
 })

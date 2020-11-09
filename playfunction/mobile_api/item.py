@@ -1,6 +1,6 @@
 import frappe
 import json
-from category import get_child_categories
+from .category import get_child_categories
 
 
 @frappe.whitelist()

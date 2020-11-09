@@ -23,24 +23,28 @@ def get_items_and_group_tree(filters):
 	filters_ = {"group_level": (">", 1)}
 	fields = ['name','parent_item_group as parent','is_group as expandable']
 	data = frappe.get_list("Item Group", fields=fields, filters=filters_)
-	item_groups, group_list = get_children(item_group, data, [item_group])
-	price_list = frappe.db.get_value("Customer", {"user": frappe.session.user}, "default_price_list") or "Standard Selling"
-	print(group_list)
 	discount_query = """ CASE WHEN pr.item_group IS NOT NULL
 	THEN pr.discount_percentage  ELSE {}
-		END as discount """.format(customer_discount)
+	END as discount """.format(customer_discount)
+	price_list = frappe.db.get_value("Customer", {"user": frappe.session.user}, "default_price_list") or "Standard Selling"
+	item_groups, group_list = get_children(item_group, data, [item_group])
 
-	# price_list = "Standard Selling"
-	if len(group_list)>1:
-		parsed_groups = [ urlparse(g).path for g in item_groups ]
-		groups_join = ",".join(["'{}'".format(g) for g in parsed_groups])
+	if not filters.get("search_txt"):
+		print(group_list)
+		# price_list = "Standard Selling"
+		if len(group_list)>1:
+			parsed_groups = [ urlparse(g).path for g in item_groups ]
+			groups_join = ",".join(["'{}'".format(g) for g in parsed_groups])
+		else:
+			groups_join = '(' + ','.join('"{}"'.format(i) for i in group_list) + ')'
+		cond = """ and (c.catalog_level_1 in ({groups}) or c.catalog_level_2 in ({groups})
+			or c.catalog_level_3 in ({groups}) or c.catalog_level_4 in ({groups})
+			)""".format(groups=groups_join)
+
 	else:
-		groups_join = '(' + ','.join('"{}"'.format(i) for i in group_list) + ')'
-	cond = """ and (c.catalog_level_1 in ({groups}) or c.catalog_level_2 in ({groups})
-or c.catalog_level_3 in ({groups}) or c.catalog_level_4 in ({groups}) )""".format(groups=groups_join)
-	if filters.get("search_txt"):
 		fil = "'%{0}%'".format(filters.get("search_txt"))
-		cond += """ and (i.item_code like %s or i.item_name like %s)"""%(fil, fil)
+		cond = """ and (i.item_code like %s or i.item_name like %s)"""%(fil, fil)
+
 	query = """SELECT
 		i.item_code, i.item_name, i.image,{},
 		group_concat(c.catalog_level_1) as catalogs,
@@ -56,7 +60,7 @@ or c.catalog_level_3 in ({groups}) or c.catalog_level_4 in ({groups}) )""".forma
 		left join `tabPricing Rule` pr on pr.item_group = i.item_group
 				where i.is_pepperi_item = 1 {}	group by i.name
 		""".format(discount_query,company, price_list, cond)
-	item_details = frappe.db.sql(query, as_dict=True)
+	item_details = frappe.db.sql(query, as_dict=True,debug=True)
 	data = {"item_groups": item_groups, "items": item_details}
 	return data
 
