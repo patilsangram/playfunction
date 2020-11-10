@@ -69,9 +69,12 @@
 						<tr>
 							<td style="text-align:right;">{{ cnt.count }}</td>
 							{% set cnt.count=cnt.count+1 %}
-							<td style="text-align:right;">{{ item.item_code }}</td>
+							<td style="text-align:right;">{{ item.item_code }}  </td>
 							<td style="text-align:right;height: 60px;width: 60px !important;"><img id="item_img" src= '{{ item.image }}'></td>
-							<td style="text-align:right;" colspan="2">{{ item.item_name }}</td>
+							<td style="text-align:right;" colspan="2">{{ item.item_name }}
+								{% if item.notes %}
+								<p> <small>{{item.notes}}</small> </p> {% endif %}
+							 </td>
 							<td style="text-align:right;">{{ item.qty }}</td>
 
 							{% set sp_without_vat = frappe.db.get_value("Item", item.item_code, "sp_without_vat") %}
