@@ -42,7 +42,8 @@ def checkout_order(data,doctype):
 				doc.party_name = customer
 			for k, v in cart_items.items():
 				discount = frappe.get_value("Item",{'item_code':k},"discount_percentage")
-				row = {"item_code": k, "qty": v[0], "discount_percentage": v[2]}
+				cost = frappe.get_value("Item",{'item_code':k},"cost_price")
+				row = {"item_code": k, "qty": v[0], "discount_percentage": v[2], "cost_price":cost}
 				# discount_percentage
 				if v[2] and v[1] > 0:
 					row.update({"discount_amount": flt(v[1]) * flt(v[2]) / 100})

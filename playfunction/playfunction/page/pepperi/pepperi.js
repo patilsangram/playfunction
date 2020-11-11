@@ -368,8 +368,6 @@ frappe.pepperi = Class.extend({
 		// decrease-qty-cart
 		$('.qty-minus-cart').click(function() {
 			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
-			console.log("--- qty ---outside---");
-			console.log(qty);
 			if (qty && parseInt(qty) > 0) {
 				update_cart_qty(this, -1)
 				// let data = me.prepare_cart_data();
@@ -381,8 +379,6 @@ frappe.pepperi = Class.extend({
 		$('.qty-plus-cart').click(function() {
 			update_cart_qty(this, 1)
 			var qty = $(this).closest("div.gQs").find("input[name='UnitsQty']").val();
-			console.log("--- qty ---");
-			console.log(qty);
 		})
 		// qty-change
 		$('.unitqty').change(function() {
