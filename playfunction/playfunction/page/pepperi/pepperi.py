@@ -60,7 +60,7 @@ def get_items_and_group_tree(filters):
 		left join `tabPricing Rule` pr on pr.item_group = i.item_group
 				where i.is_pepperi_item = 1 {}	group by i.name
 		""".format(discount_query,company, price_list, cond)
-	item_details = frappe.db.sql(query, as_dict=True,debug=True)
+	item_details = frappe.db.sql(query, as_dict=True)
 	data = {"item_groups": item_groups, "items": item_details}
 	return data
 

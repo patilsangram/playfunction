@@ -116,13 +116,13 @@ doc_events = {
 		"before_insert": "playfunction.playfunction.custom_script.item.item.item_autoname"
 	},
 	"Sales Order": {
-		"after_insert": "playfunction.playfunction.custom_script.sales_order.sales_order.submit",
+		"after_insert": "playfunction.playfunction.custom_script.sales_order.sales_order.send_order_notification",
 	},
 	"Sales Invoice": {
 		"after_insert": "playfunction.playfunction.custom_script.sales_invoice.sales_invoice.submit",
 	},
 	"Quotation": {
-		"after_insert": "playfunction.playfunction.custom_script.quotation.quotation.submit",
+		"after_insert": "playfunction.playfunction.custom_script.quotation.quotation.send_quotation_notification",
 	},
 	"Delivery Note": {
 		"after_insert": "playfunction.playfunction.custom_script.delivery_note.delivery_note.submit",

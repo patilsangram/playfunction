@@ -1,23 +1,26 @@
 import frappe, json
 from frappe.utils import today, flt
 
-def submit(doc, method):
+def send_quotation_notification(doc, method):
 	try:
 		receipient = frappe.get_doc("Notification","Quotation")
 		cc = []
 		party_name = doc.party_name if doc.party_name != "" else ""
-		print_doc = frappe.get_print('Quotation', doc.name, doc = None, print_format = receipient.print_format,as_pdf=1)
-		print_att = [{'fname':doc.name +".pdf",'fcontent':print_doc}]
+		print_att = None
+		if party_name:
+			print_doc = frappe.get_print('Quotation', doc.name, doc = None, print_format = receipient.print_format,as_pdf=1) if doc.party_name != "" else ""
+			print_att = [{'fname':doc.name +".pdf",'fcontent':print_doc}]
 		for i in receipient.recipients:
 			cc.append(i.cc)
-		frappe.sendmail(
-		# recipients = "pratik.m@indictrans.in",
-		recipients = frappe.db.get_value("Customer",{"name":party_name},"user"),
-		cc = cc,
-		subject = receipient.subject,
-		message = frappe.render_template(receipient.message,{"doc":doc}),
-		attachments= print_att
-		)
+		rec = frappe.db.get_value("Customer",{"name":party_name},"user")
+		if rec:
+			frappe.sendmail(
+				recipients = rec,
+				cc = cc,
+				subject = receipient.subject,
+				message = frappe.render_template(receipient.message,{"doc":doc}),
+				attachments= print_att
+			)
 	except Exception as e:
 		frappe.log_error(message=frappe.get_traceback() , title="Error while sending mail: Quotation")
 		raise e

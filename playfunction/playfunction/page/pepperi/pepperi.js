@@ -202,6 +202,7 @@ frappe.pepperi = Class.extend({
 			$('.backbtn').removeClass('hide');
 			$('.pepCheckout').removeClass('hide');
 			$('#goToCartBtn').hide();
+			$('.search-div').hide();
 			$('.pepperi-content').html(frappe.render_template("pepperi_cart", {"data": data,"local":me.localdata}))
 			$('.total_details').html(frappe.render_template("total_cart_details", {"total": data.total,"total_after_discount":data.total_after_discount}));
 			me.unit_qty_change()
@@ -275,6 +276,8 @@ frappe.pepperi = Class.extend({
 			$('.backbtn').addClass('hide');
 			$('.pepCheckout').addClass('hide');
 			$('#goToCartBtn').show();
+			$('.search-div').show();
+
 			me.cur_page = "Grid View"
 			me.render_item_grid(true)
 		})
