@@ -4,7 +4,7 @@ frappe.ui.form.on("Quotation",{
 	},
 	refresh: function(frm) {
 		// from public - playfunction_selling.js
-		//playfunction.selling.set_field_permissions();
+		playfunction.selling.set_field_permissions();
 		var proposal_states = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
 		if (frm.doc.docstatus == 0 &&
 				!(has_common([frm.doc.workflow_state],["Rejected"].concat(proposal_states)))) {

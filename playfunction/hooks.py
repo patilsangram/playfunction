@@ -101,6 +101,7 @@ doc_events = {
 	},
 	"Quotation":{
 		"validate": "playfunction.playfunction.custom_script.quotation.quotation.update_selling_data",
+		"after_insert": "playfunction.playfunction.custom_script.quotation.quotation.send_quotation_notification"
 	},
 	"Item Group": {
 		"before_insert": "playfunction.playfunction.custom_script.item_group.item_group.update_group_level"
@@ -120,9 +121,6 @@ doc_events = {
 	},
 	"Sales Invoice": {
 		"after_insert": "playfunction.playfunction.custom_script.sales_invoice.sales_invoice.submit",
-	},
-	"Quotation": {
-		"after_insert": "playfunction.playfunction.custom_script.quotation.quotation.send_quotation_notification",
 	},
 	"Delivery Note": {
 		"after_insert": "playfunction.playfunction.custom_script.delivery_note.delivery_note.submit",

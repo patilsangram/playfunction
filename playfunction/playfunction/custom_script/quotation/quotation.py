@@ -41,14 +41,15 @@ def checkout_order(data,doctype):
 			else:
 				doc.party_name = customer
 			for k, v in cart_items.items():
-				discount = frappe.get_value("Item",{'item_code':k},"discount_percentage")
-				cost = frappe.get_value("Item",{'item_code':k},"cost_price")
+
+				discount,cost = frappe.get_value("Item",{'item_code':k},["discount_percentage","cost_price"])
+				# cost = frappe.get_value("Item",{'item_code':k},"cost_price")
 				row = {"item_code": k, "qty": v[0], "discount_percentage": v[2], "cost_price":cost}
 				# discount_percentage
 				if v[2] and v[1] > 0:
 					row.update({"discount_amount": flt(v[1]) * flt(v[2]) / 100})
 				doc.append("items",row)
-			doc.set_missing_values()
+			# doc.set_missing_values()
 			#VAT 17%
 			doc.taxes_and_charges = "VAT 17%"
 			vat_account = frappe.db.get_value("Account", {
@@ -63,6 +64,7 @@ def checkout_order(data,doctype):
 			doc.append("taxes", vat_tax)
 			doc.flags.ignore_mandatory = True
 			doc.save(ignore_permissions=True)
+
 			return doc.name
 		else:
 			frappe.msgprint("Please add items to cart first")
