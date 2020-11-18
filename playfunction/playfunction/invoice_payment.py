@@ -150,7 +150,7 @@ def get_payment_url(order_id):
 			"SaleType": 1,
 			"HideItemList": True,
 			"Items": items,
-			# "Custom1" : "123",
+			"Custom1" : order_id,
 			# "Custom2" : "456",
 		}
 

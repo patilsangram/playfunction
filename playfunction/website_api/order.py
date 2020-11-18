@@ -292,3 +292,14 @@ def delete_order_item(order_id, item_code):
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: delete_order_item")
 	finally:
 		return response
+
+@frappe.whitelist()
+def get_payment_status(order_id):
+	response = frappe._dict()
+	try:
+		if order_id:
+			order = frappe.db.get_value("Sales Order", order_id,"payment_status")
+			response["message"]=order
+			return response
+	except Exception as e:
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_payment_status")
