@@ -294,12 +294,22 @@ def delete_order_item(order_id, item_code):
 		return response
 
 @frappe.whitelist()
-def get_payment_status(order_id):
+def get_payment_status(token):
 	response = frappe._dict()
-	try:
-		if order_id:
-			order = frappe.db.get_value("Sales Order", order_id,"payment_status")
-			response["message"]=order
-			return response
-	except Exception as e:
-		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_payment_status")
+	if token:
+		query = "Select name, payment_status from `tabSales Order` where sales_tokens like '%{0}%'".format(token)
+		sales_order = frappe.db.sql(query,as_dict=True)
+#		response['Sales Order'] = sales_order["name"]
+#		response['Status'] = sales_order["payment_status"]
+		return sales_order
+	else:
+		return "Payment Failed"
+	#try:
+	#	if token:
+	#		order = frappe.db.get_value("Sales Order", order_id,"payment_status")
+	#		response["message"]=order
+	#		return "Payment Successful"
+	#	else:
+	#		return "Payment Failed"
+	#except Exception as e:
+	#	frappe.log_error(message=frappe.get_traceback() , title="Website API: get_payment_status")
