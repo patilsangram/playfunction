@@ -1,3 +1,4 @@
+
 .stock-control-dashboard {
 	font-size: 12px;
 }
@@ -133,4 +134,13 @@ div#header {
 
 .dt-link:hover, .stock-report-link:hover {
 	color: #0074BD;
+}
+
+.sp_with_vat {
+	text-align: end;
+	color: #329ddf;
+}
+
+.sp_with_vat:hover {
+	cursor: pointer;
 }

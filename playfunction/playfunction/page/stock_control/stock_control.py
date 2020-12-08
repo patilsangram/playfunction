@@ -1,12 +1,15 @@
 import frappe
 import json
 from frappe import _
-
+from frappe.utils import flt
 @frappe.whitelist()
-def get_dashboard_data(filters):
+def get_dashboard_data(filters=None):
 	try:
-		filters = json.loads(filters)
-		filter_query = " where 1=1"
+		if filters:
+			filters = json.loads(filters)
+			filter_query = " where 1=1"
+		else:
+			filters = dict()
 
 		if filters.get("item"):
 			filter_query += " and stock_data.item_code = '{}'".format(filters.get("item"))
@@ -37,7 +40,7 @@ def get_dashboard_data(filters):
 		# sub query to handle stock filter/alias
 		query = """
 			select * from (select
-				i.item_code, i.item_name, i.cost_price, i.supplier,
+				i.item_code, i.item_name, i.cost_price, i.sp_with_vat, i.supplier,
 				i.supplier_item_name, q.party_name as customer, ifnull(sum(qi.qty), 0) as quote_qty,
 				ifnull((soi.qty - soi.delivered_qty), 0) as pending_qty, ifnull(sum(bin.actual_qty), 0) as stock
 			from
@@ -59,6 +62,21 @@ def get_dashboard_data(filters):
 	except Exception as e:
 		frappe.msgprint(_("Something went wrong while fetching data."))
 		return []
+
+@frappe.whitelist()
+def update_selling_price(data):
+	try:
+		data = json.loads(data)
+		sp_with_vat = flt(data.get("sp_with_vat", 0))
+		sp_without_vat = flt(sp_with_vat - sp_with_vat*0.17/1.17)
+		if sp_without_vat < 0:
+			sp_without_vat = 0
+		if sp_with_vat >= 0:
+			frappe.db.set_value("Item", data.get("item_code"), "sp_with_vat", sp_with_vat)
+			frappe.db.set_value("Item", data.get("item_code"), "sp_without_vat", sp_without_vat)
+		return "Success"
+	except Exception as e:
+		frappe.msgprint(_("Something went wrong while Updating Selling Price."))
 
 @frappe.whitelist()
 def make_transaction_record(dt, data):

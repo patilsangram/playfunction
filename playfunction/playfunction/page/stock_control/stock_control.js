@@ -117,6 +117,7 @@ frappe.StockControl = Class.extend({
 				me.open_stock_ledger();
 				me.place_order();
 				me.request_for_quote();
+				me.update_selling_price();
 			}
 		})
 	},
@@ -227,5 +228,63 @@ frappe.StockControl = Class.extend({
 				}
 			}
 		})
+	},
+
+	update_selling_price: function() {
+		var me = this;
+		$('.sp_with_vat').on("click", function() {
+			let item_code = $(this).attr('data-item_code');
+			let item_name = $(this).attr('data-item_name');
+			let sp_with_vat = $(this).text().trim();
+			var d = new frappe.ui.Dialog({
+			title: __('Update Selling Price'),
+			fields: [
+				{
+					"label": 'Item Code',
+					"fieldname": "item_code",
+					"fieldtype": "Link",
+					"options":"Item",
+					"read_only": 1,
+					"default": item_code
+				},
+				{
+					"label": 'Item Name',
+					"fieldname": "item_name",
+					"fieldtype": "Data",
+					"read_only": 1,
+					"default": item_name
+				},
+				{
+					"label": 'Selling Price with VAT',
+					"fieldname": "sp_with_vat",
+					"fieldtype": "Currency",
+					"reqd": 1,
+					"default": sp_with_vat
+				}
+			],
+			primary_action: function() {
+				var data = d.get_values();
+				if(sp_with_vat != data.sp_with_vat) {
+					frappe.call({
+						method: "playfunction.playfunction.page.stock_control.stock_control.update_selling_price",
+						args: {"data": data},
+						callback: function(r) {
+							if(!r.exc) {
+								me.fetch_dashboard_data();
+								frappe.msgprint("Selling Price Updated Successfully ..")
+							}
+						}
+					})
+				}
+				else {
+					frappe.msgprint(__("No Change in Selling Price"))
+				}
+				d.hide()
+			},
+			primary_action_label: __('Update')
+		});
+		d.show();
+		})
 	}
 })
+

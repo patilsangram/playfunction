@@ -1,3 +1,4 @@
+
 {% if (data.length) %}
 	<table class="table table-hover tb-head">
 		<thead>
@@ -9,6 +10,7 @@
 				<th class="tb-th cust">{{ __("Customer") }}</th>
 				<th class="tb-th nm-of-gm">{{ __("Supplier Item Name") }}</th>
 				<th class="tb-th cost">{{ __("Cost Price") }}</th>
+				<th class="tb-th sp_vat">{{ __("SP With VAT") }}</th>
 				<th class="tb-th stock">{{ __("Stock") }}</th>
 				<th class="tb-th pend-qty">{{ __("Pending Order Qty") }}</th>
 				<th class="tb-th quote-qty">{{ __("Quote Qty") }}</th>
@@ -39,6 +41,9 @@
 					</td>
 					<td class="tb-td nm-of-gm">{{ item.supplier_item_name }}</td>
 					<td class="tb-td cost">{{ item.cost_price }}</td>
+					<td class="tb-td sp_with_vat" data-item_code="{{ item.item_code }}" data-item_name="{{ item.item_name }}">
+						{{ item.sp_with_vat }}
+					</td>
 					<td class="tb-td stock stock-report-link" title="Click to open Stock Ledger Report">
 						{{ item.stock }}
 					</td>
