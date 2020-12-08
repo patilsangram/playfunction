@@ -113,8 +113,8 @@ doc_events = {
 		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.update_amount_owed",
 	},
 	"Item": {
-		"after_insert":"playfunction.playfunction.custom_script.item.item.validate",
-		"validate":"playfunction.playfunction.custom_script.item.item.validate",
+		"after_insert":"playfunction.playfunction.custom_script.item.item.create_item_price",
+		"validate":"playfunction.playfunction.custom_script.item.item.create_item_price",
 		"before_insert": "playfunction.playfunction.custom_script.item.item.item_autoname"
 	},
 	"Sales Order": {
