@@ -7,7 +7,7 @@ frappe.ui.form.on("Item", {
 		if(!frm.doc.item_group) {
 			frm.set_value("item_group", "All Item Groups");
 		}
-		frm.set_df_property("item_group", "hidden", true);
+		// frm.set_df_property("item_group", "hidden", true);
 		frm.set_df_property("allow_alternative_item", "hidden", true);
 		$('.ql-editor').css("text-align", "right");
 	},

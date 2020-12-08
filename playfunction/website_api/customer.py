@@ -25,7 +25,9 @@ def get_customer_profile(customer=None):
 			""".format(customer), as_dict=True)
 
 			if not customer_address or not len(customer_address):
-				response["message"] = "Profile Not found"
+				# msg = "Profile Not found"
+				response["message"] = "פרופיל לא נמצא"
+
 				frappe.local.response["http_status_code"] = 404
 			else:
 				customer_address = customer_address[0]

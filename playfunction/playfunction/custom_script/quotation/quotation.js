@@ -1,7 +1,10 @@
 frappe.ui.form.on("Quotation",{
+	setup:function(frm){
+		frm.add_fetch('item_code', 'cost_price', 'cost_price');
+	},
 	refresh: function(frm) {
 		// from public - playfunction_selling.js
-		//playfunction.selling.set_field_permissions();
+		playfunction.selling.set_field_permissions();
 		var proposal_states = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
 		if (frm.doc.docstatus == 0 &&
 				!(has_common([frm.doc.workflow_state],["Rejected"].concat(proposal_states)))) {
@@ -39,7 +42,7 @@ frappe.ui.form.on("Quotation",{
 		}
 	},
 
-	
+
 	approval_flow: function(frm){
 		if(frappe.user.has_role("PlayFunction Admin")) {
 			frm.add_custom_button("Approve", function() {

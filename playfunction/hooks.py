@@ -101,6 +101,7 @@ doc_events = {
 	},
 	"Quotation":{
 		"validate": "playfunction.playfunction.custom_script.quotation.quotation.update_selling_data",
+		"after_insert": "playfunction.playfunction.custom_script.quotation.quotation.send_quotation_notification"
 	},
 	"Item Group": {
 		"before_insert": "playfunction.playfunction.custom_script.item_group.item_group.update_group_level"
@@ -112,8 +113,19 @@ doc_events = {
 		"on_submit": "playfunction.playfunction.custom_script.purchase_invoice.purchase_invoice.update_amount_owed",
 	},
 	"Item": {
+		"after_insert":"playfunction.playfunction.custom_script.item.item.validate",
+		"validate":"playfunction.playfunction.custom_script.item.item.validate",
 		"before_insert": "playfunction.playfunction.custom_script.item.item.item_autoname"
-	}
+	},
+	"Sales Order": {
+		"after_insert": "playfunction.playfunction.custom_script.sales_order.sales_order.send_order_notification",
+	},
+	"Sales Invoice": {
+		"after_insert": "playfunction.playfunction.custom_script.sales_invoice.sales_invoice.submit",
+	},
+	"Delivery Note": {
+		"after_insert": "playfunction.playfunction.custom_script.delivery_note.delivery_note.submit",
+	},
 }
 
 # Scheduled Tasks
@@ -153,4 +165,3 @@ scheduler_events = {
 # override_whitelisted_methods = {
 # 	"frappe.desk.doctype.event.event.get_events": "playfunction.event.get_events"
 # }
-

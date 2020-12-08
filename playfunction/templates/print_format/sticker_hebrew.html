@@ -1,0 +1,93 @@
+<div class="container-fluid">
+	{%- from "templates/print_formats/standard_macros.html" import add_header, render_field -%}
+
+		<div id="header-html" >
+			<div style="text-align:center;margin-top:-8px;">
+				<img id="logo_img" src="/files/logo.png" style="height:130px;width:170px;" >
+			</div>
+  		</div>
+			<div class="row" style="padding-top:30px;">
+
+			</div>
+      {% set u = frappe.get_doc("Delivery Note", doc.delivery_note) %}
+      <div class="row " style="margin-left:20px;margin-right:20px;margin-top:30px;">
+				{% set doc1 = frappe.get_doc("Delivery Note",{"name":doc.delivery_note}) %}
+				{% set cnt = "pratik"%}
+
+				{%for row in doc1.items%}
+							{% set cnt = cnt +row.against_sales_invoice %}
+				{% endfor%}
+
+				<div class="col-xs-6">
+					<div class="pull-right text-right">
+						<p><font size=3>{{ u.customer }}</font><font size=4><b> :הלקוח </b></font><br></p>
+
+						<p> <font size=3> <b>{{ u.address_display}}</b></font></p> <br><br>
+
+					</div>
+				</div>
+				<div class="col-xs-6">
+					<div class="text-right">
+						<p style=" font-size:2">
+							<b> <font size = "4"> : מספר הזמנה </font> </b>
+						</p>
+						<p>
+							<font size = "3"> <span> {{doc.name}} </span></font>
+						</p>
+						<font size = "3">{{ doc.to_case_no }} מתוך {{doc.from_case_no}} חבילה</font>
+						<br><br>
+						<p style="margin-top: 1px; font-size:2">
+							<b> <font size = "4">:השולח</font> </b>
+							<br> <font size = "3"> <span>פליי פאנקשן בע"מ ח.פ. 514972330</span></font>
+							<br><font size = "3"> <span>תכלת מרדכי 21 משרד 1202 ירושלים</span></font>
+						</p>
+						<p style="margin-top: 1px; font-size:2">
+							<b> <font size = "4"> טלפון :</font> </b>
+						  <font size = "3"> <span>02-650-6262 </span></font>
+
+						</p>
+					</div>
+						<!--<p style="text-decoration: underline;text-underline-position: under; "><small>Proposal is valid for 14 days from the date shown</small></p>-->
+
+				</div>
+			</div>
+  		<br>
+		<div class="row" style="direction: rtl;margin-left:20px;margin-right:20px;margin-bottom:20px;">
+			<div class="col-xs-6">
+				<font size=3> <b> : הערות ללקוח</b></font>
+				<div style="width:100%;height:120px;border:1px solid #000;"></div>
+			</div>
+			<div class="col-xs-6">
+				<font size=3><b> : הערות לנהג</b></font>
+				<div style="width:100%;height:120px;border:1px solid #000;"></div>
+			</div>
+		</div>
+		<hr style="width:120%; border: 3px solid orange;margin-left:-20px">
+		<div class="row" style="direction:rtl;margin-left:20px;margin-right:10px;">
+			<small>
+				<div class="col-xs-12">
+					<div class="col-xs-3">
+						<span style="float:left;">
+							<font size=1><b>ח.פ.</b> 514972330 </font>
+							<!-- <b>  טלפון :</b> 2-650-6262 -->
+						</span>
+					</div>
+					<div class="col-xs-2">
+						<span style="float:left;">
+							<!-- <b>Business no.:</b> ח.פ. 514972330 &emsp;&emsp; -->
+							<font size=1><b>  טלפון :</b> 02-650-6262</font>
+						</span>
+					</div>
+					<div class="col-xs-7">
+						<font size=1><b>פליי פאנקשן ישראל בע"מ</b> תכלת מרדכי 21 משרד מספר 1202 ירושלים 9439645</font>
+					</div>
+				</div>
+			</small>
+		</div>
+		<div id="footer-html" class="visible-pdf">
+			{% if not no_letterhead and footer %}
+				<div class="letter-head-footer">
+					{{ footer }}
+				</div>
+			{% endif %}
+</div>

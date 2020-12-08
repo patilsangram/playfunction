@@ -26,5 +26,13 @@ def get_data():
 			"type": "page",
 			"link": "stock-control",
 			"label": _("Stock Control")
+		},
+		{
+			"module_name": "Pepperi",
+			"color": "#106096",
+			"icon": "octicon octicon-graph",
+			"type": "page",
+			"link": "pepperi",
+			"label": _("Pepperi Page")
 		}
 	]

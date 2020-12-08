@@ -2,7 +2,7 @@ import frappe
 import json
 from frappe import _
 from frappe.utils import has_common, flt
-from order import order_details
+from .order import order_details
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
 from playfunction.playfunction.invoice_payment import *
 
@@ -120,7 +120,7 @@ def create_quote(customer, items):
 @frappe.whitelist()
 def update_quote(quote_id, items):
 	"""
-	:params 
+	:params
 		quote_id: quotation
 		items: {
 		item_code:
@@ -128,7 +128,7 @@ def update_quote(quote_id, items):
 		rate: Unit Price
 		discount_percentage:
 		description:
-		notes: 
+		notes:
 	}
 	"""
 	try:

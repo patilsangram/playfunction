@@ -80,7 +80,7 @@ def stock_availability_mail(sales_orders):
 			return
 		recipients = [ u.get("parent") for u in admin_users if u.get("parent") != "Administrator"]
 		message = frappe.render_template("templates/includes/stock_availability_mail.html", {
-			"sales_orders": sales_orders		
+			"sales_orders": sales_orders
 		})
 		frappe.sendmail(recipients=recipients,
 			subject=_("Stock availability"),
@@ -98,6 +98,7 @@ def stock_availability_mail(sales_orders):
 def check_payment_status():
 	"""Scheduler method to check payment status of order(iCredit)"""
 	try:
+		from requests import request as req
 		orders = []
 		error_log = {}
 		fields = ["name", "sales_tokens"]
@@ -113,21 +114,22 @@ def check_payment_status():
 			method = "POST"
 
 			for order in due_orders:
-				tokens = order.get("sales_tokens")
-				sales_token = json.loads(tokens)["PrivateSaleToken"]
-				data = {"SalePrivateToken": sales_token}
-				response = request(method, url, data=json.dumps(data), headers=headers)
-				# check payment status
-				if response.status_code == 200:
-					response = json.loads(response.text)
-					if not response.get("status") and response.get("Amount") \
-						and response.get("AuthNum"):
-						# TODO: partial payment - response.get("Amount") != order amt
-						frappe.db.set_value("Sales Order", order.get("name"), "payment_status", "Paid")
-						frappe.db.commit()
-				else:
-					# update error log
-					error_log[order.get("name")] = response.text
+				if order.get("sales_token"):
+					tokens = order.get("sales_tokens")
+					sales_token = json.loads(tokens)["PrivateSaleToken"]
+					data = {"SalePrivateToken": sales_token}
+					response = req(method, url, data=json.dumps(data), headers=headers)
+					# check payment status
+					if response.status_code == 200:
+						response = json.loads(response.text)
+						if not response.get("status") and response.get("Amount") \
+							and response.get("AuthNum"):
+							# TODO: partial payment - response.get("Amount") != order amt
+							frappe.db.set_value("Sales Order", order.get("name"), "payment_status", "Paid")
+							frappe.db.commit()
+					else:
+						# update error log
+						error_log[order.get("name")] = response.text
 		if error_log.keys():
 			frappe.error_log(message=json.dumps(error_log), title="Scheduler Event Failed")
 	except Exception as e:

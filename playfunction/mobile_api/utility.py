@@ -99,18 +99,10 @@ def create_copy(dt, dn, customer):
 @frappe.whitelist(allow_guest=True)
 def set_payment_status(data=None):
 	try:
-		response = {}
-		response["headers"] = str(frappe.request.headers)
-		if data:
-			response["type"] = "Data Parameter"
-			response["data"] = data
-		elif frappe.request.data:
-			response["type"] = "frappe.request.data"
-			response["data"] = frappe.request.data
-		else:
-			response["data"] = "Not found"
+		data = data if data else {}
+		data = json.loads(data)
+		if data.get("order_id") and frappe.db.exists("Sales Order", data.get("order_id")):
+			frappe.db.set_value("Sales Order", data.get("order_id"), "payment_status", "Paid")
+		return "Payment Status Updated Successfully"
 	except Exception as e:
-		response["error"] = str(e)
-	finally:
-		frappe.log_error(message=response , title="Mobile API: set_payment_status")
-		return response
+		frappe.log_error(message=str(e) , title="Mobile API: set_payment_status")
