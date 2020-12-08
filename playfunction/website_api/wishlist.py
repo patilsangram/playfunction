@@ -36,7 +36,8 @@ def add_to_wishlist(data):
 					wishlist_doc.append("items", items)
 				wishlist_doc.save(ignore_permissions=True)
 				frappe.db.commit()
-				response["message"] = "Wishlist is updated"
+				# msg = "Wishlist is updated"
+				response["message"] = "רשימת המשאלות עודכנה בהצלחה"
 				frappe.local.response["http_status_code"] = 200
 			else:
 				wishlist_doc = frappe.new_doc("Wishlist")
@@ -45,14 +46,17 @@ def add_to_wishlist(data):
 				wishlist_doc.append("items", items)
 				wishlist_doc.save(ignore_permissions= True)
 				frappe.db.commit()
-				response["message"] = "Wishlist Created"
+				# msg = "Wishlist Created"
+				response["message"] = "רשימת המשאלות שלך נוצרה בהצלחה"
 		else:
-			response["message"] = "Customer not found"
+			# msg ="Customer not found"
+			response["message"] = "שם משתמש לא קיים"
 			frappe.local.response['http_status_code'] = 404
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to create Wishlist: {}".format(str(e))
+		# msg ="Unable to create Wishlist:"
+		response["message"] = " {} אין לך אפשרות ליצור רשימת משאלות".format(str(e))
 		frappe.log_error(message=frappe.get_traceback(), title = "Website API: add_to_wishlist")
 	finally:
 		return response
@@ -77,18 +81,22 @@ def delete_wishlist(name, item_code):
 			wish.items = new_items
 			wish.flags.ignore_mandatory = True
 			wish.save()
-			response["message"] = "Wishlist Item deleted"
+			# msg = "Wishlist Item deleted"
+			response["message"] = "המוצר הוסר מרשימת המשאלות שלך"
 			if not len(wish.get("items", [])):
 				frappe.delete_doc("Wishlist", wish_doc)
-				response["message"] = "Deleted all items"
+				# msg = 'Deleted all items'
+				response["message"] = "כל המוצרים הוסרו מרשימת המשאלות שלך"
 			frappe.db.commit()
 		else:
-			response["message"] = "Wishlist not found"
+			# msg ="Wishlist not found"
+			response["message"] = "רשימת משאלות לא נמצאה במערכת"
 			frappe.local.response['http_status_code'] = 404
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to delete Wishlist"
+		# msg = "Unable to delete Wishlist"
+		response["message"] = "אין אפשרות להסיר פריטים מרשימת המשאלות שלך"
 		frappe.log_error(message=frappe.get_traceback() , title = "Website API: delete_wishlist")
 	finally:
 		return response
@@ -99,6 +107,9 @@ def get_wishlist_details():
 	try:
 		item_fields = ["item_code", "item_name","qty", "image", "description","rate","age"]
 		response = frappe._dict()
+		print("====================================")
+		print(frappe.session.user)
+		print("====================================")
 		cust = frappe.db.get_value("Customer",{'user':frappe.session.user},"name")
 		wishlist_doc =frappe.get_value("Wishlist",{
 			"customer": cust,
@@ -119,12 +130,14 @@ def get_wishlist_details():
 				items.append(row_data)
 			response["items"] = items
 		else:
-			response["message"] = "Data not found"
+			# msg ="Data not found"
+			response["message"] = "נתונים לא נמצאו"
 			frappe.local.response['http_status_code'] = 404
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to fetch wishlist"
+		# msg ="Unable to fetch wishlist"
+		response["message"] = "אין אפשרות למצוא את הנתונים של רשימת המשאלות"
 		frappe.log_error(message = frappe.get_traceback() , title = "Website API: get_wishlist_details")
 	finally:
 		return response
@@ -141,7 +154,8 @@ def wishlist_checkout():
 				"status": "Draft"
 			},"name")
 			if not wishlist:
-				response["message"] = "Wishlist not found"
+				# msg = "Wishlist not found"
+				response["message"] = "רשימת משאלות לא נמצאה במערכת"
 				frappe.local.response["http_status_code"] = 404
 			else:
 				wishlist_doc = frappe.get_doc("Wishlist", wishlist)
@@ -173,12 +187,14 @@ def wishlist_checkout():
 				quote.flags.ignore_permissions = True
 				quote.save()
 				frappe.db.commit()
-				response["message"] = "Added to Cart Successfully ..."
+				# msg = "Added to Cart Successfully ..."
+				response["message"] = "המוצר נוסף לרשימה"
 				response["quote_id"] = quote.name
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Order Creation failed"
+		# msg = "Order Creation failed"
+		response["message"] = "ההזמנה נכשלה"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: wishlist_checkout")
 	finally:
 		return response

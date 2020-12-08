@@ -10,7 +10,8 @@ def get_proposal_list(page_index=0, page_size=10):
 		response = frappe._dict()
 		customer = frappe.db.get_value("Customer",{"user": frappe.session.user},"name")
 		if not customer:
-			response["message"] = "Customer doesn't exists."
+			# msg ="Customer doesn't exists."
+			response["message"] = "שם משתמש אינו קיים"
 			frappe.local.response["http_status_code"] = 422
 		else:
 			proposal_states = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
@@ -29,7 +30,8 @@ def get_proposal_list(page_index=0, page_size=10):
 			})
 	except Exception as e:
 		frappe.local.response['http_status_code'] = getattr(e, "http_status_code", 500)
-		response["message"] = "Unable to fetch Proposal list"
+		# msg ="Unable to fetch Proposal list"
+		response["message"] = "המערכת לא מצליחה לאתר את רשימת הצעת המחיר שלך"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_proposal_list")
 	finally:
 		return response
@@ -62,7 +64,8 @@ def send_proposal(quote_id, data=None):
 		quote.flags.ignore_mandatory = True
 		quote.save()
 		frappe.db.commit()
-		response["message"] = "Proposal Sent Successfully"
+		# msg ="Proposal Sent Successfully"
+		response["message"] = "הבקשה להצעת המחיר נשלחה בהצלחה!"
 	except Exception as e:
 		frappe.local.response['http_status_code'] = getattr(e, "http_status_code", 500)
 		response["message"] = "Proposal Creation Failed"
@@ -77,14 +80,17 @@ def delete_proposal(proposal_id):
 		proposal_state = frappe.db.get_value("Quotation", proposal_id, "workflow_state")
 		if proposal_state == "Proposal Processing":
 			frappe.local.response["http_status_code"] = 422
-			response["message"] = "Can not delete Processing Stage Proposal"
+			# msg = "Can not delete Processing Stage Proposal"
+			response["message"] = "לא ניתן להסיר את הרשימה כרגע"
 		else:
 			frappe.delete_doc("Quotation", proposal_id)
 			frappe.db.commit()
-			response["message"] = "Proposal Deleted Successfully."
+			# msg = "Proposal Deleted Successfully."
+			response["message"] = "הבקשה שלך להצעת מחיר הוסרה בהצלחה!"
 	except Exception as e:
 		frappe.local.response['http_status_code'] = getattr(e, "http_status_code", 500)
-		response["message"] = "Proposal Deletion Failed"
+		# msg ="Proposal Deletion Failed"
+		response["message"] = "לא ניתן להסיר כרגע את הבקשה להצעת מחיר"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: delete_proposal")
 	finally:
 		return response

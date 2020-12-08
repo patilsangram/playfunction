@@ -20,7 +20,8 @@ def get_expert_list(page_index=0, page_size=10):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to fetch expert list"
+		# msg = "Unable to fetch expert list"
+		response["message"] = "המערכת זיהתה בעיה"
 		frappe.log_error(message=frappe.get_traceback() , title="website API: get_expert_list")
 	finally:
 		return response
@@ -34,11 +35,13 @@ def get_expert_details(expert_id):
 			response["data"] = blog_data
 		else:
 			frappe.local.response['http_status_code'] = 404
-			response["message"] = "Given Expert ID Not found"
+			# msg = "Given Expert ID Not found"
+			response["message"] = "איש המקצוע לא נמצא"
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to fetch expert Details: {}".format(str(e))
+		# msg = "Unable to fetch expert Details"
+		response["message"] = "{} : המערכת זיהתה בעיה בקבלת הנתונים".format(str(e))
 		frappe.log_error(message=frappe.get_traceback(), title="website API: get_expert_details")
 	finally:
 		return response

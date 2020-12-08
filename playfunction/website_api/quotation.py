@@ -16,7 +16,8 @@ def get_cart_details(quote_id):
 	try:
 		response = frappe._dict()
 		if not frappe.db.exists("Quotation", quote_id):
-			response["message"] = "Invalid Quotation"
+			# msg = "Invalid Quotation"
+			response["message"] = "שגיאה"
 			frappe.local.response["http_status_code"] = 404
 		else:
 			quote = frappe.get_doc("Quotation", quote_id)
@@ -76,7 +77,8 @@ def get_cart_details(quote_id):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to fetch Quotation Details"
+		# msg = "Unable to fetch Quotation Details"
+		response["message"] = "שגיאה בפרטי הבקשה"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_cart_details")
 	finally:
 		return response
@@ -99,12 +101,12 @@ def add_to_cart(items, is_proposal=False):
 		customer = frappe.db.get_value("Customer",{'user':user.name},"name")
 		if not customer:
 			# msg = "Customer doesn't exists."
-			response["message"] = ""
+			response["message"] = "לקוח אינו קיים"
 			frappe.local.response['http_status_code'] = 200
 		else:
 			if not has_common(["item_code", "qty"], items.keys()) or not all([ f in item_fields for f in items.keys()]):
-
-				response["message"] = "Invalid data"
+				# msg = "Invalid data"
+				response["message"] = "שגיאה בנתונים"
 				frappe.local.response["http_status_code"] = 422
 			else:
 				quote = frappe.new_doc("Quotation")
@@ -127,7 +129,8 @@ def add_to_cart(items, is_proposal=False):
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Quotation Creation failed".format(str(e))
+		# msg = "Quotation Creation failed"
+		response["message"] = "שגיאה בתהליך הבקשה להצעה".format(str(e))
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: add_to_cart")
 	finally:
 		return response
@@ -146,11 +149,13 @@ def update_cart(quote_id, items):
 		items = json.loads(items)
 
 		if not frappe.db.exists("Quotation", quote_id):
-			response["message"] = "Quotation not found"
+			# msg = "Quotation not found"
+			response["message"] = "הצעת המחיר לא נמצאה"
 			frappe.local.response['http_status_code'] = 404
 		else:
 			if not all([ f in item_fields for f in items.keys()]):
-				response["message"] = "Invalid Data"
+				# msg = "Invalid Data"
+				response["message"] = "שגיאה בנתונים"
 				frappe.local.response["http_status_code"] = 422
 			else:
 				quote = frappe.get_doc("Quotation", quote_id)
@@ -178,7 +183,8 @@ def update_cart(quote_id, items):
 		http_status_code = getattr(e, "http_status_code", 500)
 		response["status_code"] = http_status_code
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Quotation Update failed"
+		# msg = "Quotation Update failed"
+		response["message"] = "שגיאה בעדכון הבקשה להצעה"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: update_cart")
 	finally:
 		return response
@@ -194,7 +200,8 @@ def delete_cart_item(quote_id, item_code):
 		if not isinstance(item_code, list):
 			item_code = [item_code]
 		if not frappe.db.exists("Quotation", quote_id):
-			response["message"] = "Quotation not found"
+			# msg = "Quotation not found"
+			response["message"] = "הצעת המחיר לא נמצאה"
 			frappe.local.response['http_status_code'] = 404
 		else:
 			quote = frappe.get_doc("Quotation", quote_id)
@@ -207,7 +214,8 @@ def delete_cart_item(quote_id, item_code):
 			quote.save()
 			if not len(quote.get("items", [])):
 				frappe.delete_doc("Quotation", quote_id)
-				response["message"] = "Deleted all items"
+				# msg = "Deleted all items"
+				response["message"] = "כל המוצרים הוסרו בהצלחה"
 				frappe.local.response["http_status_code"] = 200
 			else:
 				response = get_cart_details(quote_id)
@@ -215,7 +223,8 @@ def delete_cart_item(quote_id, item_code):
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
-		response["message"] = "Unable to Delete Quote Item"
+		# msg = "Unable to Delete Quote Item"
+		response["message"] = "אין אפשרות להסיר מוצר מהרשימה"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: delete_cart_item")
 	finally:
 		return response
