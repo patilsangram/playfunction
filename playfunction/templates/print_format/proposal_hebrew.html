@@ -83,16 +83,15 @@
 							<td style="text-align:right;">{{ '%0.2f' % item.price_list_rate|float }}</td>
 							<td style="text-align:right;">{{ item.discount_percentage }}%</td>
 							<!-- Discounted amount for one item -->
+							<!-- Net Per Unit -->
 							{% if item.discount_percentage > 0 %}
 
 							{% set disc.discount = disc.discount + (item.price_list_rate*item.discount_percentage*item.qty/100) %}
-							<td style="text-align:right;">{{ '%0.2f' % (sp_without_vat-(sp_without_vat*item.discount_percentage/100))|float }}</td>
-							{% else %}
-							<td style="text-align:right;">{{ '%0.2f' % sp_without_vat|float }}</td>
 							{% endif%}
+							<td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td>
 							<!-- Total Amount after discount -->
-
-							<td style="text-align: right;">{{ '%0.2f' % ((sp_without_vat-(sp_without_vat*item.discount_percentage/100))*item.qty)|float }}</td>
+							<td style="text-align:right;">{{ '%0.2f' % item.amount|float }}</td>
+							<!-- <td style="text-align: right;">{{ '%0.2f' % ((sp_without_vat-(sp_without_vat*item.discount_percentage/100))*item.qty)|float }}</td> -->
 							<!-- <td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td> -->
 						</tr>
 						{% endfor %}
@@ -103,10 +102,11 @@
             </tr>
 						<tr >
 							<td colspan="5"></td>
-							<td> <u> {{ doc.total_qty }} </u> </td>
+							<td> <u> {{ doc.total_qty }} </u></td>
 							<td></td>
 							<td style="font-size: 12" colspan="2"><b> {{ _("סך הכל ללא מע\"מ:") }}</b></td>
-							<td><b>{{ '%0.2f' % total_sp_without_vat.total_sp_without_vat|float }}</b></td>
+							<td><b>{{ '%0.2f' % total_sp_without_vat.total_sp_without_vat|float }}</b>
+							</td>
 						</tr>
 						<tr>
 							<td colspan="7"></td>
