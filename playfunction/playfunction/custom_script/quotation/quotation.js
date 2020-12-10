@@ -87,8 +87,8 @@ frappe.ui.form.on("Quotation",{
 	}
 })
 
-// #ODO: temporary commented as proposal hebrew calculations was coming wrong. Discuss & uncomment/modify
-/*frappe.ui.form.on("Quotation Item",{
+/*//#TODO: temporary commented as proposal hebrew calculations was coming wrong. Discuss & uncomment/modify
+frappe.ui.form.on("Quotation Item",{
 	selling_rate:function(frm, cdt, cdn){
 		var item = locals[cdt][cdn]
 		if(item.cost_price && item.cost_price > 0 && item.selling_rate > 0){
