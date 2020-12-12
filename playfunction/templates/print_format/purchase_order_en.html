@@ -1,0 +1,99 @@
+<div class="container-fluid">
+	{%- from "templates/print_formats/standard_macros.html" import add_header, render_field -%}
+
+		<div id="header-html" >
+
+		</div>
+
+		<div class="row">
+			<div style="margin-left:35px;margin-top:-8px;">
+				<img id="logo_img" src="/files/logo.png" style="height:130px;width:170px;" >
+			</div>
+			<div id="header">
+			 <b>Purchase Order</b>
+			</div>
+		</div>
+
+		<div class="row ">
+			<div class="col-xs-6">
+				<font size=4><b>Receipt for:</b></font><br>
+				<font size=2><b>{{ doc.supplier }}</b></font>
+				<p>{{ doc.address_display}}</p>
+			</div>
+			<div class="col-xs-6" style="text-align: right;">
+				<font size=4>  {{ frappe.utils.formatdate(doc.transaction_date, "dd MMMM YYYY") }} </font>
+			    <p style="text-decoration: underline;text-underline-position: under; "><small>Proposal is valid for 14 days from the date shown</small></p>
+		       	<!-- <hr align="right"  style="width:60%; color: #000000; margin-top: 10px;" /> -->
+	    	   	<p style="text-align:left; margin-top: 1px; margin-left: 38%; font-size:2"><b>Supplier ID:</b>
+	    	   		<span style="float: right;">{{ doc.supplier }}</span></p>
+	    		<p style="text-align:left; margin-top: 1px; margin-left: 38%; font-size:2"><b>PO. No.: </b>
+	    			<span style="float: right;">{{ doc.name }}</span></p>
+			</div>
+		</div>
+	
+		<br><br>
+		
+		<div class="row">
+			<div>
+				<table class="table" style="width:100%;" class="col-xs-12">
+					<thead>
+						<tr>
+							<td><b>{{ _("#") }}</b></td>
+							<td><b>{{ _("Product ID") }}</b></td>
+							<td></td>
+							<td><b>{{ _("Description") }}</b></td>
+							<td><b>{{ _("Qty") }}</b></td>
+							<td><b>{{ _("Note") }}</b></td>
+							<td><b>{{ _("Barcode") }}</b></td>
+						</tr>
+					</thead>
+					<tbody>
+
+						{% for item in doc.items %}
+						<tr>
+							<td>{{ item.idx }}</td>
+							<td>{{ frappe.db.get_value("Item", item.item_code, "supplier_item_code")  or item.item_code}}</td>
+							<td>
+								<img style="height: 60px;width: 60px !important;" id="item_img" src= '{{ item.image }}'>
+							</td>
+							<td>{{ frappe.db.get_value("Item", item.item_code, "supplier_item_name")  or item.item_name}}</td>
+							<td>{{ item.qty }}</td>
+							<td>{{ item.notes }}</td>
+							<td>{{ frappe.db.get_value("Item Barcode", {"parent": item.item_code}, "barcode") or "-" }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
+					<tfoot style="line-height:5pt;"></tfoot>
+				</table>
+			</div>
+		<div>
+		
+		<div id="footer-html" class="visible-pdf">
+			{% if not no_letterhead and footer %}
+				<div class="letter-head-footer">
+					{{ footer }}
+				</div>
+			{% endif %}
+			<div  class="row">
+	
+			<div class="col-xs-12" id="confirm">
+				<p><b>Confirmation of order</b></p><br>
+				<p>Name:___________________ Signature: __________________ Date: _____________</p>
+				<br><br>
+			</div>
+
+			<div class="col-xs-12">
+				<p id="terms"><small>
+					<b>Terms & Conditions: &nbsp</b> Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. 
+				</small></p>
+			
+				<hr style="border: 3px solid orange;">
+
+ 				<p style="text-align: center"><small>
+ 					<b>Playfunction:</b>21Techelet Mordechai,office number 1202, Jerusalem 9439645 &emsp;&emsp;
+ 					<b>Business no.:</b> 51497233 &emsp;&emsp;
+ 					<b>Phone:</b> 2-650-6262
+ 				</small></p>
+			</div>
+		</div>	
+</div>
