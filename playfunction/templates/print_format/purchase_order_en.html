@@ -7,7 +7,7 @@
 
 		<div class="row">
 			<div style="margin-left:35px;margin-top:-8px;">
-				<img id="logo_img" src="/files/logo.png" style="height:130px;width:170px;" >
+				<img id="logo_img" src="/files/po_logo.png" style="height:130px;width:170px;" >
 			</div>
 			<div id="header">
 			 <b>Purchase Order</b>
@@ -17,17 +17,17 @@
 		<div class="row ">
 			<div class="col-xs-6">
 				<font size=4><b>Receipt for:</b></font><br>
-				<font size=2><b>{{ doc.supplier }}</b></font>
-				<p>{{ doc.address_display}}</p>
+				<!-- <font size=2><b>{{ doc.supplier }}</b></font> -->
+				<p>{{ doc.shipping_address_display}}</p>
 			</div>
 			<div class="col-xs-6" style="text-align: right;">
 				<font size=4>  {{ frappe.utils.formatdate(doc.transaction_date, "dd MMMM YYYY") }} </font>
-			    <p style="text-decoration: underline;text-underline-position: under; "><small>Proposal is valid for 14 days from the date shown</small></p>
-		       	<!-- <hr align="right"  style="width:60%; color: #000000; margin-top: 10px;" /> -->
-	    	   	<p style="text-align:left; margin-top: 1px; margin-left: 38%; font-size:2"><b>Supplier ID:</b>
-	    	   		<span style="float: right;">{{ doc.supplier }}</span></p>
-	    		<p style="text-align:left; margin-top: 1px; margin-left: 38%; font-size:2"><b>PO. No.: </b>
-	    			<span style="float: right;">{{ doc.name }}</span></p>
+				<p style="text-decoration: underline;text-underline-position: under; "></p>
+				<hr align="right"  style="width:60%; color: #000000; margin-top: 10px;" />
+				<p style="text-align:left; margin-top: 1px; margin-left: 38%; font-size:2"><b>Account No:</b>
+					<span style="float: right;">{{ frappe.db.get_value("Supplier", doc.supplier, "account_no") or "-" }}</span></p>
+				<p style="text-align:left; margin-top: 1px; margin-left: 38%; font-size:2"><b>PO. No.: </b>
+				<span style="float: right;">{{ doc.name }}</span></p>
 			</div>
 		</div>
 	
