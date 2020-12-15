@@ -9350,7 +9350,7 @@
   "in_list_view": 0,
   "in_standard_filter": 0,
   "insert_after": "supplier_item_code",
-  "label": "Supplier",
+  "label": "Supplier List",
   "modified": "2019-05-16 14:18:47.217223",
   "name": "Item-supplier_list",
   "no_copy": 0,

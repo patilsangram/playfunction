@@ -2,6 +2,8 @@ import frappe
 import json
 from frappe import _
 from frappe.utils import flt
+
+
 @frappe.whitelist()
 def get_dashboard_data(filters=None):
 	try:

@@ -78,6 +78,7 @@ def checkout_order(data,doctype):
 
 @frappe.whitelist()
 def update_selling_data(doc,meathod):
+	#TODO: for now removed call from hooks. check and if needed enable
 	"""
 		update cost_price & discount_percentage & calculate selling_price i.e. Rate
 		formula: rate = cost_price * selling_rate

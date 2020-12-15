@@ -100,7 +100,7 @@ doc_events = {
 		"validate": "playfunction.playfunction.custom_script.customer.customer.validate_customer",
 	},
 	"Quotation":{
-		"validate": "playfunction.playfunction.custom_script.quotation.quotation.update_selling_data",
+		#"validate": "playfunction.playfunction.custom_script.quotation.quotation.update_selling_data",
 		"after_insert": "playfunction.playfunction.custom_script.quotation.quotation.send_quotation_notification"
 	},
 	"Item Group": {

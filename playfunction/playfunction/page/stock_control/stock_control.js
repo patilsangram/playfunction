@@ -224,7 +224,7 @@ frappe.StockControl = Class.extend({
 			callback: function(r) {
 				if (!r.exc && r.message) {
 					frappe.msgprint(__(dt+" Record Created Successfully..."))
-					me.fetch_dashboard_data();
+					me.make();
 				}
 			}
 		})
