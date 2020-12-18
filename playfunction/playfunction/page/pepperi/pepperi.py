@@ -48,7 +48,7 @@ def get_items_and_group_tree(filters):
 	query = """SELECT
 		i.item_code, i.item_name, i.image,{},
 		group_concat(c.catalog_level_1) as catalogs,
-		ifnull(b.actual_qty, 0) as qty, d.default_warehouse, i.sp_with_vat as price
+		ifnull(b.actual_qty, 0) as qty, d.default_warehouse, i.sp_without_vat as price
 		from
 				tabItem i left join `tabCatalog` c  on c.parent = i.name
 		left join
