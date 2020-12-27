@@ -220,10 +220,15 @@ def registration(data):
 				user_doc.flags.ignore_permissions = True
 				user_doc.save()
 				if user_doc:
-					key = random_string(32)
-					user_doc.db_set("reset_password_key", key)
-					send_mail(user_doc.name,key)
+					#key = random_string(32)
+					#user_doc.db_set("reset_password_key", key)
+					#send_mail(user_doc.name,key)
 					# msg = "User created with Email Id {} Please check Email for Verification"
+
+					# add roles
+					if frappe.db.exists("Role", "Playfunction Customer"):
+						user_doc.add_roles("Playfunction Customer", "Customer")
+						user_doc.save()
 					response.message = _("משתמש נוצר עם מזהה דוא\"ל {} אנא בדוק אם יש אימות בדוא\"ל שלך".format(user_doc.name))
 					frappe.local.response['http_status_code'] = 200
 	except Exception as e:
