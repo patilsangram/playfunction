@@ -14,13 +14,13 @@ def get_dashboard_data(filters=None):
 			filters = dict()
 
 		if filters.get("item"):
-			filter_query += " and stock_data.item_code = '{}'".format(filters.get("item"))
+			filter_query += " and item.item_code = '{}'".format(filters.get("item"))
 
 		if filters.get("customer"):
-			filter_query += " and stock_data.customer = '{}'".format(filters.get("customer"))
+			filter_query += " and selling.customer = '{}'".format(filters.get("customer"))
 
 		if filters.get("supplier"):
-			filter_query += " and stock_data.supplier = '{}'".format(filters.get("supplier"))
+			filter_query += " and item.supplier = '{}'".format(filters.get("supplier"))
 
 		if filters.get("stock") and filters.get("stock_qty"):
 			# stock filter e.g. between 100 and 200, not in (100, 200)
@@ -37,27 +37,34 @@ def get_dashboard_data(filters=None):
 					cond_query = "{} and {}".format(val_list[0], val_list[1])
 				else:
 					cond_query = val_list[0]
-				filter_query += " and stock_data.stock {} {}".format(condition, cond_query)
+				filter_query += " and item.stock {} {}".format(condition, cond_query)
 
 		# sub query to handle stock filter/alias
 		query = """
-			select * from (select
-				i.item_code, i.item_name, i.cost_price, i.sp_with_vat, i.supplier,
-				i.supplier_item_name, q.party_name as customer, ifnull(sum(qi.qty), 0) as quote_qty,
-				ifnull((soi.qty - soi.delivered_qty), 0) as pending_qty, ifnull(sum(bin.actual_qty), 0) as stock
-			from
-				tabItem i
-			left join
-				`tabQuotation Item` qi on qi.item_code = i.item_code
-			left join
-				`tabQuotation` q on qi.parent = q.name
-			left join
-				`tabSales Order Item` soi on soi.item_code = i.item_code
-			left join
-				`tabBin` bin on bin.item_code = i.item_code
-			group by
-				i.item_code, q.party_name) as stock_data
+			select item.*, selling.quote_qty, selling.customer, selling.pending_qty from (
+				select
+					i.item_code, i.item_name, i.cost_price, i.sp_with_vat, i.supplier,
+					i.supplier_item_name, ifnull(sum(b.actual_qty), 0) as stock
+				from tabItem i
+				left join tabBin b on i.item_code = b.item_code
+				group by i.item_code
+			) item
+			left join (
+				select quote.party_name as customer, quote.item_code as item_code, quote.quote_qty, sales.pending_qty from
+				(select q.party_name, qi.item_code, sum(qi.qty) as quote_qty from `tabQuotation` q
+				left join `tabQuotation Item` qi on q.name =  qi.parent group by qi.item_code, q.party_name)  quote
+
+				left join
+
+				(select so.customer, soi.item_code, ifnull((sum(soi.qty) - sum(soi.delivered_qty)), 0) as pending_qty
+				from `tabSales Order` so left join `tabSales Order Item` soi on so.name = soi.parent
+				group by soi.item_code, so.customer)  sales
+				on quote.party_name = sales.customer and quote.item_code = sales.item_code
+				group by quote.item_code, quote.party_name
+			) selling
+			on item.item_code = selling.item_code
 			{}
+			group by item.item_code, selling.customer
 		""".format(filter_query)
 		data = frappe.db.sql(query, as_dict=True)
 		return data
