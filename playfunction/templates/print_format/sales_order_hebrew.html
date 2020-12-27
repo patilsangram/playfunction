@@ -34,6 +34,9 @@
       <div class="col-xs-7">
         <div class="pull-right text-right">
 					<font size=4><b> :לכבוד</b></font><br>
+					<font size=3><b>{{
+						frappe.db.get_value("Customer", doc.customer, "customer_group") or "-" 
+					}}</b></font><br>
 					<font size=2><b>{{ doc.customer }}</b></font>
 					<font size=2><p>{{ doc.address_display}}</p></font>
         </div>
