@@ -227,7 +227,7 @@ def registration(data):
 
 					# add roles
 					if frappe.db.exists("Role", "Playfunction Customer"):
-						user_doc.add_roles("Playfunction Customer", "Customer")
+						user_doc.add_roles("Playfunction Customer")
 						user_doc.save()
 					response.message = _("משתמש נוצר עם מזהה דוא\"ל {} אנא בדוק אם יש אימות בדוא\"ל שלך".format(user_doc.name))
 					frappe.local.response['http_status_code'] = 200
