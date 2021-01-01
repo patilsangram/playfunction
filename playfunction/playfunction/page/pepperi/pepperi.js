@@ -97,6 +97,10 @@ frappe.pepperi = Class.extend({
 
 	render_item_catalog: function() {
 		var me = this;
+
+		// clear localStorage
+		localStorage.removeItem("item_group");
+		localStorage.removeItem("child_item_group");
 		// fetch & render item group
 		frappe.call({
 			method: "playfunction.playfunction.page.pepperi.pepperi.get_item_groups",
