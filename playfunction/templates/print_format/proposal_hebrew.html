@@ -64,14 +64,12 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% set cnt=namespace(count=1) %}
-						{% set disc =namespace(discount=0) %}
-						{% set total_sp_without_vat =namespace(total_sp_without_vat=0) %}
+						{% set disc = namespace(val=0) %}
+						{% set price_list_rate = namespace(val=0) %}
 
 						{% for item in doc.items %}
 						<tr>
-							<td style="text-align:right;">{{ cnt.count }}</td>
-							{% set cnt.count=cnt.count+1 %}
+							<td style="text-align:right;">{{ item.idx + 1 }}</td>
 							<td style="text-align:right;">{{ item.item_code }}  </td>
 							<td style="text-align:right;height: 60px;width: 60px !important;"><img id="item_img" src= '{{ item.image }}'></td>
 							<td style="text-align:right;" colspan="2">{{ item.item_name }}
@@ -80,8 +78,7 @@
 							 </td>
 							<td style="text-align:right;">{{ item.qty }}</td>
 
-							{% set sp_without_vat = frappe.db.get_value("Item", item.item_code, "sp_without_vat") %}
-							{% set total_sp_without_vat.total_sp_without_vat =(total_sp_without_vat.total_sp_without_vat+(sp_without_vat* item.qty))%}
+							{% set price_list_rate.val = (price_list_rate.val + (item.price_list_rate * item.qty)) %}
 
 							<td style="text-align:right;">{{ '%0.2f' % item.price_list_rate|float }}</td>
 							<td style="text-align:right;">{{ item.discount_percentage }}%</td>
@@ -89,13 +86,11 @@
 							<!-- Net Per Unit -->
 							{% if item.discount_percentage > 0 %}
 
-							{% set disc.discount = disc.discount + (item.price_list_rate*item.discount_percentage*item.qty/100) %}
+							{% set disc.val = disc.val + item.discount_amount %}
 							{% endif%}
 							<td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td>
 							<!-- Total Amount after discount -->
 							<td style="text-align:right;">{{ '%0.2f' % item.amount|float }}</td>
-							<!-- <td style="text-align: right;">{{ '%0.2f' % ((sp_without_vat-(sp_without_vat*item.discount_percentage/100))*item.qty)|float }}</td> -->
-							<!-- <td style="text-align:right;">{{ '%0.2f' % item.rate|float }}</td> -->
 						</tr>
 						{% endfor %}
 					</tbody>
@@ -108,29 +103,27 @@
 							<td> <u> {{ doc.total_qty }} </u></td>
 							<td></td>
 							<td style="font-size: 12" colspan="2"><b> {{ _("סך הכל ללא מע\"מ:") }}</b></td>
-							<td><b>{{ '%0.2f' % total_sp_without_vat.total_sp_without_vat|float }}</b>
+							<td><b>{{ '%0.2f' % price_list_rate.val|float }}</b>
 							</td>
 						</tr>
 						<tr>
 							<td colspan="7"></td>
 							<td colspan="2"><b> {{ _("הנחה:") }}</b></td>
 
-							<td><b>{{ '%0.2f' % disc.discount|float  }}</b></td>
+							<td><b>{{ '%0.2f' % disc.val|float  }}</b></td>
 						</tr>
 						<tr>
 							<td colspan="7"></td>
 							<td colspan="2"> <b>{{ _("סה\"כ לאחר הנחה:") }}</b></td>
-							{% set total_aftr_disc=total_sp_without_vat.total_sp_without_vat-disc.discount %}
-							<td><b>{{ '%0.2f' % total_aftr_disc|float }}</b></td>
+							<td><b>{{ '%0.2f' % doc.total|float }}</b></td>
 						</tr>
 						<tr>
 							<td colspan="7"></td>
-							<td colspan="2"><b>{{ _("מע\"מ:") }}</b> <b class='small'>{{ _("17%") }}</b></td>
-							{% set tax = 0 %}
-							{% set tax = total_aftr_disc*0.17 %}
-							<td><b>{{ '%0.2f' % tax|float }}</b></td>
+							<td colspan="2"><b>{{ _("מע\"מ:") }}</b> <b class='small'>{{ _("17%") }}</b>
+							</td>
+							<td><b>{{ '%0.2f' % doc.total_taxes_and_charges|float }}</b></td>
 						</tr>
-						{% for tax in doc.taxes %}
+						<!-- {% for tax in doc.taxes %}
 							{% if tax.account_head != "VAT 17% - PF"%}
 							<tr>
 								<td colspan="7"></td>
@@ -138,11 +131,11 @@
 								<td><b>{{ '%0.2f' % tax.tax_amount|float }}</b></td>
 							</tr>
 							{% endif %}
-						{% endfor %}
+						{% endfor %} -->
 						<tr>
 							<td colspan="7"></td>
 							<td id="total" colspan="2"> <b>{{ _("סך הכל") }}</b></td>
-							<td id="total"><b>{{ '%0.2f' % doc.rounded_total|float }}</b></td>
+							<td id="total"><b>{{ '%0.2f' % doc.grand_total|float }}</b></td>
 						</tr>
 					</tfoot>
 				</table>
