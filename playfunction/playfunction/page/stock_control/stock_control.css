@@ -113,6 +113,10 @@ div#header {
 	width: 150px;
 }
 
+.s-icode {
+	width: 100px;
+}
+
 .supp, .cust {
 	width: 120px;
 }

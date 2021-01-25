@@ -44,7 +44,7 @@ def get_dashboard_data(filters=None):
 			select item.*, selling.quote_qty, selling.customer, selling.pending_qty from (
 				select
 					i.item_code, i.item_name, i.cost_price, i.sp_with_vat, i.supplier,
-					i.supplier_item_name, ifnull(sum(b.actual_qty), 0) as stock
+					i.supplier_item_name, i.supplier_item_code, ifnull(sum(b.actual_qty), 0) as stock
 				from tabItem i
 				left join tabBin b on i.item_code = b.item_code
 				group by i.item_code

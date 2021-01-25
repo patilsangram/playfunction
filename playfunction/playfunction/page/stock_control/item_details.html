@@ -9,6 +9,7 @@
 				<th class="tb-th supp">{{ __("Supplier") }}</th>
 				<th class="tb-th cust">{{ __("Customer") }}</th>
 				<th class="tb-th nm-of-gm">{{ __("Supplier Item Name") }}</th>
+				<th class="tb-th s-icode">{{ __("Supplier Item Code") }}</th>
 				<th class="tb-th cost">{{ __("Cost Price") }}</th>
 				<th class="tb-th sp_vat">{{ __("SP With VAT") }}</th>
 				<th class="tb-th stock">{{ __("Stock") }}</th>
@@ -40,6 +41,7 @@
 						{{ item.customer }}
 					</td>
 					<td class="tb-td nm-of-gm">{{ item.supplier_item_name }}</td>
+					<td class="tb-td s-icode">{{ item.supplier_item_code }}</td>
 					<td class="tb-td cost">{{ item.cost_price }}</td>
 					<td class="tb-td sp_with_vat" data-item_code="{{ item.item_code }}" data-item_name="{{ item.item_name }}">
 						{{ item.sp_with_vat }}
