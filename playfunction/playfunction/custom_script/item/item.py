@@ -22,8 +22,13 @@ def item_autoname(doc, method):
 
 def create_item_price(doc,method):
 	if not doc.is_new() and doc.sp_without_vat:
-		if frappe.db.exists("Item Price",{"item_code":doc.name,"selling":1}):
-			item_price_doc = frappe.get_doc("Item Price",{"item_code":doc.name})
+		is_exist = frappe.db.exists("Item Price",{
+				"item_code": doc.name,
+				"selling":1,
+				"price_list": "Standard Selling"
+			})
+		if is_exist:
+			item_price_doc = frappe.get_doc("Item Price", is_exist)
 		else:
 			item_price_doc = frappe.new_doc("Item Price")
 			item_price_doc.item_code = doc.name
