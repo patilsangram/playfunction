@@ -81,8 +81,12 @@ def update_selling_price(data):
 		if sp_without_vat < 0:
 			sp_without_vat = 0
 		if sp_with_vat >= 0:
-			frappe.db.set_value("Item", data.get("item_code"), "sp_with_vat", sp_with_vat)
-			frappe.db.set_value("Item", data.get("item_code"), "sp_without_vat", sp_without_vat)
+			doc = frappe.get_doc("Item", data.get("item_code"))
+			doc.sp_with_vat = sp_with_vat
+			doc.sp_without_vat = sp_without_vat
+			doc.save()
+			# frappe.db.set_value("Item", data.get("item_code"), "sp_with_vat", sp_with_vat)
+			# frappe.db.set_value("Item", data.get("item_code"), "sp_without_vat", sp_without_vat)
 		return "Success"
 	except Exception as e:
 		frappe.msgprint(_("Something went wrong while Updating Selling Price."))
