@@ -228,3 +228,55 @@ def delete_cart_item(quote_id, item_code):
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: delete_cart_item")
 	finally:
 		return response
+
+
+@frappe.whitelist()
+def bulk_add_to_cart(quote_id, items):
+	"""
+	:params
+		quote_id: quotation
+		items: [{
+			"item_code": "",
+			"qty": ,
+		}]
+	"""
+	try:
+		response = frappe._dict()
+		items = json.loads(items)
+		if not frappe.db.exists("Quotation", quote_id):
+			# msg = "Quotation not found"
+			response["message"] = "הצעת המחיר לא נמצאה"
+			frappe.local.response['http_status_code'] = 404
+		else:
+			quote = frappe.get_doc("Quotation", quote_id)
+			for i in items:
+				item_details = frappe.db.get_value("Item", i.get("item_code"),\
+					["sp_with_vat", "discount_percentage"], as_dict=True)
+				if item_details.get("discount_percentage", 0.00) > 0:
+					i["margin_type"] = "Percentage"
+					i["discount_percentage"] = item_details.get("discount_percentage")
+				i["price_list_rate"] = item_details.get("sp_with_vat", 0)
+				existing_item = False
+				for row in quote.get("items"):
+					# update item row
+					if row.get("item_code") == i.get("item_code"):
+						existing_item = True
+						updatd_qty = row.get("qty") + i.get("qty")
+						i["qty"] = int(updatd_qty)
+						row.update(i)
+				# add new item
+				if not existing_item:
+					quote.append("items", i)
+			quote.save()
+			frappe.db.commit()
+			response = get_cart_details(quote.name)
+		return "Successful"
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		response["status_code"] = http_status_code
+		frappe.local.response['http_status_code'] = http_status_code
+		# msg = "Quotation Update failed"
+		response["message"] = "שגיאה בעדכון הבקשה להצעה"
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: bulk_add_to_cart")
+	finally:
+		return response

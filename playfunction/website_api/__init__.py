@@ -8,7 +8,8 @@ from .item import get_category_items, search, get_categorised_item, \
 from .wishlist import add_to_wishlist, delete_wishlist, get_wishlist_details, wishlist_checkout
 from .category import get_categories, get_child_categories, get_category_tree, age_list,\
 	manufacturer_list
-from .quotation import get_cart_details, add_to_cart, update_cart, delete_cart_item
+from .quotation import get_cart_details, add_to_cart, update_cart, \
+	delete_cart_item, bulk_add_to_cart
 from .order import place_order, order_details, update_order, order_history, delete_order_item,get_payment_status
 from .faq import get_faq
 from .expert import get_expert_list, get_expert_details
