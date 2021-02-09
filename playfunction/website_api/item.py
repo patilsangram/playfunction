@@ -115,7 +115,7 @@ def search(search=None):
 def get_categorised_item(catalog_level_1, catalog_level_2, age=None, manufacturer=None, catalog_level_3=None, catalog_level_4=None, price_from=None,price_to=None):
 	try:
 		response = frappe._dict()
-		cond = " where 1=1"
+		cond = " where is_website_item = 1"
 
 		# catalog_level conditions
 		levels = [catalog_level_1, catalog_level_2, catalog_level_3, catalog_level_4]
@@ -246,7 +246,7 @@ def recommended_items(item_code):
 	finally:
 		return response
 
-@frappe.whitelist()
+@frappe.whitelist(allow_guest=True)
 def related_items(data):
 	"""
 		Returns related item details

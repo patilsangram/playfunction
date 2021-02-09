@@ -176,6 +176,8 @@ def update_cart(quote_id, items):
 				# add new item
 				if not existing_item:
 					quote.append("items", items)
+
+				quote.set_missing_values()
 				quote.save()
 				frappe.db.commit()
 				response = get_cart_details(quote.name)
