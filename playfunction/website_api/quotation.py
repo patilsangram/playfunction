@@ -160,11 +160,13 @@ def update_cart(quote_id, items):
 			else:
 				quote = frappe.get_doc("Quotation", quote_id)
 				item_details = frappe.db.get_value("Item", items.get("item_code"),\
-					["sp_with_vat", "discount_percentage"], as_dict=True)
+					["sp_with_vat", "discount_percentage", "description"], as_dict=True)
 				if item_details.get("discount_percentage", 0.00) > 0:
 					items["margin_type"] = "Percentage"
 					items["discount_percentage"] = item_details.get("discount_percentage")
 				items["price_list_rate"] = item_details.get("sp_with_vat", 0)
+				items["description"] = item_details.get("description", "WebAPI")
+
 				existing_item = False
 				for row in quote.get("items"):
 					# update item row
