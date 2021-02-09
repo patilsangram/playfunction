@@ -8,8 +8,10 @@ def get_customer_profile(customer=None):
 	try:
 		response = frappe._dict()
 		if not customer:
-			customer = frappe.db.get_value("Customer", {"user": frappe.session.user}, "name")
-		if customer:
+			customer_data = frappe.db.sql("select name, customer_name from `tabCustomer`\
+					where user = '{}'".format(frappe.session.user), as_dict=True)
+			# frappe.db.get_value("Customer", {"user": frappe.session.user}, "name")
+		if customer_data and len(customer_data):
 			customer_address = frappe.db.sql("""select
 				ad.name, ad.address_line1, ad.address_line2,
 				ad.phone, ad.email_id, ad.city
@@ -22,7 +24,7 @@ def get_customer_profile(customer=None):
 				dl.link_name = '{}' and
 				ad.address_type = 'Billing' and
 				ifnull(ad.disabled, 0) = 0
-			""".format(customer), as_dict=True)
+			""".format(customer_data[0].get('name')), as_dict=True)
 
 			if not customer_address or not len(customer_address):
 				# msg = "Profile Not found"
@@ -43,7 +45,7 @@ def get_customer_profile(customer=None):
 					customer_address["street_address"] = street_address.strip()
 				if len(address_line1) > 1:
 					customer_address["apartment_no"] = address_line1[1].strip()
-				customer_address["customer_name"] = frappe.db.get_value("Customer", customer, "customer_name")
+				customer_address["customer_name"] = customer_data[0].get("customer_name")
 				response["data"] = customer_address
 		else:
 			# msg="Customer doesn't exist"
@@ -76,8 +78,9 @@ def update_customer_profile(data, customer=None):
 	try:
 		response = frappe._dict()
 		if not customer:
-			customer = frappe.db.get_value("Customer",{"user": frappe.session.user},"name")
-		if not customer:
+			customer_data = frappe.db.sql("select name, customer_name from `tabCustomer`\
+					where user = '{}'".format(frappe.session.user), as_dict=True)
+		if not customer_data or not len(customer_data):
 			# msg = "Customer doesn't exists."
 			response["message"] = "לקוח אינו קיים"
 			frappe.local.response["http_status_code"] = 422
@@ -85,6 +88,7 @@ def update_customer_profile(data, customer=None):
 			if not isinstance(data, dict):
 				data = json.loads(data)
 
+			customer = customer_data[0].get("name")
 			add_doc = {}
 			add_doc["address_line1"] = data.get("house_no", "").strip() +", "+\
 				data.get("apartment_no", "").strip()
@@ -94,7 +98,7 @@ def update_customer_profile(data, customer=None):
 			add_doc["email_id"] = data.get("email_id").strip()
 
 
-			existing_address = get_customer_profile(customer)
+			existing_address = get_customer_profile()
 			if not existing_address.get("data"):
 				if not data:
 					return False
@@ -107,18 +111,21 @@ def update_customer_profile(data, customer=None):
 					"link_title": customer
 				})
 				address.flags.ignore_mandatory = True
+				address.flags.ignore_permissions = True
 				address.save()
 			else:
 				address_doc = frappe.get_doc("Address", existing_address.get("data").get("name"))
 				address_doc.update(add_doc)
 				address_doc.flags.ignore_mandatory = True
+				address_doc.flags.ignore_permissions = True
 				address_doc.save()
 			if data.get("customer_name"):
-				frappe.db.set_value("Customer", customer, "customer_name", data.get("customer_name"))
+				frappe.db.sql("update tabCustomer set customer_name = '{}' where name = '{}'".format(data.get("customer_name"), customer))
+
 			frappe.db.commit()
 			# msg = "Profile Created Successfully."
 			response["message"] = "הפרופיל שלך נוצר בהצלחה!"
-		response = get_customer_profile(customer)
+		response = get_customer_profile()
 	except Exception as e:
 		frappe.local.response["http_status_code"] = getattr(e, "http_status_code", 500)
 		# msg = "Address Creation failed"

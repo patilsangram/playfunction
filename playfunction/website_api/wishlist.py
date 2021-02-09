@@ -107,15 +107,12 @@ def get_wishlist_details():
 	try:
 		item_fields = ["item_code", "item_name","qty", "image", "description","rate","age"]
 		response = frappe._dict()
-		print("====================================")
-		print(frappe.session.user)
-		print("====================================")
 		cust = frappe.db.get_value("Customer",{'user':frappe.session.user},"name")
 		wishlist_doc =frappe.get_value("Wishlist",{
 			"customer": cust,
 			"status": "Draft"
 		},"name")
-		if frappe.db.exists("Wishlist",wishlist_doc):
+		if frappe.db.exists("Wishlist", wishlist_doc):
 			wishlist = frappe.get_doc("Wishlist", wishlist_doc)
 			items = []
 			# fetch required item details
