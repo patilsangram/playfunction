@@ -17,7 +17,8 @@ def add_to_wishlist(data):
 	try:
 		response = frappe._dict()
 		items = json.loads(data)
-		cust = frappe.db.get_value("Customer",{'user':frappe.session.user},"name")
+		cust = frappe.db.sql("select name from `tabCustomer`\
+			where user = '{}'".format(frappe.session.user))[0][0]
 		if cust:
 			wishlist_doc = frappe.get_value("Wishlist", {
 				"customer": cust,
@@ -67,7 +68,8 @@ def delete_wishlist(name, item_code):
 		response = frappe._dict()
 		item_code = item_code.encode('utf-8')
 		item_list= [ i.strip() for i in item_code.split(",")]
-		cust = frappe.db.get_value("Customer",{'user':frappe.session.user},"name")
+		cust = frappe.db.sql("select name from `tabCustomer` \
+			where user = '{}'".format(frappe.session.user))[0][0]
 		wish_doc = frappe.get_value("Wishlist",{
 			"customer": cust,
 			"status": "Draft"
@@ -107,7 +109,8 @@ def get_wishlist_details():
 	try:
 		item_fields = ["item_code", "item_name","qty", "image", "description","rate","age"]
 		response = frappe._dict()
-		cust = frappe.db.get_value("Customer",{'user':frappe.session.user},"name")
+		cust = frappe.db.sql("select name from `tabCustomer`\
+			where user = '{}'".format(frappe.session.user))[0][0]
 		wishlist_doc =frappe.get_value("Wishlist",{
 			"customer": cust,
 			"status": "Draft"
@@ -145,7 +148,8 @@ def wishlist_checkout():
 	try:
 		response = frappe._dict()
 		if frappe.session.user:
-			customer = frappe.db.get_value("Customer",{'user':frappe.session.user},"name")
+			customer = frappe.db.sql("select name from `tabCustomer`\
+				where user = '{}'".format(frappe.session.user))[0][0]
 			wishlist = frappe.get_value("Wishlist", {
 				"customer": customer,
 				"status": "Draft"
