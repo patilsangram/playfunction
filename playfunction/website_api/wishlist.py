@@ -82,11 +82,13 @@ def delete_wishlist(name, item_code):
 					new_items.append(row)
 			wish.items = new_items
 			wish.flags.ignore_mandatory = True
+			wish.flags.ignore_permissions = True
 			wish.save()
 			# msg = "Wishlist Item deleted"
 			response["message"] = "המוצר הוסר מרשימת המשאלות שלך"
 			if not len(wish.get("items", [])):
-				frappe.delete_doc("Wishlist", wish_doc)
+				#frappe.delete_doc("Wishlist", wish_doc)
+				frappe.db.sql("delete from tabWishlist where name = '{}'".format(wish_doc))
 				# msg = 'Deleted all items'
 				response["message"] = "כל המוצרים הוסרו מרשימת המשאלות שלך"
 			frappe.db.commit()
