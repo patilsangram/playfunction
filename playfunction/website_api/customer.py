@@ -77,9 +77,8 @@ def update_customer_profile(data, customer=None):
 	"""
 	try:
 		response = frappe._dict()
-		if not customer:
-			customer_data = frappe.db.sql("select name, customer_name from `tabCustomer`\
-					where user = '{}'".format(frappe.session.user), as_dict=True)
+		customer_data = frappe.db.sql("select name, customer_name from `tabCustomer`\
+			where user = '{}'".format(frappe.session.user), as_dict=True)
 		if not customer_data or not len(customer_data):
 			# msg = "Customer doesn't exists."
 			response["message"] = "לקוח אינו קיים"
@@ -127,7 +126,7 @@ def update_customer_profile(data, customer=None):
 			response["message"] = "הפרופיל שלך נוצר בהצלחה!"
 		response = get_customer_profile()
 	except Exception as e:
-		frappe.local.response["http_status_code"] = getattr(e, "http_status_code", 500)
+		# frappe.local.response["http_status_code"] = getattr(e, "http_status_code", 500)
 		# msg = "Address Creation failed"
 		response["message"] = "אופס, משהו בכתובת לא תקין"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: update_customer_profile")
