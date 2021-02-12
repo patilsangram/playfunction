@@ -83,7 +83,8 @@ def delete_proposal(proposal_id):
 			# msg = "Can not delete Processing Stage Proposal"
 			response["message"] = "לא ניתן להסיר את הרשימה כרגע"
 		else:
-			frappe.delete_doc("Quotation", proposal_id)
+			#frappe.delete_doc("Quotation", proposal_id)
+			frappe.db.sql("delete from tabQuotation where name = '{}'".format(proposal_id))
 			frappe.db.commit()
 			# msg = "Proposal Deleted Successfully."
 			response["message"] = "הבקשה שלך להצעת מחיר הוסרה בהצלחה!"
