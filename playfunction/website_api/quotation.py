@@ -113,11 +113,13 @@ def add_to_cart(items, is_proposal=False):
 				quote.party_name = customer
 				# update price list price
 				item_details = frappe.db.get_value("Item", items.get("item_code"),\
-					["sp_with_vat", "last_purchase_rate", "discount_percentage"], as_dict=True)
+					["sp_with_vat", "last_purchase_rate", "discount_percentage", "description"], as_dict=True)
 				items["price_list_rate"] = item_details.get("sp_with_vat") or item_details.get("last_purchase_rate") or 0
 				if item_details.get("discount_percentage") > 0:
 					items["margin_type"] = "Percentage"
 					items["discount_percentage"] = item_details.get("discount_percentage")
+
+				items["description"] = item_details.get("description", "WebAPI")
 				quote.append("items", items)
 				# proposal
 				if is_proposal:
@@ -141,8 +143,9 @@ def update_cart(quote_id, items):
 	:params
 		quote_id: quotation
 		items: {
-		item_code:
-		qty:
+			item_code:
+			qty:
+		}
 	"""
 	try:
 		response = frappe._dict()
@@ -173,13 +176,19 @@ def update_cart(quote_id, items):
 					if row.get("item_code") == items.get("item_code"):
 						existing_item = True
 						updatd_qty = row.get("qty") + items.get("qty")
-						items["qty"] = int(updatd_qty)
-						row.update(items)
+						# if qty == 0 remove that row
+						if updatd_qty == 0:
+							frappe.delete_doc_if_exists("Quotation Item", row.name)
+						else:
+							items["qty"] = int(updatd_qty)
+							row.update(items)
 				# add new item
 				if not existing_item:
 					quote.append("items", items)
 
 				quote.set_missing_values()
+				quote.flags.ignore_mandatory = True
+				quote.flags.ignore_permissions = True
 				quote.save()
 				frappe.db.commit()
 				response = get_cart_details(quote.name)
