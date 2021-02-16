@@ -24,7 +24,7 @@ def get_category_items(data):
 	try:
 		response = frappe._dict()
 		data = json.loads(data)
-		cond = " where 1=1"
+		cond = " where i.is_website_item = 1"
 		if data.get("category"):
 			child_cat = get_child_categories(data.get("category"))
 			child_cat.append(data.get("category"))
@@ -76,7 +76,7 @@ def search(search=None):
 		# Need to find category
 		category = None
 		response = frappe._dict()
-		cond = " where 1=1"
+		cond = " where i.is_website_item = 1"
 		if category:
 			child_cat = get_child_categories(category)
 			child_cat.append(category)
@@ -115,7 +115,7 @@ def search(search=None):
 def get_categorised_item(catalog_level_1, catalog_level_2=None, age=None, manufacturer=None, catalog_level_3=None, catalog_level_4=None, price_from=None,price_to=None):
 	try:
 		response = frappe._dict()
-		cond = " where is_website_item = 1"
+		cond = " where i.is_website_item = 1"
 
 		# catalog_level conditions
 		levels = [catalog_level_1, catalog_level_2, catalog_level_3, catalog_level_4]
