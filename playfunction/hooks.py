@@ -126,6 +126,9 @@ doc_events = {
 	"Delivery Note": {
 		"after_insert": "playfunction.playfunction.custom_script.delivery_note.delivery_note.submit",
 	},
+	"Item Price": {
+		"validate": "playfunction.playfunction.custom_script.price_list.item_price.copy_item_price"
+	}
 }
 
 # Scheduled Tasks
