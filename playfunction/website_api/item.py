@@ -52,7 +52,7 @@ def get_category_items(data):
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
 			left join
 				`tabCatalog` c on c.parent = i.name
-			{} 	group by i.name
+			{} 	group by i.name order by i.item_name
 		""".format(cond)
 		items = frappe.db.sql(query,as_dict=True)
 		response["items"] = items
@@ -98,7 +98,7 @@ def search(search=None):
 				`tabItem` i left join `tabBin` b on b.item_code = i.name
 			left join
 				`tabCatalog` c on c.parent = i.name
-			{} 	group by i.name
+			{} 	group by i.name order by i.item_name
 		""".format(cond)
 		items = frappe.db.sql(query,as_dict=True)
 		response["items"] = items
@@ -142,7 +142,7 @@ def get_categorised_item(catalog_level_1, catalog_level_2=None, age=None, manufa
 				i.sp_with_vat) as after_discount, i.image
 			from
 				`tabItem` i left join `tabCatalog` c on c.parent = i.name
-			{} group by i.name
+			{} group by i.name order by i.item_name
 		""".format(cond)
 
 		items = frappe.db.sql(query, as_dict=True)
@@ -230,7 +230,7 @@ def recommended_items(item_code):
 			items = frappe.db.sql("""select i.name as item_code, i.item_name, i.image,
 				i.sp_with_vat as selling_price, i.age as age_range
 				from `tabItem` i where item_code in
-					(select item_code from `tabRecommend Item` where parent = '{}')""".format(item_code), as_dict=True)
+					(select item_code from `tabRecommend Item` where parent = '{}') order by i.item_name""".format(item_code), as_dict=True)
 
 			package_cost = 0.0
 			for i in items:
@@ -276,7 +276,7 @@ def related_items(data):
 			from
 				`tabItem` i left join `tabRelated Item` r
 				on r.item_code = i.name
-			{0} group by i.item_code
+			{0} group by i.item_code order by i.item_name
 		""".format(cond)
 		items = frappe.db.sql(query, as_dict=True)
 		response["items"] = items
