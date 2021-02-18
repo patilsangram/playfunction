@@ -24,6 +24,11 @@ def add_to_wishlist(data):
 				"customer": cust,
 				"status": "Draft"
 			},"name")
+
+			# update image
+			image = frappe.db.sql("select ifnull(image, '') from `tabItem`\
+				where name = '{}'".format(items.get('item_code')))[0][0]
+			items.update({"image": image})
 			if wishlist_doc:
 				wishlist_doc = frappe.get_doc("Wishlist", wishlist_doc)
 				existing_item = False
@@ -109,7 +114,7 @@ def delete_wishlist(name, item_code):
 @frappe.whitelist(allow_guest=True)
 def get_wishlist_details():
 	try:
-		item_fields = ["item_code", "item_name","qty", "image", "description","rate","age"]
+		item_fields = ["item_code", "item_name","qty", "image", "description","rate","age", "amount"]
 		response = frappe._dict()
 		cust = frappe.db.sql("select name from `tabCustomer`\
 			where user = '{}'".format(frappe.session.user))[0][0]
@@ -199,5 +204,36 @@ def wishlist_checkout():
 		# msg = "Order Creation failed"
 		response["message"] = "ההזמנה נכשלה"
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: wishlist_checkout")
+	finally:
+		return response
+
+@frappe.whitelist()
+def update_wishlist(item_code, qty):
+	try:
+		response = frappe._dict()
+		cust = frappe.db.sql("select name from `tabCustomer`\
+			where user = '{}'".format(frappe.session.user))[0][0]
+		wishlist =frappe.get_value("Wishlist",{
+			"customer": cust,
+			"status": "Draft"
+		},"name")
+		wishlist_doc = frappe.get_doc("Wishlist", wishlist)
+		for idx, row in enumerate(wishlist_doc.items):
+			if item_code == row.item_code:
+				updated_qty = int(row.qty) + int(qty)
+				if updated_qty == 0:
+					frappe.delete_doc_if_exists("Wishlist Item", row.name)
+				else:
+					row.update({
+						"qty": updated_qty,
+						"amount": row.rate * updated_qty 
+					})
+				wishlist_doc.save()
+		response = get_wishlist_details()
+	except Exception as e:
+		http_status_code = getattr(e, "http_status_code", 500)
+		frappe.local.response['http_status_code'] = http_status_code
+		response["message"] = "ההזמנה נכשלה"
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: update_wishlist")
 	finally:
 		return response
