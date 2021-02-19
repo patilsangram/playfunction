@@ -170,27 +170,28 @@ def wishlist_checkout():
 				wishlist_doc.status = "Converted"
 				wishlist_doc.flags.ignore_permissions = True
 				wishlist_doc.save()
-				quote_id = get_last_quote()[0]
-				if quote_id:
-					# if cart exist
-					quote = frappe.get_doc("Quotation", quote_id)
-				else:
-					# create new quote
-					quote = frappe.new_doc("Quotation")
-					quote.party_name = customer
-				exising_items = [i.get("item_code") for i in quote.get("items")]
+				# quote_id = get_last_quote()[0]
+				# if quote_id:
+				# 	# if cart exist
+				# 	quote = frappe.get_doc("Quotation", quote_id)
+				# else:
+				# create new quote
+				quote = frappe.new_doc("Quotation")
+				quote.party_name = customer
+				#exising_items = [i.get("item_code") for i in quote.get("items")]
 				for i in wishlist_doc.get("items"):
-					if i.get("item_code") not in exising_items:
-						quote.append("items",{
-							"item_code": i.get("item_code"),
-							"qty": i.get("qty", 0)
-						})
-					else:
-						# if item already exist just increase the qty
-						for idx, qi in enumerate(quote.get("items")):
-							if qi.get("item_code") == i.get("item_code"):
-								qty = qi.get("qty")
-								qi.qty = qty + i.get("qty")
+					#if i.get("item_code") not in exising_items:
+					quote.append("items",{
+						"item_code": i.get("item_code"),
+						"qty": i.get("qty", 0),
+						"rate": i.get("rate", 0)
+					})
+					# else:
+					# 	# if item already exist just increase the qty
+					# 	for idx, qi in enumerate(quote.get("items")):
+					# 		if qi.get("item_code") == i.get("item_code"):
+					# 			qty = qi.get("qty")
+					# 			qi.qty = qty + i.get("qty")
 				quote.flags.ignore_mandatory = True
 				quote.flags.ignore_permissions = True
 				quote.save()
