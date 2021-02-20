@@ -9,7 +9,7 @@ filter_flags = ["sales_item", "community_center", "best_seller",
 
 
 @frappe.whitelist(allow_guest=True)
-def get_category_items(data):
+def get_category_items(data, page_index=0, page_size=8):
 	"""returns items with category
 		data:{
 			'category':
@@ -54,6 +54,12 @@ def get_category_items(data):
 				`tabCatalog` c on c.parent = i.name
 			{} 	group by i.name order by i.item_name
 		""".format(cond)
+
+		#pagination
+		if page_index and page_size:
+			query += "limit {}, {}".format(page_index, page_size)
+
+
 		items = frappe.db.sql(query,as_dict=True)
 		response["items"] = items
 
