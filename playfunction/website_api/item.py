@@ -57,6 +57,7 @@ def get_category_items(data, page_index=0, page_size=8):
 
 		#pagination
 		if page_index and page_size:
+			start = 0
 			record_count = frappe.db.sql("select count(*) as record_count\
 			 from ({}) as items".format(query), as_dict=True)
 
@@ -66,7 +67,9 @@ def get_category_items(data, page_index=0, page_size=8):
 					"page_size": page_size,
 					"record_count": record_count[0]["record_count"]
 				})
-				query += "limit {}, {}".format(page_index, page_size)
+				if page_index > 1:
+					start = (page_index - 1) * page_size
+				query += " limit {}, {}".format(start, page_size)
 
 
 		items = frappe.db.sql(query, as_dict=True)
