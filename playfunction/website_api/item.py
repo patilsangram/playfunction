@@ -68,7 +68,7 @@ def get_category_items(data, page_index=0, page_size=8):
 					"record_count": record_count[0]["record_count"]
 				})
 				if page_index > 1:
-					start = (page_index - 1) * page_size
+					start = (int(page_index) - 1) * int(page_size)
 				query += " limit {}, {}".format(start, page_size)
 
 
