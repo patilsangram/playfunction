@@ -11,13 +11,13 @@ def copy_item_price(doc, method):
 					"price_list": "Meuhedet",
 					"selling": 1
 				})
-			if is_exist:
-				item_price = frappe.get_doc("Item Price", is_exist)
-				item_price.update({
-					"price_list_rate": doc.price_list_rate,
-					"note": "Copy/Updated from Standard Selling"
-				})
-			else:
+			# if is_exist:
+			# 	item_price = frappe.get_doc("Item Price", is_exist)
+			# 	item_price.update({
+			# 		"price_list_rate": doc.price_list_rate,
+			# 		"note": "Copy/Updated from Standard Selling"
+			# 	})
+			if not is_exist:
 				item_price = frappe.new_doc("Item Price")
 				item_price.update({
 					"price_list": "Meuhedet",
@@ -26,7 +26,7 @@ def copy_item_price(doc, method):
 					"item_name": doc.item_name,
 					"note": "Copy/Updated from Standard Selling"
 				})
-			item_price.flags.ignore_permissions = True	
-			item_price.save()
+				item_price.flags.ignore_permissions = True	
+				item_price.save()
 	except Exception as e:
 		pass
