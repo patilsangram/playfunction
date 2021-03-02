@@ -227,8 +227,8 @@ def delete_cart_item(quote_id, item_code):
 			quote.save()
 			if not len(quote.get("items", [])):
 				# frappe.delete_doc("Quotation", quote_id)
-				frappe.db.sql("delete from tabQuotation where name = '{}'".format(quote_id))
-
+				# frappe.db.sql("delete from tabQuotation where name = '{}'".format(quote_id))
+				quote.flags.ignore_mandatory = True
 				# msg = "Deleted all items"
 				response["message"] = "כל המוצרים הוסרו בהצלחה"
 				frappe.local.response["http_status_code"] = 200
