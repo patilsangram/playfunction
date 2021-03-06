@@ -238,13 +238,13 @@ def registration(data):
 						customer.flags.ignore_mandatory = True
 						customer.save()
 
-						#add user permission for customer
+						# add user permission for customer
 						user_permission = frappe.new_doc("User Permission")
 						user_permission.user = user_doc.name
 						user_permission.allow = "Customer"
 						user_permission.for_value = customer.name
 						user_permission.apply_to_all_documents = True
-						user_permission.ignore_permissions = True
+						user_permission.flags.ignore_permissions = True
 						user_permission.save()
 
 					response.message = _("משתמש נוצר עם מזהה דוא\"ל {} אנא בדוק אם יש אימות בדוא\"ל שלך".format(user_doc.name))
