@@ -229,6 +229,24 @@ def registration(data):
 					if frappe.db.exists("Role", "Playfunction Customer"):
 						user_doc.add_roles("Playfunction Customer")
 						user_doc.save()
+
+						# make customer
+						customer = frappe.new_doc("Customer")
+						customer.customer_name = user_doc.full_name
+						customer.user = user_doc.email
+						customer.flags.ignore_permissions = True
+						customer.flags.ignore_mandatory = True
+						customer.save()
+
+						#add user permission for customer
+						user_permission = frappe.new_doc("User Permission")
+						user_permission.user = user_doc.name
+						user_permission.allow = "Customer"
+						user_permission.for_value = customer.name
+						user_permission.apply_to_all_documents = True
+						user_permission.ignore_permissions = True
+						user_permissions.save()
+
 					response.message = _("משתמש נוצר עם מזהה דוא\"ל {} אנא בדוק אם יש אימות בדוא\"ל שלך".format(user_doc.name))
 					frappe.local.response['http_status_code'] = 200
 	except Exception as e:
