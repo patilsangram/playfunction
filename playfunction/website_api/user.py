@@ -245,7 +245,7 @@ def registration(data):
 						user_permission.for_value = customer.name
 						user_permission.apply_to_all_documents = True
 						user_permission.ignore_permissions = True
-						user_permissions.save()
+						user_permission.save()
 
 					response.message = _("משתמש נוצר עם מזהה דוא\"ל {} אנא בדוק אם יש אימות בדוא\"ל שלך".format(user_doc.name))
 					frappe.local.response['http_status_code'] = 200
