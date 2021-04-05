@@ -2,6 +2,13 @@ frappe.ui.form.on("Quotation",{
 	setup:function(frm){
 		frm.add_fetch('item_code', 'cost_price', 'cost_price');
 	},
+
+	onload: function(frm) {
+		if(!frm.doc.taxes_and_charges && frm.is_new()) {
+			frm.set_value("taxes_and_charges", "VAT 17% - PF")
+		}
+	},
+
 	refresh: function(frm) {
 		// from public - playfunction_selling.js
 		playfunction.selling.set_field_permissions();
@@ -21,6 +28,17 @@ frappe.ui.form.on("Quotation",{
 		if(frm.doc.workflow_state == "Proposal Received") {
 			frm.doc.workflow_state = "Proposal Processing"
 		}
+
+		//blank description issue fix
+
+		$.each(frm.doc.items, function(i, row) {
+			if(!row.description || row.description == '<div><br></div>' || 
+				row.description == undefined) {
+				frappe.model.set_value(row.doctype, row.name,
+					"description", row.item_name)
+			}
+			refresh_field("items");
+		})
 	},
 
 	set_status_intro: function(frm) {
@@ -58,7 +76,10 @@ frappe.ui.form.on("Quotation",{
 
 	approve_qutotation:function(frm){
 		frm.doc.workflow_state = "Approved";
-		frm.savesubmit();
+		frm.refresh_field("workflow_state")
+		frm.trigger("set_status_intro");
+		frm.save()
+		//frm.savesubmit();
 	},
 
 	reject_qutotation:function(frm){
@@ -111,3 +132,4 @@ frappe.ui.form.on("Quotation Item",{
 		refresh_field("items");
 	}
 })*/
+

@@ -99,11 +99,28 @@ def add_to_cart(items, is_proposal=False):
 		user= frappe.get_doc("User",frappe.session.user)
 		#check customer exists or not for the current user
 		customer = frappe.db.get_value("Customer",{'user':user.name},"name")
+
 		if not customer:
 			# msg = "Customer doesn't exists."
 			response["message"] = "לקוח אינו קיים"
 			frappe.local.response['http_status_code'] = 200
 		else:
+			billing_addr = frappe.db.sql("""
+				select
+					ad.name
+				from
+					`tabAddress` ad, `tabDynamic Link` dl
+				where
+					dl.parent = ad.name and
+					dl.parenttype = 'Address' and
+					dl.link_doctype = 'Customer' and
+					dl.link_name = '{}' and
+					ad.address_type = 'Billing' and
+					ifnull(ad.disabled, 0) = 0
+				""".format(customer), as_dict=True
+			)
+			address = billing_addr[0]["name"] if len(billing_addr) else ""
+ 
 			if not has_common(["item_code", "qty"], items.keys()) or not all([ f in item_fields for f in items.keys()]):
 				# msg = "Invalid data"
 				response["message"] = "שגיאה בנתונים"
@@ -111,6 +128,7 @@ def add_to_cart(items, is_proposal=False):
 			else:
 				quote = frappe.new_doc("Quotation")
 				quote.party_name = customer
+				quote.customer_address = address
 				# update price list price
 				item_details = frappe.db.get_value("Item", items.get("item_code"),\
 					["sp_with_vat", "last_purchase_rate", "discount_percentage", "description"], as_dict=True)
