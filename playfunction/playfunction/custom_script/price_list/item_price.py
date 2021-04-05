@@ -11,12 +11,17 @@ def copy_item_price(doc, method):
 					"price_list": "Meuhedet",
 					"selling": 1
 				})
-			# if is_exist:
-			# 	item_price = frappe.get_doc("Item Price", is_exist)
-			# 	item_price.update({
-			# 		"price_list_rate": doc.price_list_rate,
-			# 		"note": "Copy/Updated from Standard Selling"
-			# 	})
+			if is_exist:
+				# if exiting and brand not equals to meudet then only update
+				brand = frappe.db.get_value("Item", doc.item_code, "brand")
+				if brand != 'meuhedet':
+					item_price = frappe.get_doc("Item Price", is_exist)
+					item_price.update({
+						"price_list_rate": doc.price_list_rate,
+						"note": "Copy/Updated from Standard Selling"
+					})
+					item_price.flags.ignore_permissions = True
+					item_price.save()
 			if not is_exist:
 				item_price = frappe.new_doc("Item Price")
 				item_price.update({
