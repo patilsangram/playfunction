@@ -13,4 +13,4 @@ class Wishlist(Document):
 
 	def update_amount(self):
 		for i in self.get("items"):
-			i.amount = flt(i.qty) * flt(i.rate)
+			i.amount = flt(i.qty, 2) * flt(i.rate, 2)

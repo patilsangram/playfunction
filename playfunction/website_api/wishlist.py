@@ -129,7 +129,7 @@ def get_wishlist_details():
 			for row in wishlist.get("items"):
 				row_data = {}
 				for f in item_fields:
-					row_data[f] = row.get(f) if f != "rate" else flt(row.get(f), 2)
+					row_data[f] = row.get(f) if f not in ["rate", "amount"] else flt(row.get(f), 2)
 
 				# selling/before discount price of Item
 				row_data["selling_price"] = frappe.db.get_value("Item",
@@ -227,7 +227,7 @@ def update_wishlist(item_code, qty):
 				else:
 					row.update({
 						"qty": updated_qty,
-						"amount": row.rate * updated_qty 
+						"amount": flt((row.rate * updated_qty), 2)
 					})
 				wishlist_doc.save()
 		response = get_wishlist_details()

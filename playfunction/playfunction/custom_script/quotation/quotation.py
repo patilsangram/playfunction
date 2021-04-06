@@ -115,3 +115,11 @@ def get_permission_query_conditions(user, doctype):
 	if user != "Administrator" and "Playfunction Customer" in frappe.get_roles():
 		customer = frappe.db.get_value("Customer", {"user": user})
 		return """ {} = '{}' """.format(customer_field.get(doctype), customer) if customer else "1=2"
+
+def update_blank_item_description(doc, meathod):
+	try:
+		for item in doc.items:
+			if not item.description or item.description == '<div><br></div>':
+				item.description = item.item_name or item.item_code
+	except Exception as e:
+		frappe.log_error(message=frappe.get_traceback() , title="Hooks Method: update_blank_item_description")
