@@ -28,9 +28,20 @@ def get_customer_profile(customer=None):
 
 			if not customer_address or not len(customer_address):
 				# msg = "Profile Not found"
-				response["message"] = "פרופיל לא נמצא"
-
-				frappe.local.response["http_status_code"] = 404
+				# to handle front end CORS issue and profile update for new user
+				customer_address = {
+					"city": "",
+					"apartment_no": "",
+					"name": "",
+					"email_id": "",
+					"phone": "",
+					"house_no": "",
+					"street_address": "",
+					"customer_name": customer_data[0].get("customer_name")
+				}
+				response["data"] = customer_address
+				# response["message"] = "פרופיל לא נמצא"
+				# frappe.local.response["http_status_code"] = 404
 			else:
 				customer_address = customer_address[0]
 				customer_address.update({
