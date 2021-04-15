@@ -1,5 +1,6 @@
 import frappe
 import json
+from requests import request
 from .order import order_details
 from .quotation import get_quote_details
 
@@ -99,10 +100,39 @@ def create_copy(dt, dn, customer):
 @frappe.whitelist(allow_guest=True)
 def set_payment_status(data=None):
 	try:
-		data = data if data else {}
-		data = json.loads(data)
-		if data.get("order_id") and frappe.db.exists("Sales Order", data.get("order_id")):
-			frappe.db.set_value("Sales Order", data.get("order_id"), "payment_status", "Paid")
-		return "Payment Status Updated Successfully"
+		# check request data
+		error = ""
+		if frappe.local.form_dict:
+			icredit_settings = frappe.get_doc("iCredit Settings", "iCredit Settings")
+			data = frappe.local.form_dict
+			order_id = data.get("Custom1")
+
+			# verify payment
+			url =  "https://testicredit.rivhit.co.il/API/PaymentPageRequest.svc/Verify"
+			headers = {"Content-Type": "application/json", "user-agent": "Playfunction App"}
+			verify_data = {
+				"GroupPrivateToken": icredit_settings.get("group_private_token"),
+				"SaleId": data.get("SaleId"),
+				"TotalAmount": data.get("TransactionAmount")
+			}
+			response = request("POST", url, data=json.dumps(verify_data), headers=headers)
+
+			# update payment status on sales order
+			if response.status_code == 200:
+				res_status = json.loads(response.text)
+				if res_status.get("Status") == "VERIFIED":
+					if frappe.db.exists("Sales Order", order_id):
+						frappe.db.set_value("Sales Order", order_id, "payment_status", "Paid")
+					else: error = "Sales Order {} not exists".format(order_id)
+				else:
+					error = "Payment Failed: {}".format(res_status)
+					frappe.db.set_value("Sales Order", order_id, "payment_status", "Failed")
+			else:
+				error = "Verify API Fail: {}".format(response.text)
+
+			# mark error
+			if error:
+				frappe.log_error(message=error, title="Mobile API: set_payment_status")
+			return "Payment Status Updated Success"
 	except Exception as e:
 		frappe.log_error(message=str(e) , title="Mobile API: set_payment_status")

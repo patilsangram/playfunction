@@ -109,7 +109,7 @@ def update_customer_profile(data, customer=None):
 
 
 			existing_address = get_customer_profile()
-			if not existing_address.get("data"):
+			if existing_address.get("data").get("name"):
 				if not data:
 					return False
 

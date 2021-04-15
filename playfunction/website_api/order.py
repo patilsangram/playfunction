@@ -59,6 +59,7 @@ def place_order(quote_id, data=None):
 			if sales_order:
 				sales_order.delivery_date = frappe.utils.today()
 				sales_order.mode_of_order = "Web"
+				sales_order.payment_status = "Pending"
 				if data:
 					update_customer_profile(data, sales_order.customer)
 					# sales_order.delivery_collection_point = data.get("delivery_collection_point")
@@ -294,22 +295,17 @@ def delete_order_item(order_id, item_code):
 		return response
 
 @frappe.whitelist()
-def get_payment_status(token):
+def get_payment_status(order_id):
 	response = frappe._dict()
-	if token:
-		query = "Select name, payment_status from `tabSales Order` where sales_tokens like '%{0}%'".format(token)
-		sales_order = frappe.db.sql(query,as_dict=True)
-#		response['Sales Order'] = sales_order["name"]
-#		response['Status'] = sales_order["payment_status"]
-		return sales_order
-	else:
-		return "Payment Failed"
-	#try:
-	#	if token:
-	#		order = frappe.db.get_value("Sales Order", order_id,"payment_status")
-	#		response["message"]=order
-	#		return "Payment Successful"
-	#	else:
-	#		return "Payment Failed"
-	#except Exception as e:
-	#	frappe.log_error(message=frappe.get_traceback() , title="Website API: get_payment_status")
+	try:
+		if order_id:
+			if frappe.db.exists("Sales Order", order_id):
+				payment_status = frappe.db.get_value("Sales Order", order_id, "payment_status") or "Pending"
+				response["payment_status"] = payment_status
+			else:
+				response["message"] = "Given Order doesn't exists."
+	except Exception as e:
+		response["message"] = "Something went wrong while fetching the Payment status"
+		frappe.log_error(message=frappe.get_traceback() , title="Website API: get_payment_status")
+	finally:
+		return response
