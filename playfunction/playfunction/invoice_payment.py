@@ -137,7 +137,7 @@ def get_payment_url(order_id):
 		url = icredit_settings.get("geturl_api")
 		data = {
 			"GroupPrivateToken": icredit_settings.get("group_private_token"),
-			"RedirectURL" : icredit_settings.get("redirect_url"),
+			"RedirectURL" : icredit_settings.get("redirect_url") + "&order_id={}".format(order_id),
 			"FailRedirectURL": icredit_settings.get("fail_redirect_url"),
 			"IPNURL": icredit_settings.get("ipnurl"),
 			"CustomerLastName": customer.get("customer_name"),
