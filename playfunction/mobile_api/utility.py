@@ -121,6 +121,8 @@ def set_payment_status(data=None):
 			if response.status_code == 200:
 				res_status = json.loads(response.text)
 				if res_status.get("Status") == "VERIFIED":
+					#TODO Submit Sales Order and Create SI -> PE
+					#Note: for PE - reference_no & reference_date are mandatory 
 					if frappe.db.exists("Sales Order", order_id):
 						frappe.db.set_value("Sales Order", order_id, "payment_status", "Paid")
 					else: error = "Sales Order {} not exists".format(order_id)
