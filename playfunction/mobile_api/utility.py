@@ -1,11 +1,11 @@
 import frappe
 import json
-from frappe.utils import today
+from frappe import _, scrub
 from requests import request
+from frappe.utils import today
 from .order import order_details
 from .quotation import get_quote_details
-from erpnext.stock.doctype.sales_order.sales_order import make_sales_invoice
-from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
+from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
 
 @frappe.whitelist()
 def delete_record(dt, dn):
@@ -157,3 +157,93 @@ def set_payment_status(data=None):
 			return "Payment Status Updated Success"
 	except Exception as e:
 		frappe.log_error(message=str(e) , title="Mobile API: set_payment_status")
+
+@frappe.whitelist()
+def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=None):
+	try:
+		doc = frappe.get_doc(dt, dn)
+		party_type = "Customer"
+		default_account_name = "default_receivable_account"
+		party_account = frappe.get_cached_value('Company',  doc.company,  default_account_name)
+		party_account_currency = doc.get("party_account_currency")
+
+		# payment type
+		payment_type = "Receive"
+
+		# amounts
+		grand_total = outstanding_amount = 0
+		if party_account_currency == doc.company_currency:
+			grand_total = doc.base_rounded_total or doc.base_grand_total
+		else:
+			grand_total = doc.rounded_total or doc.grand_total
+		outstanding_amount = doc.outstanding_amount
+
+		# bank or cash
+		#bank = frappe._dict()
+		df_account = frappe.get_cached_value('Company',  doc.company,  "default_bank_account")
+		if df_account:
+			account_details = frappe.db.sql("select account_currency, account_type from tabAccount\
+				where name = '{}'".format(df_account), as_dict=True)[0]
+			bank = frappe._dict({
+				"account": df_account,
+				#"balance": get_balance_on(df_account),
+				"account_currency": account_details.account_currency,
+				"account_type": account_details.account_type
+			})
+			print("#################", bank)
+		paid_amount = received_amount = 0
+		print("hereeeeee ********************", bank.account_currency)
+		if party_account_currency == bank.account_currency:
+			paid_amount = received_amount = abs(outstanding_amount)
+		elif payment_type == "Receive":
+			paid_amount = abs(outstanding_amount)
+		else:
+			received_amount = abs(outstanding_amount)
+
+		print("Start .....")
+		pe = frappe.new_doc("Payment Entry")
+		pe.payment_type = payment_type
+		pe.company = doc.company
+		pe.cost_center = doc.get("cost_center")
+		pe.posting_date = frappe.utils.nowdate()
+		pe.mode_of_payment = doc.get("mode_of_payment")
+		pe.party_type = party_type
+		pe.party = doc.get(scrub(party_type))
+		pe.contact_person = doc.get("contact_person")
+		pe.contact_email = doc.get("contact_email")
+
+		pe.paid_from = party_account
+		pe.paid_to = bank.account
+		pe.paid_from_account_currency = party_account_currency
+		pe.paid_to_account_currency = bank.account_currency
+		pe.paid_amount = paid_amount
+		pe.received_amount = received_amount
+		pe.allocate_payment_amount = 1
+		pe.letter_head = doc.get("letter_head")
+
+		bank_account = frappe.db.sql("""select name from `tabBank Account` where \
+			party_type = '{}' and party = '{}' and is_default = 1
+		""".format(pe.party_type, pe.party), as_dict=True)
+
+		bank_account = bank_account[0]["name"] if len(bank_account) else ""
+		pe.set("bank_account", bank_account)
+		pe.set_bank_account_data()
+
+		pe.append("references", {
+			'reference_doctype': dt,
+			'reference_name': dn,
+			"bill_no": doc.get("bill_no"),
+			"due_date": doc.get("due_date"),
+			'total_amount': grand_total,
+			'outstanding_amount': outstanding_amount,
+			'allocated_amount': outstanding_amount
+		})
+		pe.flags.ignore_permissions = True
+		pe.setup_party_account_field()
+		pe.set_missing_values()
+		if party_account and bank:
+			pe.set_exchange_rate()
+			pe.set_amounts()
+		return pe
+	except Exception as e:
+		print("Exception: ##############", str(e))
