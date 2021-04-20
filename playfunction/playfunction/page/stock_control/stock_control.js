@@ -17,15 +17,8 @@ frappe.StockControl = Class.extend({
 		this.$wrapper.append(frappe.render_template("stock_control_layout"));
 		this.init_filter();
 		this.fetch_dashboard_data();
-
-		this.check_all();
-		this.check_item();
-		this.validate_order_qty();
-		this.open_record();
-		this.open_stock_ledger();
 		this.place_order();
 		this.request_for_quote();
-		this.update_selling_price();
 	},
 
 	init_filter: function() {
@@ -121,14 +114,12 @@ frappe.StockControl = Class.extend({
 			args: {"filters": filters},
 			callback: function(r) {
 				$('.item-tbl').html(frappe.render_template("item_details", {"data": r.message}))
-				/*me.check_all();
+				me.check_all();
 				me.check_item();
 				me.validate_order_qty();
 				me.open_record();
 				me.open_stock_ledger();
-				me.place_order();
-				me.request_for_quote();
-				me.update_selling_price();*/
+				me.update_selling_price();
 			}
 		})
 	},
