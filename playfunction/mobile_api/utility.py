@@ -1,8 +1,11 @@
 import frappe
 import json
+from frappe.utils import today
 from requests import request
 from .order import order_details
 from .quotation import get_quote_details
+from erpnext.stock.doctype.delivery_note.delivery_note import make_sales_invoice
+from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
 
 @frappe.whitelist()
 def delete_record(dt, dn):
@@ -125,6 +128,19 @@ def set_payment_status(data=None):
 					#Note: for PE - reference_no & reference_date are mandatory 
 					if frappe.db.exists("Sales Order", order_id):
 						frappe.db.set_value("Sales Order", order_id, "payment_status", "Paid")
+						so = frappe.get_doc("Sales Order", order_id)
+						so.submit(ignore_permissions=True)
+
+						#SI
+						si = make_sales_invoice(so.name, ignore_permissions=True)
+						si.submit(ignore_permissions=True)
+
+						#PE
+						pe = get_payment_entry("Sales Invoice", si.name)
+						pe.reference_no = data.get("SaleId")
+						pe.reference_date = today()
+						pe.save(ignore_permissions=True)
+						pe.submit(ignore_permissions=True)
 					else: error = "Sales Order {} not exists".format(order_id)
 				else:
 					error = "Payment Failed: {}".format(res_status)
