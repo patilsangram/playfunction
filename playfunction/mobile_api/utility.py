@@ -106,8 +106,9 @@ def set_payment_status(data=None):
 	try:
 		# check request data
 
-		if frappe.session.user == "Guest":
-			frappe.set_user("Administrator")
+		# if frappe.session.user == "Guest":
+		# 	frappe.set_user("Administrator")
+		frappe.log_error(message=frappe.local.form_dict, title="Set Payment")
 
 		error = ""
 		if frappe.local.form_dict:
@@ -143,11 +144,11 @@ def set_payment_status(data=None):
 						si.submit()
 
 						#PE
-						pe = get_payment_entry("Sales Invoice", si.name)
+						pe = get_payment_entry_custom("Sales Invoice", si.name)
 						pe.reference_no = data.get("SaleId")
 						pe.reference_date = today()
-						pe.save(ignore_permissions=True)
 						pe.flags.ignore_permissions = True
+						pe.save()
 						pe.submit()
 					else: error = "Sales Order {} not exists".format(order_id)
 				else:
@@ -220,7 +221,8 @@ def get_payment_entry_custom(dt, dn, party_amount=None, bank_account=None, bank_
 		pe.paid_amount = paid_amount
 		pe.received_amount = received_amount
 		pe.allocate_payment_amount = 1
-		pe.letter_head = doc.get("letter_head")
+		# pe.letter_head = doc.get("letter_head")
+		pe.flags.ignore_permissions = True
 
 		bank_account = frappe.db.sql("""select name from `tabBank Account` where \
 			party_type = '{}' and party = '{}' and is_default = 1
@@ -239,12 +241,12 @@ def get_payment_entry_custom(dt, dn, party_amount=None, bank_account=None, bank_
 			'outstanding_amount': outstanding_amount,
 			'allocated_amount': outstanding_amount
 		})
-		pe.flags.ignore_permissions = True
 		pe.setup_party_account_field()
 		pe.set_missing_values()
 		if party_account and bank:
 			pe.set_exchange_rate()
 			pe.set_amounts()
+		frappe.log_error(message=pe, title="Mobile API: payment_entry_data")
 		return pe
 	except Exception as e:
-		print("Exception: ##############", str(e))
+		frappe.log_error(message=error, title="Mobile API: Payment Entry Creation")
