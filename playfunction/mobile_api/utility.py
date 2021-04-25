@@ -6,6 +6,7 @@ from frappe.utils import today
 from .order import order_details
 from .quotation import get_quote_details
 from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
+from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
 
 @frappe.whitelist()
 def delete_record(dt, dn):
@@ -104,6 +105,10 @@ def create_copy(dt, dn, customer):
 def set_payment_status(data=None):
 	try:
 		# check request data
+
+		if frappe.session.user == "Guest":
+			frappe.set_user("Administrator")
+
 		error = ""
 		if frappe.local.form_dict:
 			icredit_settings = frappe.get_doc("iCredit Settings", "iCredit Settings")
@@ -159,7 +164,7 @@ def set_payment_status(data=None):
 		frappe.log_error(message=str(e) , title="Mobile API: set_payment_status")
 
 @frappe.whitelist()
-def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=None):
+def get_payment_entry_custom(dt, dn, party_amount=None, bank_account=None, bank_amount=None):
 	try:
 		doc = frappe.get_doc(dt, dn)
 		party_type = "Customer"
@@ -179,20 +184,17 @@ def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=
 		outstanding_amount = doc.outstanding_amount
 
 		# bank or cash
-		#bank = frappe._dict()
 		df_account = frappe.get_cached_value('Company',  doc.company,  "default_bank_account")
 		if df_account:
 			account_details = frappe.db.sql("select account_currency, account_type from tabAccount\
 				where name = '{}'".format(df_account), as_dict=True)[0]
 			bank = frappe._dict({
 				"account": df_account,
-				#"balance": get_balance_on(df_account),
 				"account_currency": account_details.account_currency,
 				"account_type": account_details.account_type
 			})
-			print("#################", bank)
+
 		paid_amount = received_amount = 0
-		print("hereeeeee ********************", bank.account_currency)
 		if party_account_currency == bank.account_currency:
 			paid_amount = received_amount = abs(outstanding_amount)
 		elif payment_type == "Receive":
@@ -200,7 +202,6 @@ def get_payment_entry(dt, dn, party_amount=None, bank_account=None, bank_amount=
 		else:
 			received_amount = abs(outstanding_amount)
 
-		print("Start .....")
 		pe = frappe.new_doc("Payment Entry")
 		pe.payment_type = payment_type
 		pe.company = doc.company

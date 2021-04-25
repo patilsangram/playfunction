@@ -52,6 +52,7 @@ def place_order(quote_id, data=None):
 						"description": delivery_account
 					}
 					doc.append("taxes", delivery_charge_tax)
+			doc.flags.ignore_permissions = True
 			doc.save()
 			doc.submit()
 			# sales order
