@@ -148,7 +148,7 @@ def set_payment_status(data=None):
 							sales_order.submit()
 
 						#SI
-						si = make_sales_invoice(so.name, ignore_permissions=True)
+						si = make_sales_invoice(sales_order.name, ignore_permissions=True)
 						si.flags.ignore_permissions = True
 						si.submit()
 
