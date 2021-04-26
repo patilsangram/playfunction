@@ -5,7 +5,7 @@ from requests import request
 from frappe.utils import today
 from .order import order_details
 from .quotation import get_quote_details
-from erpnext.selling.doctype.quotation.quotation import make_sales_order
+from erpnext.selling.doctype.quotation.quotation import _make_sales_order
 from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
 from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
 
@@ -139,7 +139,7 @@ def set_payment_status(data=None):
 						quote.submit()
 
 						#SO
-						sales_order = make_sales_order(quote_id)
+						sales_order = _make_sales_order(quote_id, ignore_permissions=True)
 						if sales_order:
 							sales_order.delivery_date = frappe.utils.today()
 							sales_order.mode_of_order = "Web"

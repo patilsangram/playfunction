@@ -3,6 +3,8 @@ import frappe
 
 def send_order_notification(doc, method):
     try:
+        if frappe.session.user == "Guest":
+            frappe.set_user("Administrator")
         receipient = frappe.get_doc("Notification","Sales Order")
         cc = []
         party_name = doc.customer if doc.customer != "" else ""
@@ -21,4 +23,3 @@ def send_order_notification(doc, method):
             )
     except Exception as e:
         frappe.log_error(message=frappe.get_traceback() , title="Error while sending mail: Sales Order")
-        raise

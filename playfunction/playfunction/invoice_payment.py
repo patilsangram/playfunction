@@ -110,7 +110,7 @@ def get_payment_url(quote_id):
 		customer = frappe.get_doc("Customer", quote.get("party_name"))
 		address_doc = frappe.db.get_value("Dynamic Link", {
 			"link_doctype": "Customer",
-			"link_name": quote.get("customer")
+			"link_name": quote.get("party_name")
 		}, "parent")
 
 		full_address = ""
