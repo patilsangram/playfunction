@@ -73,7 +73,7 @@ def place_order(quote_id, data=None):
 				else:
 					try:
 						doc.submit()
-						sales_order = make_playfunction_so(doc.name)
+						sales_order = make_playfunction_so(doc.name, data)
 						create_rihvit_invoice(sales_order.name)
 					except Exception as e:
 						frappe.log_error(message=frappe.get_traceback() , title="Error in Creating Rihvit invoice: Place order function")
@@ -93,7 +93,7 @@ def place_order(quote_id, data=None):
 		return response
 
 
-def make_playfunction_so(quote_id):
+def make_playfunction_so(quote_id, data=None):
 	try:
 		# sales order
 		sales_order = make_sales_order(quote_id)
@@ -109,7 +109,7 @@ def make_playfunction_so(quote_id):
 				frappe.log_error(message=frappe.get_traceback() , title="Error in payment method")
 
 			sales_order.save()
-			return sales_order.name
+			return sales_order
 	except Exception as e:
 		frappe.log_error(message=frappe.get_traceback() , title="Support Function: make_playfunction_so")
 
