@@ -98,19 +98,19 @@ def create_rihvit_invoice(order_id):
 		return "Failure"
 
 @frappe.whitelist()
-def get_payment_url(order_id):
-	"""This method will pass order data (customer details, item data)
+def get_payment_url(quote_id):
+	"""This method will pass quote data (customer details, item data)
 	to the GetUrl API (iCredit) and get payment url
 
-	:param order_id: Sales Order No.
+	:param quote_id: Quotation No.
 	:return: payment url(iCredit) (String)"""
 	try:
-		order = frappe.get_doc("Sales Order", order_id)
+		quote = frappe.get_doc("Quotation", quote_id)
 		icredit_settings = frappe.get_doc("iCredit Settings", "iCredit Settings")
-		customer = frappe.get_doc("Customer", order.get("customer"))
+		customer = frappe.get_doc("Customer", quote.get("customer"))
 		address_doc = frappe.db.get_value("Dynamic Link", {
 			"link_doctype": "Customer",
-			"link_name": order.get("customer")
+			"link_name": quote.get("customer")
 		}, "parent")
 
 		full_address = ""
@@ -119,9 +119,9 @@ def get_payment_url(order_id):
 			address = frappe.get_doc("Address", address_doc)
 			full_address = address.get("address_line1") +" "+ address.get("address_line2")
 
-		# sales order item
+		# quote item
 		items = []
-		for i in order.get("items"):
+		for i in quote.get("items"):
 			items.append({
 				"CatalogNumber": i.get("item_code"),
 				"Quantity": i.get("qty"),
@@ -137,7 +137,7 @@ def get_payment_url(order_id):
 		url = icredit_settings.get("geturl_api")
 		data = {
 			"GroupPrivateToken": icredit_settings.get("group_private_token"),
-			"RedirectURL" : icredit_settings.get("redirect_url") + "&order_id={}".format(order_id),
+			"RedirectURL" : icredit_settings.get("redirect_url") + "&quote_id={}".format(quote_id),
 			"FailRedirectURL": icredit_settings.get("fail_redirect_url"),
 			"IPNURL": icredit_settings.get("ipnurl"),
 			"CustomerLastName": customer.get("customer_name"),
@@ -150,13 +150,13 @@ def get_payment_url(order_id):
 			"SaleType": 1,
 			"HideItemList": True,
 			"Items": items,
-			"Custom1" : order_id,
+			"Custom1" : quote_id,
 			# "Custom2" : "456",
 		}
 
 		response = request("POST", url, data=json.dumps(data), headers=headers)
 		if response.status_code == 200:
-			doc = frappe.get_doc("Sales Order", order_id)
+			doc = frappe.get_doc("Quotation", quote_id)
 			doc.sales_tokens = response.text
 			doc.save()
 			frappe.db.commit()

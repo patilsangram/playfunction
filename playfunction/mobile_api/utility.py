@@ -5,6 +5,7 @@ from requests import request
 from frappe.utils import today
 from .order import order_details
 from .quotation import get_quote_details
+from erpnext.selling.doctype.quotation.quotation import make_sales_order
 from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
 from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
 
@@ -114,7 +115,7 @@ def set_payment_status(data=None):
 		if frappe.local.form_dict:
 			icredit_settings = frappe.get_doc("iCredit Settings", "iCredit Settings")
 			data = frappe.local.form_dict
-			order_id = data.get("Custom1")
+			quote_id = data.get("Custom1")
 
 			# verify payment
 			url =  "https://testicredit.rivhit.co.il/API/PaymentPageRequest.svc/Verify"
@@ -126,17 +127,25 @@ def set_payment_status(data=None):
 			}
 			response = request("POST", url, data=json.dumps(verify_data), headers=headers)
 
-			# update payment status on sales order
+			# update payment status on quotation
 			if response.status_code == 200:
 				res_status = json.loads(response.text)
 				if res_status.get("Status") == "VERIFIED":
-					#TODO Submit Sales Order and Create SI -> PE
-					#Note: for PE - reference_no & reference_date are mandatory 
-					if frappe.db.exists("Sales Order", order_id):
-						frappe.db.set_value("Sales Order", order_id, "payment_status", "Paid")
-						so = frappe.get_doc("Sales Order", order_id)
-						so.flags.ignore_permissions = True
-						so.submit()
+
+					if frappe.db.exists("Quotation", quote_id):
+						frappe.db.set_value("Quotation", quote_id, "payment_status", "Paid")
+						quote = frappe.get_doc("Quotation", quote_id)
+						quote.flags.ignore_permissions = True
+						quote.submit()
+
+						#SO
+						sales_order = make_sales_order(quote_id)
+						if sales_order:
+							sales_order.delivery_date = frappe.utils.today()
+							sales_order.mode_of_order = "Web"
+							sales_order.flags.ignore_permissions = True
+							sales_order.save()
+							sales_order.submit()
 
 						#SI
 						si = make_sales_invoice(so.name, ignore_permissions=True)
@@ -150,10 +159,10 @@ def set_payment_status(data=None):
 						pe.flags.ignore_permissions = True
 						pe.save()
 						pe.submit()
-					else: error = "Sales Order {} not exists".format(order_id)
+					else: error = "Quotation {} not exists".format(quote_id)
 				else:
 					error = "Payment Failed: {}".format(res_status)
-					frappe.db.set_value("Sales Order", order_id, "payment_status", "Failed")
+					frappe.db.set_value("Quotation", quote_id, "payment_status", "Failed")
 			else:
 				error = "Verify API Fail: {}".format(response.text)
 

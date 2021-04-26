@@ -54,23 +54,11 @@ def place_order(quote_id, data=None):
 					doc.append("taxes", delivery_charge_tax)
 			doc.flags.ignore_permissions = True
 			doc.save()
-			doc.submit()
-			# sales order
-			sales_order = make_sales_order(doc.name)
-			if sales_order:
-				sales_order.delivery_date = frappe.utils.today()
-				sales_order.mode_of_order = "Web"
-				sales_order.payment_status = "Pending"
-				if data:
-					update_customer_profile(data, sales_order.customer)
-					# sales_order.delivery_collection_point = data.get("delivery_collection_point")
-					# sales_order.delivery_city = data.get("delivery_city")
-					try:
-						sales_order.shipping_type = data.get("shipping")
-						sales_order.payment_method = data.get("payment_method")
-					except Exception as e :
-						frappe.log_error(message=frappe.get_traceback() , title="Error in payment method")
-				sales_order.save()
+
+			#update customer
+			if data:
+				update_customer_profile(data, doc.customer)
+
 				# send back payment_url if payment by card
 				# else create Rihvit Invoice
 				payment_url = ""
@@ -78,11 +66,13 @@ def place_order(quote_id, data=None):
 				# institution = "תשלום באמצעות קוד"  // credit by code‎
 				if data.get("payment_method") == "תשלום באמצעות כרטיס אשראי":
 					try:
-						payment_url = get_payment_url(sales_order.name)
+						payment_url = get_payment_url(doc.name)
 					except Exception as e:
 						frappe.log_error(message=frappe.get_traceback() , title="Error in getting URL: Place order Function")
 				else:
 					try:
+						doc.submit()
+						sales_order = make_playfunction_so(doc.name)
 						create_rihvit_invoice(sales_order.name)
 					except Exception as e:
 						frappe.log_error(message=frappe.get_traceback() , title="Error in Creating Rihvit invoice: Place order function")
@@ -90,8 +80,8 @@ def place_order(quote_id, data=None):
 				response["payment_url"] = payment_url
 				# msg = "Order Placed Successfully."
 				# response["message"] = "Order Placed Successfully."
-				response["message"] = "ההזמנה שלך בוצעה בהצלחה!"
-				response["order_id"] = sales_order.name
+				response["message"] = "העגלה שלך עודכנה בהצלחה"
+				response["quote_id"] = quote_id.name
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code
@@ -100,6 +90,28 @@ def place_order(quote_id, data=None):
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: place_order")
 	finally:
 		return response
+
+
+def make_playfunction_so(quote_id):
+	try:
+		# sales order
+		sales_order = make_sales_order(quote_id)
+		if sales_order:
+			sales_order.delivery_date = frappe.utils.today()
+			sales_order.mode_of_order = "Web"
+			#sales_order.payment_status = "Pending"
+
+			try:
+				sales_order.shipping_type = data.get("shipping")
+				sales_order.payment_method = data.get("payment_method")
+			except Exception as e :
+				frappe.log_error(message=frappe.get_traceback() , title="Error in payment method")
+
+			sales_order.save()
+			return sales_order.name
+	except Exception as e:
+		frappe.log_error(message=frappe.get_traceback() , title="Support Function: make_playfunction_so")
+
 
 @frappe.whitelist()
 def order_details(order_id):
