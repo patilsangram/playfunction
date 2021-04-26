@@ -31,6 +31,7 @@ def place_order(quote_id, data=None):
 			frappe.local.response["http_status_code"] = 404
 		else:
 			doc = frappe.get_doc("Quotation", quote_id)
+			doc.mode_of_order = "Web"
 			doc.workflow_state = "Approved"
 			if data:
 				data = json.loads(data)
@@ -57,7 +58,7 @@ def place_order(quote_id, data=None):
 
 			#update customer
 			if data:
-				update_customer_profile(data, doc.customer)
+				update_customer_profile(data, doc.party_name)
 
 				# send back payment_url if payment by card
 				# else create Rihvit Invoice
@@ -81,7 +82,7 @@ def place_order(quote_id, data=None):
 				# msg = "Order Placed Successfully."
 				# response["message"] = "Order Placed Successfully."
 				response["message"] = "העגלה שלך עודכנה בהצלחה"
-				response["quote_id"] = quote_id.name
+				response["quote_id"] = doc.name
 	except Exception as e:
 		http_status_code = getattr(e, "http_status_code", 500)
 		frappe.local.response['http_status_code'] = http_status_code

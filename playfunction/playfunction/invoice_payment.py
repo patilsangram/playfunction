@@ -107,7 +107,7 @@ def get_payment_url(quote_id):
 	try:
 		quote = frappe.get_doc("Quotation", quote_id)
 		icredit_settings = frappe.get_doc("iCredit Settings", "iCredit Settings")
-		customer = frappe.get_doc("Customer", quote.get("customer"))
+		customer = frappe.get_doc("Customer", quote.get("party_name"))
 		address_doc = frappe.db.get_value("Dynamic Link", {
 			"link_doctype": "Customer",
 			"link_name": quote.get("customer")
