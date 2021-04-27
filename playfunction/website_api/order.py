@@ -50,7 +50,8 @@ def place_order(quote_id, data=None):
 				vat_tax = {
 					"account_head": vat_account.get("name"),
 					"charge_type": "On Net Total",
-					"rate": vat_account.get("tax_rate")
+					"rate": vat_account.get("tax_rate"),
+					"description": "VAT 17%"
 				}
 				doc.append("taxes", vat_tax)
 
