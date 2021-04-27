@@ -39,8 +39,22 @@ def place_order(quote_id, data=None):
 				doc.delivery_city = data.get("delivery_city")
 				doc.shipping_type = data.get("shipping")
 				doc.payment_method = data.get("payment_method")
-				# delivery charges
 
+				#taxes
+				doc.taxes = []
+				vat_account = frappe.db.sql("""
+					select name, tax_rate from tabAccount
+					where account_name = 'VAT 17%'""", as_dict=True)
+				vat_account = vat_account[0] if len(vat_account) else {}
+				doc.taxes_and_charges = vat_account.get("name")
+				vat_tax = {
+					"account_head": vat_account.get("name"),
+					"charge_type": "On Net Total",
+					"rate": vat_account.get("tax_rate")
+				}
+				doc.append("taxes", vat_tax)
+
+				# delivery charges
 				# if data.get("shipping") == "Fast delivery to the house at subsidized price - NIS 29":
 				if data.get("shipping") == "משלוח מהיר עד הבית/ארגון במחיר מסובסד -29 ש\"ח":
 					delivery_account = frappe.db.get_value("Account", {
