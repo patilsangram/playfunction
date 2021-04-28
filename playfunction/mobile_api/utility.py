@@ -5,6 +5,7 @@ from requests import request
 from frappe.utils import today
 from .order import order_details
 from .quotation import get_quote_details
+from playfunction.playfunction.invoice_payment import *
 from erpnext.selling.doctype.quotation.quotation import _make_sales_order
 from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
 from erpnext.accounts.doctype.payment_entry.payment_entry import get_payment_entry
@@ -148,9 +149,13 @@ def set_payment_status(data=None):
 							sales_order.submit()
 
 						#SI
+						#TODO: create rihvit invoice
 						si = make_sales_invoice(sales_order.name, ignore_permissions=True)
 						si.flags.ignore_permissions = True
 						si.submit()
+
+						#create_rihvit incoice for card payment as well
+						create_rihvit_invoice(si.name)
 
 						#PE
 						pe = get_payment_entry_custom("Sales Invoice", si.name)

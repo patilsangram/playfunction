@@ -5,6 +5,7 @@ from frappe import _
 from playfunction.website_api.customer import update_customer_profile
 from playfunction.playfunction.invoice_payment import *
 from erpnext.selling.doctype.quotation.quotation import make_sales_order
+from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
 
 
 @frappe.whitelist()
@@ -89,7 +90,15 @@ def place_order(quote_id, data=None):
 					try:
 						doc.submit()
 						sales_order = make_playfunction_so(doc.name, data)
-						create_rihvit_invoice(sales_order.name)
+						sales_order.flags.ignore_permissions = True
+						sales_order.submit()
+
+						#si
+						si = make_sales_invoice(sales_order.name, ignore_permissions=True)
+						si.flags.ignore_permissions = True
+						si.submit()
+						#TODO: Create Sales Invoice
+						create_rihvit_invoice(si.name)
 					except Exception as e:
 						frappe.log_error(message=frappe.get_traceback() , title="Error in Creating Rihvit invoice: Place order function")
 

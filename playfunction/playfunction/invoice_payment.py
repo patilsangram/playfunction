@@ -44,22 +44,23 @@ def get_rihvit_api_token(rihvit_settings):
 
 
 @frappe.whitelist()
-def create_rihvit_invoice(order_id):
+def create_rihvit_invoice(invoice_id):
 	"""
 	Create Rihvit Invoice using order details and iCredit Settings
 	:param order_id: Sales Order
 	:return: Invoice Creation Status (String)
 	"""
 	try:
-		order = frappe.get_doc("Sales Order", order_id)
+		#TODO: Use Invoice Data instead of Sales Order
+		invoice = frappe.get_doc("Sales Invoice", invoice_id)
 		rihvit_settings = frappe.get_doc("Rihvit Settings", "Rihvit Settings")
-		customer = frappe.get_doc("Customer", order.get("customer"))
+		customer = frappe.get_doc("Customer", invoice.get("customer"))
 		# Rihvit API token - check in settings if not generate new one
 		if not rihvit_settings.get("api_token"):
 			get_rihvit_api_token(rihvit_settings)
 		# sales order item
 		items = []
-		for i in order.get("items"):
+		for i in invoice.get("items"):
 			items.append({
 				"quantity": i.get("qty"),
 				"description": i.get("description"),
@@ -83,14 +84,13 @@ def create_rihvit_invoice(order_id):
 		}
 		response = request("POST", url, data=json.dumps(data), headers=headers)
 		if response.status_code == 200:
-			so = frappe.get_doc("Sales Order", order_id)
-			so.rihvit_invoice = response.text
-			so.save()
+			invoice.rihvit_invoice = response.text
+			invoice.save()
 			frappe.db.commit()
 			frappe.log_error(message= "Rihvit Invoice Success", title="API: Rihvit API Success")
 			return "Success"
 		else:
-			error_log = json.dumps({order_id: response.text})
+			error_log = json.dumps({invoice_id: response.text})
 			frappe.log_error(message= error_log, title="API: create_rihvit_invoice")
 			return "Failure"
 	except Exception as e:
