@@ -85,7 +85,7 @@ def create_rihvit_invoice(invoice_id):
 		response = request("POST", url, data=json.dumps(data), headers=headers)
 		if response.status_code == 200:
 			invoice.rihvit_invoice = response.text
-			invoice.save()
+			invoice.save(ignore_permissions=True)
 			frappe.db.commit()
 			frappe.log_error(message= "Rihvit Invoice Success", title="API: Rihvit API Success")
 			return "Success"
