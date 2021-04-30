@@ -62,11 +62,12 @@ def create_rihvit_invoice(invoice_id):
 		items = []
 		for i in invoice.get("items"):
 			items.append({
+				#"item_id": i.get("item_code"),
 				"quantity": i.get("qty"),
-				"description": i.get("description"),
+				"description": i.get("item_code") + ":" + i.get("item_name"),
 				"price_nis": i.get("rate"),
 				"currency_id": 1,
-				"exempt_vat": True
+				"exempt_vat": False
 			})
 
 		# Rihvit Sales Invoice API
@@ -78,7 +79,7 @@ def create_rihvit_invoice(invoice_id):
 			"customer_id": 0,
 			"last_name": customer.get("customer_name"),
 			"first_name": customer.get("customer_name"),
-			"price_include_vat": True,
+			"price_include_vat": False,
 			"currency_id":1,
 			"items": items
 		}
