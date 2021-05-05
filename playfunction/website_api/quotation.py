@@ -26,19 +26,27 @@ def get_cart_details(quote_id):
 			response["quote_id"] = quote.name
 			items = []
 			# fetch required item details
-			sp_without_vat = 0
+			sp_without_vat = discount = 0
 			for row in quote.get("items"):
 				row_data = {}
 				for f in item_fields:
 					row_data[f] = row.get(f)
 				# selling/before discount price of Item
-				row_data["selling_price"] = frappe.db.get_value("Item",
-					row.get("item_code"), "sp_with_vat") or 0
-				item_details = frappe.db.get_value("Item", row.get("item_code"),["sp_with_vat", "last_purchase_rate", "discount_percentage","sp_without_vat"], as_dict=True)
-				if item_details.get("discount_percentage") > 0:
-					sp_without_vat = sp_without_vat + (item_details.get("sp_without_vat") * row.get("qty"))*item_details.get("discount_percentage")/100
-				else:
-					sp_without_vat =  sp_without_vat + (item_details.get("sp_without_vat") * row.get("qty") )
+				# row_data["selling_price"] = frappe.db.get_value("Item",
+				# 	row.get("item_code"), "sp_with_vat") or 0
+				# item_details = frappe.db.get_value("Item", row.get("item_code"),["sp_with_vat", "last_purchase_rate", "discount_percentage","sp_without_vat"], as_dict=True)
+				# if item_details.get("discount_percentage") > 0:
+				# 	sp_without_vat = sp_without_vat + (item_details.get("sp_without_vat") * row.get("qty"))*item_details.get("discount_percentage")/100
+				# else:
+				# 	sp_without_vat =  sp_without_vat + (item_details.get("sp_without_vat") * row.get("qty") )
+
+				# calculations
+				if row.get("discount_percentage") > 0:
+					per_item_disc = row.get("price_list_rate") * row.get("discount_percentage")/100
+					discount += per_item_disc*row.get("qty")
+
+				sp_without_vat += row.get("rate") * row.get("qty")
+				row_data["selling_price"] = row.price_list_rate
 				items.append(row_data)
 			response["items"] = items
 			#delivery_details
@@ -64,12 +72,13 @@ def get_cart_details(quote_id):
 					sales_tax =  tax_.get("tax_amount")
 
 			# taxes & total section
-			response["discount"] = quote.get("discount_amount", 0)
+			response["discount"] = discount
 			response["total"] = quote.get("grand_total", 0)
 			response["delivery_charges"] = delivery_charges
 			#sales_tax = quote.get("total")-sp_without_vat if quote.get("total") != 0 and sp_without_vat !=0 else 0
 			#response["sales_tax"] = flt(sales_tax,2)
 			response["sales_tax"] = flt(sales_tax,2)
+			response["sp_without_vat"] = sp_without_vat
 			#response["amount_due"] = flt(sp_without_vat,2)
 			response["amount_due"] = flt(quote.grand_total,2)
 			response["sub_total"] = quote.get("total")
@@ -211,7 +220,7 @@ def update_cart(quote_id, items):
 				if not existing_item:
 					quote.append("items", items)
 
-				quote.set_missing_values()
+				quote.run_method("set_missing_values")
 				quote.flags.ignore_mandatory = True
 				quote.flags.ignore_permissions = True
 				quote.save()
@@ -337,8 +346,8 @@ def get_item_details(quote, items):
 
 		item_details = get_pricing_details(args)
 		items["price_list_rate"] = item_details.get("price_list_rate")
+		items["margin_type"] = item_details.get("margin_type")
 		items["discount_percentage"] = item_details.get("discount_percentage")
-		items["margin_type"] = item_details.get("Percentage")
 		items["description"] = item_details.get("description", "WebAPI")
 		return items
 	except Exception as e:
