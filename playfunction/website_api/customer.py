@@ -29,12 +29,17 @@ def get_customer_profile(customer=None):
 			if not customer_address or not len(customer_address):
 				# msg = "Profile Not found"
 				# to handle front end CORS issue and profile update for new user
+				# send new user's mobile & email_id
+				email_id = phone = ""
+				user_data = frappe.db.sql("select email, mobile_no from tabUser where name = '{}'".format(frappe.session.user))
+				if len(user_data):
+					email_id, phone = user_data[0]
 				customer_address = {
 					"city": "",
 					"apartment_no": "",
 					"name": "",
-					"email_id": "",
-					"phone": "",
+					"email_id": email_id,
+					"phone": phone,
 					"house_no": "",
 					"street_address": "",
 					"customer_name": customer_data[0].get("customer_name")
