@@ -82,7 +82,8 @@ def create_rihvit_invoice(invoice_id):
 			"first_name": customer.get("customer_name"),
 			"price_include_vat": False,
 			"currency_id":1,
-			"items": items
+			"items": items,
+			"comments": invoice.name
 		}
 		response = request("POST", url, data=json.dumps(data), headers=headers)
 		if response.status_code == 200:
