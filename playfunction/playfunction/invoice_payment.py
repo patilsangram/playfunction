@@ -65,7 +65,8 @@ def create_rihvit_invoice(invoice_id):
 				#"item_id": i.get("item_code"),
 				"quantity": i.get("qty"),
 				"description": i.get("item_code") + ":" + i.get("item_name"),
-				"price_nis": i.get("rate"),
+				"bruto_price_nis": i.get("price_list_rate"), #before discount
+				"price_nis": i.get("rate"), #after discount
 				"currency_id": 1,
 				"exempt_vat": False
 			})
