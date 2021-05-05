@@ -57,9 +57,10 @@ def checkout_order(data,doctype):
 			}, ["name", "tax_rate"], as_dict=True)
 			doc.taxes_and_charges = vat_account.get("name")
 			vat_tax = {
-			"account_head": vat_account.get("name"),
-			"charge_type": "On Net Total",
-			"rate": vat_account.get("tax_rate")
+				"account_head": vat_account.get("name"),
+				"charge_type": "On Net Total",
+				"rate": vat_account.get("tax_rate"),
+				"description": "VAT 17% - Pepperi"
 			}
 			doc.append("taxes", vat_tax)
 			doc.flags.ignore_mandatory = True

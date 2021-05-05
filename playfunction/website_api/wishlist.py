@@ -192,6 +192,19 @@ def wishlist_checkout():
 					# 		if qi.get("item_code") == i.get("item_code"):
 					# 			qty = qi.get("qty")
 					# 			qi.qty = qty + i.get("qty")
+
+				# Tax - VAT 17%
+				vat_account = frappe.db.get_value("Account", {
+					"account_name": "VAT 17%"
+				}, ["name", "tax_rate"], as_dict=True)
+				quote.taxes_and_charges = vat_account.get("name")
+				vat_tax = {
+					"account_head": vat_account.get("name"),
+					"charge_type": "On Net Total",
+					"rate": vat_account.get("tax_rate"),
+					"description": "VAT 17% - Website"
+				}
+				quote.append("taxes", vat_tax)
 				quote.flags.ignore_mandatory = True
 				quote.flags.ignore_permissions = True
 				quote.save()

@@ -132,13 +132,28 @@ def add_to_cart(items, is_proposal=False):
 				# update price list price
 				item_details = frappe.db.get_value("Item", items.get("item_code"),\
 					["sp_with_vat", "last_purchase_rate", "discount_percentage", "description"], as_dict=True)
-				items["price_list_rate"] = item_details.get("sp_with_vat") or item_details.get("last_purchase_rate") or 0
-				if item_details.get("discount_percentage") > 0:
-					items["margin_type"] = "Percentage"
-					items["discount_percentage"] = item_details.get("discount_percentage")
+				# items["price_list_rate"] = item_details.get("sp_with_vat") or item_details.get("last_purchase_rate") or 0
+				# if item_details.get("discount_percentage") > 0:
+				# 	items["margin_type"] = "Percentage"
+				# 	items["discount_percentage"] = item_details.get("discount_percentage")
 
 				items["description"] = item_details.get("description", "WebAPI")
 				quote.append("items", items)
+
+				# Tax - VAT 17%
+				vat_account = frappe.db.get_value("Account", {
+					"account_name": "VAT 17%"
+				}, ["name", "tax_rate"], as_dict=True)
+				quote.taxes_and_charges = vat_account.get("name")
+				vat_tax = {
+					"account_head": vat_account.get("name"),
+					"charge_type": "On Net Total",
+					"rate": vat_account.get("tax_rate"),
+					"description": "VAT 17% - Website"
+				}
+				quote.append("taxes", vat_tax)
+
+				quote.run_method("set_missing_values")
 				# proposal
 				if is_proposal:
 					quote.workflow_state = "Proposal Received"
@@ -180,12 +195,12 @@ def update_cart(quote_id, items):
 				frappe.local.response["http_status_code"] = 422
 			else:
 				quote = frappe.get_doc("Quotation", quote_id)
-				item_details = frappe.db.get_value("Item", items.get("item_code"),\
-					["sp_with_vat", "discount_percentage", "description"], as_dict=True)
-				if item_details.get("discount_percentage", 0.00) > 0:
-					items["margin_type"] = "Percentage"
-					items["discount_percentage"] = item_details.get("discount_percentage")
-				items["price_list_rate"] = item_details.get("sp_with_vat", 0)
+				# item_details = frappe.db.get_value("Item", items.get("item_code"),\
+				# 	["sp_with_vat", "discount_percentage", "description"], as_dict=True)
+				# if item_details.get("discount_percentage", 0.00) > 0:
+				# 	items["margin_type"] = "Percentage"
+				# 	items["discount_percentage"] = item_details.get("discount_percentage")
+				# items["price_list_rate"] = item_details.get("sp_with_vat", 0)
 				items["description"] = item_details.get("description", "WebAPI")
 
 				existing_item = False
@@ -282,13 +297,14 @@ def bulk_add_to_cart(quote_id, items):
 			frappe.local.response['http_status_code'] = 404
 		else:
 			quote = frappe.get_doc("Quotation", quote_id)
+			quote.mode_of_order = "Website"
 			for i in items:
 				item_details = frappe.db.get_value("Item", i.get("item_code"),\
 					["sp_with_vat", "discount_percentage"], as_dict=True)
-				if item_details.get("discount_percentage", 0.00) > 0:
-					i["margin_type"] = "Percentage"
-					i["discount_percentage"] = item_details.get("discount_percentage")
-				i["price_list_rate"] = item_details.get("sp_with_vat", 0)
+				# if item_details.get("discount_percentage", 0.00) > 0:
+				# 	i["margin_type"] = "Percentage"
+				# 	i["discount_percentage"] = item_details.get("discount_percentage")
+				# i["price_list_rate"] = item_details.get("sp_with_vat", 0)
 				existing_item = False
 				for row in quote.get("items"):
 					# update item row
