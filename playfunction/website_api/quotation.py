@@ -2,6 +2,7 @@ import frappe
 import json
 from frappe import _
 from frappe.utils import has_common, flt
+from erpnext.stock.get_item_details import get_item_details as get_pricing_details
 
 item_fields = ["item_code", "item_name","qty", "discount_percentage", "description", "rate", "amount", "image"]
 
@@ -66,9 +67,11 @@ def get_cart_details(quote_id):
 			response["discount"] = quote.get("discount_amount", 0)
 			response["total"] = quote.get("grand_total", 0)
 			response["delivery_charges"] = delivery_charges
-			sales_tax = quote.get("total")-sp_without_vat if quote.get("total") != 0 and sp_without_vat !=0 else 0
+			#sales_tax = quote.get("total")-sp_without_vat if quote.get("total") != 0 and sp_without_vat !=0 else 0
+			#response["sales_tax"] = flt(sales_tax,2)
 			response["sales_tax"] = flt(sales_tax,2)
-			response["amount_due"] = flt(sp_without_vat,2)
+			#response["amount_due"] = flt(sp_without_vat,2)
+			response["amount_due"] = flt(quote.grand_total,2)
 			response["sub_total"] = quote.get("total")
 			# proposal_stages
 			proposal_state = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
@@ -129,15 +132,10 @@ def add_to_cart(items, is_proposal=False):
 				quote = frappe.new_doc("Quotation")
 				quote.party_name = customer
 				quote.customer_address = address
-				# update price list price
-				item_details = frappe.db.get_value("Item", items.get("item_code"),\
-					["sp_with_vat", "last_purchase_rate", "discount_percentage", "description"], as_dict=True)
-				# items["price_list_rate"] = item_details.get("sp_with_vat") or item_details.get("last_purchase_rate") or 0
-				# if item_details.get("discount_percentage") > 0:
-				# 	items["margin_type"] = "Percentage"
-				# 	items["discount_percentage"] = item_details.get("discount_percentage")
 
-				items["description"] = item_details.get("description", "WebAPI")
+				# update price_list_rate, margin_type, discount_percentage
+				items = get_item_details(quote, items)
+
 				quote.append("items", items)
 
 				# Tax - VAT 17%
@@ -195,13 +193,7 @@ def update_cart(quote_id, items):
 				frappe.local.response["http_status_code"] = 422
 			else:
 				quote = frappe.get_doc("Quotation", quote_id)
-				# item_details = frappe.db.get_value("Item", items.get("item_code"),\
-				# 	["sp_with_vat", "discount_percentage", "description"], as_dict=True)
-				# if item_details.get("discount_percentage", 0.00) > 0:
-				# 	items["margin_type"] = "Percentage"
-				# 	items["discount_percentage"] = item_details.get("discount_percentage")
-				# items["price_list_rate"] = item_details.get("sp_with_vat", 0)
-				items["description"] = item_details.get("description", "WebAPI")
+				items = get_item_details(quote, items)
 
 				existing_item = False
 				for row in quote.get("items"):
@@ -299,12 +291,7 @@ def bulk_add_to_cart(quote_id, items):
 			quote = frappe.get_doc("Quotation", quote_id)
 			quote.mode_of_order = "Website"
 			for i in items:
-				item_details = frappe.db.get_value("Item", i.get("item_code"),\
-					["sp_with_vat", "discount_percentage"], as_dict=True)
-				# if item_details.get("discount_percentage", 0.00) > 0:
-				# 	i["margin_type"] = "Percentage"
-				# 	i["discount_percentage"] = item_details.get("discount_percentage")
-				# i["price_list_rate"] = item_details.get("sp_with_vat", 0)
+				i = get_item_details(quote, i)
 				existing_item = False
 				for row in quote.get("items"):
 					# update item row
@@ -329,3 +316,30 @@ def bulk_add_to_cart(quote_id, items):
 		frappe.log_error(message=frappe.get_traceback() , title="Website API: bulk_add_to_cart")
 	finally:
 		return response
+
+def get_item_details(quote, items):
+	try:
+		args = frappe._dict({
+			"customer": quote.party_name,
+			"customer_group": frappe.db.get_value("Customer", quote.party_name, "customer_group"),
+			"currency": quote.currency,
+			"company": "PlayFunction",
+			"transaction_date": frappe.utils.today(),
+			"price_list": quote.selling_price_list,
+			"ignore_pricing_rule": 0,
+			"conversion_rate": 1,
+			"plc_conversion_rate": 1,
+			"doctype": "Quotation",
+			"name": None,
+			"order_type": "Sales",
+			"item_code": items.get("item_code")
+		})
+
+		item_details = get_pricing_details(args)
+		items["price_list_rate"] = item_details.get("price_list_rate")
+		items["discount_percentage"] = item_details.get("discount_percentage")
+		items["margin_type"] = item_details.get("Percentage")
+		items["description"] = item_details.get("description", "WebAPI")
+		return items
+	except Exception as e:
+		return items
