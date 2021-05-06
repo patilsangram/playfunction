@@ -128,8 +128,9 @@ def get_payment_url(quote_id):
 			items.append({
 				"CatalogNumber": i.get("item_code"),
 				"Quantity": i.get("qty"),
-				"UnitPrice": i.get("rate"),
-				"Description": i.get("description")
+				#UnitPrice with 17% VAT
+				"UnitPrice": i.get("rate") + i.get("rate") * 0.17,
+				"Description": i.get("item_code") + ":" + i.get("item_name")
 			})
 
 		# GetUrl API
