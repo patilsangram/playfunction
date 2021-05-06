@@ -34,8 +34,8 @@ def get_cart_details(quote_id):
 					amount = rate * row.get("qty")
 					if f not in ["rate", "amount"]:
 						row_data[f] = row.get(f)
-					row_data["rate"] = rate
-					row_data["amount"] = amount
+					row_data["rate"] = flt(rate, 2)
+					row_data["amount"] = flt(amount, 2)
 				# selling/before discount price of Item
 				# row_data["selling_price"] = frappe.db.get_value("Item",
 				# 	row.get("item_code"), "sp_with_vat") or 0
@@ -85,8 +85,8 @@ def get_cart_details(quote_id):
 			response["sales_tax"] = flt(sales_tax,2)
 			response["sp_without_vat"] = sp_without_vat
 			#response["amount_due"] = flt(sp_without_vat,2)
-			response["amount_due"] = flt(quote.grand_total,2)
-			response["sub_total"] = quote.get("total")
+			response["amount_due"] = flt(quote.total,2)
+			response["sub_total"] = quote.get("grand_total")
 			# proposal_stages
 			proposal_state = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
 			if quote.get("workflow_state") in proposal_state:
