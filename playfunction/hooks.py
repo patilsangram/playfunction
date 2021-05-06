@@ -123,6 +123,7 @@ doc_events = {
 	},
 	"Sales Invoice": {
 		"after_insert": "playfunction.playfunction.custom_script.sales_invoice.sales_invoice.submit",
+		"on_submit": "playfunction.playfunction.custom_script.sales_invoice.sales_invoice.trigger_rihvit_invoice",
 	},
 	"Delivery Note": {
 		"after_insert": "playfunction.playfunction.custom_script.delivery_note.delivery_note.submit",

@@ -155,7 +155,7 @@ def set_payment_status(data=None):
 						si.submit()
 
 						#create_rihvit incoice for card payment as well
-						create_rihvit_invoice(si.name)
+						#create_rihvit_invoice(si.name)
 
 						#PE
 						pe = get_payment_entry_custom("Sales Invoice", si.name)

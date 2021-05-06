@@ -1,5 +1,5 @@
 import frappe
-
+from playfunction.playfunction.invoice_payment import *
 
 def submit(doc, method):
     try:
@@ -20,5 +20,11 @@ def submit(doc, method):
             message = frappe.render_template(receipient.message,{"doc":doc}),
             attachments= print_att
             )
+    except Exception as e:
+        pass
+
+def trigger_rihvit_invoice(doc, method):
+    try:
+        create_rihvit_invoice(doc.name)
     except Exception as e:
         pass

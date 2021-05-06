@@ -97,8 +97,7 @@ def place_order(quote_id, data=None):
 						si = make_sales_invoice(sales_order.name, ignore_permissions=True)
 						si.flags.ignore_permissions = True
 						si.submit()
-						#TODO: Create Sales Invoice
-						create_rihvit_invoice(si.name)
+						#create_rihvit_invoice(si.name)
 					except Exception as e:
 						frappe.log_error(message=frappe.get_traceback() , title="Error in Creating Rihvit invoice: Place order function")
 

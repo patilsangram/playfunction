@@ -30,7 +30,12 @@ def get_cart_details(quote_id):
 			for row in quote.get("items"):
 				row_data = {}
 				for f in item_fields:
-					row_data[f] = row.get(f)
+					rate = row.get("rate") + row.get("rate") * 0.17
+					amount = rate * row.get("qty")
+					if f not in ["rate", "amount"]:
+						row_data[f] = row.get(f)
+					row_data["rate"] = rate
+					row_data["amount"] = amount
 				# selling/before discount price of Item
 				# row_data["selling_price"] = frappe.db.get_value("Item",
 				# 	row.get("item_code"), "sp_with_vat") or 0
@@ -73,7 +78,7 @@ def get_cart_details(quote_id):
 
 			# taxes & total section
 			response["discount"] = discount
-			response["total"] = quote.get("grand_total", 0)
+			response["total"] = quote.get("total", 0)
 			response["delivery_charges"] = delivery_charges
 			#sales_tax = quote.get("total")-sp_without_vat if quote.get("total") != 0 and sp_without_vat !=0 else 0
 			#response["sales_tax"] = flt(sales_tax,2)
