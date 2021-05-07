@@ -133,6 +133,14 @@ def get_payment_url(quote_id):
 				"Description": i.get("item_code") + ":" + i.get("item_name")
 			})
 
+		if quote.get("shipping_type") == "משלוח מהיר עד הבית/ארגון במחיר מסובסד -29 ש\"ח":
+			items.append({
+				"CatalogNumber": "Delivery Charges",
+				"Quantity": i.get("qty"),
+				"UnitPrice": 29,
+				"Description": "Delivery Charges"
+			})
+
 		# GetUrl API
 
 		# Added user-agent to headers to avoid max redires exceed error
