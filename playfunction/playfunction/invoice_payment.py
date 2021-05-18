@@ -62,9 +62,10 @@ def create_rihvit_invoice(invoice_id):
 		items = []
 		for i in invoice.get("items"):
 			items.append({
-				"catalog_number": frappe.db.get_value("Item", i.get("item_code"), "rihvit_item_id") or '',
+				#"item_id": i.get("item_code"),
+				"catalog_number": i.get("item_code"),
 				"quantity": i.get("qty"),
-				"description": i.get("item_code") + ":" + i.get("item_name"),
+				"description": i.get("item_name"),
 				"bruto_price_nis": i.get("price_list_rate"), #before discount
 				"price_nis": i.get("rate"), #after discount
 				"currency_id": 1,
