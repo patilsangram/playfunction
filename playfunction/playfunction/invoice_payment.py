@@ -62,11 +62,28 @@ def create_rihvit_invoice(invoice_id):
 		items = []
 		for i in invoice.get("items"):
 			items.append({
-				#"item_id": i.get("item_code"),
+				"catalog_number": frappe.db.get_value("Item", i.get("item_code"), "rihvit_item_id") or '',
 				"quantity": i.get("qty"),
 				"description": i.get("item_code") + ":" + i.get("item_name"),
 				"bruto_price_nis": i.get("price_list_rate"), #before discount
 				"price_nis": i.get("rate"), #after discount
+				"currency_id": 1,
+				"exempt_vat": False
+			})
+
+		delivery_taxes = frappe.db.sql("""
+			select tax_amount from `tabSales Taxes and Charges`
+			where charge_type = 'Actual' and  account_head like 'Delivery Charge%'
+			and parent = '{}'
+		""".format(invoice.get("name")))
+
+		if len(delivery_taxes):
+			items.append({
+				#"item_id": i.get("item_code"),
+				"quantity": 1,
+				"description": "Delivery Charges",
+				"bruto_price_nis": 24.79,
+				"price_nis": 24.79,
 				"currency_id": 1,
 				"exempt_vat": False
 			})
