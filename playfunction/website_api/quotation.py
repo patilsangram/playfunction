@@ -78,7 +78,8 @@ def get_cart_details(quote_id):
 
 			# taxes & total section
 			response["discount"] = discount
-			response["total"] = quote.get("total", 0)
+			response["total"] = quote.get("grand_total", 0)
+			response["shippingCharge"] = discount
 			response["delivery_charges"] = delivery_charges
 			#sales_tax = quote.get("total")-sp_without_vat if quote.get("total") != 0 and sp_without_vat !=0 else 0
 			#response["sales_tax"] = flt(sales_tax,2)
