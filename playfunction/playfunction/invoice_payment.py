@@ -82,7 +82,7 @@ def create_rihvit_invoice(invoice_id):
 			items.append({
 				#"item_id": i.get("item_code"),
 				"quantity": 1,
-				"description": "Delivery Charges",
+				"description": "דמי משלוח עם שליח",
 				"bruto_price_nis": 24.79,
 				"price_nis": 24.79,
 				"currency_id": 1,
