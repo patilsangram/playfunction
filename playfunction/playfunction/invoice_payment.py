@@ -47,11 +47,10 @@ def get_rihvit_api_token(rihvit_settings):
 def create_rihvit_invoice(invoice_id):
 	"""
 	Create Rihvit Invoice using order details and iCredit Settings
-	:param order_id: Sales Order
+	:param invoice_id: Sales Invoice
 	:return: Invoice Creation Status (String)
 	"""
 	try:
-		#TODO: Use Invoice Data instead of Sales Order
 		invoice = frappe.get_doc("Sales Invoice", invoice_id)
 		rihvit_settings = frappe.get_doc("Rihvit Settings", "Rihvit Settings")
 		customer = frappe.get_doc("Customer", invoice.get("customer"))
@@ -96,7 +95,7 @@ def create_rihvit_invoice(invoice_id):
 			"api_token": rihvit_settings.get("api_token"),
 			"document_type": 1,
 			"customer_id": 0,
-			"last_name": customer.get("customer_name"),
+			#"last_name": customer.get("customer_name"),
 			"first_name": customer.get("customer_name"),
 			"price_include_vat": False,
 			"currency_id":1,
