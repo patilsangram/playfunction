@@ -147,7 +147,7 @@ def add_to_cart(items, is_proposal=False):
 				quote = frappe.new_doc("Quotation")
 				quote.party_name = customer
 				quote.customer_address = address
-
+				quote.selling_price_list = "Meuhedet"
 				# update price_list_rate, margin_type, discount_percentage
 				items = get_item_details(quote, items)
 
@@ -305,6 +305,7 @@ def bulk_add_to_cart(quote_id, items):
 		else:
 			quote = frappe.get_doc("Quotation", quote_id)
 			quote.mode_of_order = "Website"
+			quote.selling_price_list = "Meuhedet"
 			for i in items:
 				i = get_item_details(quote, i)
 				existing_item = False
