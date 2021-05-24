@@ -109,7 +109,7 @@ def check_payment_status():
 		}
 		due_orders = frappe.get_list("Sales Order", fields=fields, filters=filters)
 		if len(due_orders):
-			url = "https://testicredit.rivhit.co.il/API/PaymentPageRequest.svc/SaleDetails"
+			url = "https://icredit.rivhit.co.il/API/PaymentPageRequest.svc/SaleDetails"
 			headers = {"Content-Type": "application/json", "user-agent": "Playfunction App"}
 			method = "POST"
 

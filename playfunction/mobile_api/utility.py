@@ -119,7 +119,7 @@ def set_payment_status(data=None):
 			quote_id = data.get("Custom1")
 
 			# verify payment
-			url =  "https://testicredit.rivhit.co.il/API/PaymentPageRequest.svc/Verify"
+			url =  "https://icredit.rivhit.co.il/API/PaymentPageRequest.svc/Verify"
 			headers = {"Content-Type": "application/json", "user-agent": "Playfunction App"}
 			verify_data = {
 				"GroupPrivateToken": icredit_settings.get("group_private_token"),
