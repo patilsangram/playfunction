@@ -12,11 +12,6 @@
       {% set u = frappe.get_doc("Delivery Note", doc.delivery_note) %}
       <div class="row " style="margin-left:20px;margin-right:20px;margin-top:30px;">
 				{% set doc1 = frappe.get_doc("Delivery Note",{"name":doc.delivery_note}) %}
-				{% set cnt = "pratik"%}
-
-				{%for row in doc1.items%}
-							{% set cnt = cnt +row.against_sales_invoice %}
-				{% endfor%}
 
 				<div class="col-xs-6">
 					<div class="pull-right text-right">
