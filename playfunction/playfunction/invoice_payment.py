@@ -54,6 +54,12 @@ def create_rihvit_invoice(invoice_id):
 		invoice = frappe.get_doc("Sales Invoice", invoice_id)
 		rihvit_settings = frappe.get_doc("Rihvit Settings", "Rihvit Settings")
 		customer = frappe.get_doc("Customer", invoice.get("customer"))
+
+		#phone
+		phone = ''
+		if customer.get("user"):
+			phone = frappe.db.get_value("User", customer.get("user"), "phone") or ''
+
 		# Rihvit API token - check in settings if not generate new one
 		if not rihvit_settings.get("api_token"):
 			get_rihvit_api_token(rihvit_settings)
@@ -97,9 +103,11 @@ def create_rihvit_invoice(invoice_id):
 			"customer_id": 0,
 			#"last_name": customer.get("customer_name"),
 			"first_name": customer.get("customer_name"),
+			"phone": phone,
 			"price_include_vat": False,
 			"currency_id":1,
 			"items": items,
+			"order": invoice.po_no,
 			"comments": invoice.name
 		}
 		response = request("POST", url, data=json.dumps(data), headers=headers)
@@ -139,6 +147,11 @@ def get_payment_url(quote_id):
 			address = frappe.get_doc("Address", address_doc)
 			full_address = address.get("address_line1") +" "+ address.get("address_line2")
 
+		#phone
+		phone = ''
+		if customer.get("user"):
+			phone = frappe.db.get_value("User", customer.get("user"), "phone") or ''
+
 		# quote item
 		items = []
 		for i in quote.get("items"):
@@ -171,12 +184,12 @@ def get_payment_url(quote_id):
 			"IPNURL": icredit_settings.get("ipnurl"),
 			"CustomerLastName": customer.get("customer_name"),
 			"CustomerFirstName": customer.get("customer_name"),
+			"PhoneNumber": phone,
 			"Address": full_address,
 			"City": address.get("city"),
 			"EmailAddress": address.get("email_id"),
 			"NumberOfPayments": 1,
 			"Currency": 1,
-			"SaleType": 1,
 			"HideItemList": True,
 			"Items": items,
 			"Custom1" : quote_id,
