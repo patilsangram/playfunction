@@ -41,7 +41,8 @@ def get_dashboard_data(filters=None):
 
 		# sub query to handle stock filter/alias
 		query = """
-			select item.*, selling.quote_qty, selling.customer, selling.pending_qty from (
+			select item.*, selling.quote_qty, selling.customer, selling.pending_qty, selling.delivered_qty
+			 from (
 				select
 					i.item_code, i.item_name, i.cost_price, i.sp_with_vat, i.supplier,
 					i.supplier_item_name, i.supplier_item_code, ifnull(sum(b.actual_qty), 0) as stock
@@ -50,13 +51,13 @@ def get_dashboard_data(filters=None):
 				group by i.item_code
 			) item
 			left join (
-				select quote.party_name as customer, quote.item_code as item_code, quote.quote_qty, sales.pending_qty from
-				(select q.party_name, qi.item_code, sum(qi.qty) as quote_qty from `tabQuotation` q
+				select quote.party_name as customer, quote.item_code as item_code, quote.quote_qty, sales.pending_qty, sales.delivered_qty from
+				(select q.party_name, qi.item_code, ifnull(sum(qi.qty), 0) as quote_qty from `tabQuotation` q
 				left join `tabQuotation Item` qi on q.name =  qi.parent group by qi.item_code, q.party_name)  quote
 
 				left join
 
-				(select so.customer, soi.item_code, ifnull((sum(soi.qty) - sum(soi.delivered_qty)), 0) as pending_qty
+				(select so.customer, soi.item_code, ifnull(sum(soi.delivered_qty), 0) as delivered_qty, ifnull((sum(soi.qty) - sum(soi.delivered_qty)), 0) as pending_qty
 				from `tabSales Order` so left join `tabSales Order Item` soi on so.name = soi.parent
 				group by soi.item_code, so.customer)  sales
 				on quote.party_name = sales.customer and quote.item_code = sales.item_code
@@ -69,6 +70,7 @@ def get_dashboard_data(filters=None):
 		data = frappe.db.sql(query, as_dict=True)
 		return data
 	except Exception as e:
+		frappe.log_error(message=frappe.get_traceback() , title="Stock Control Data")
 		frappe.msgprint(_("Something went wrong while fetching data."))
 		return []
 

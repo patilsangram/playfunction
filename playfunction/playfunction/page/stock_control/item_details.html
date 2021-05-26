@@ -50,7 +50,9 @@
 						{{ item.stock }}
 					</td>
 					<td class="tb-td pend-qty">{{ item.pending_qty }}</td>
-					<td class="tb-td quote-qty">{{ item.quote_qty }}</td>
+					<td class="tb-td quote-qty">
+						{{ item.quote_qty - item.delivered_qty }}
+					</td>
 					<td class="tb-td order-qty">
 						<input autocomplete="off" class="to-be-ordered" type="number">
 					</td>
