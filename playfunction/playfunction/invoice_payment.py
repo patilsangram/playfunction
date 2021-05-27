@@ -58,7 +58,7 @@ def create_rihvit_invoice(invoice_id):
 		#phone
 		phone = email_to = ''
 		if customer.get("user"):
-			phone, email_to = frappe.db.get_value("User", customer.get("user"), ["phone", "email"])
+			phone, email_to = frappe.db.get_value("User", customer.get("user"), ["mobile_no", "email"])
 
 		# Rihvit API token - check in settings if not generate new one
 		if not rihvit_settings.get("api_token"):
@@ -153,7 +153,7 @@ def get_payment_url(quote_id):
 		#phone
 		phone = ''
 		if customer.get("user"):
-			phone = frappe.db.get_value("User", customer.get("user"), "phone") or ''
+			phone = frappe.db.get_value("User", customer.get("user"), "mobile_no") or ''
 
 		# quote item
 		items = []
