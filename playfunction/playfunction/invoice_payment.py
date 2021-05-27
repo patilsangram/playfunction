@@ -56,9 +56,9 @@ def create_rihvit_invoice(invoice_id):
 		customer = frappe.get_doc("Customer", invoice.get("customer"))
 
 		#phone
-		phone = ''
+		phone = email_to = ''
 		if customer.get("user"):
-			phone = frappe.db.get_value("User", customer.get("user"), "phone") or ''
+			phone, email_to = frappe.db.get_value("User", customer.get("user"), ["phone", "email"])
 
 		# Rihvit API token - check in settings if not generate new one
 		if not rihvit_settings.get("api_token"):
@@ -104,6 +104,9 @@ def create_rihvit_invoice(invoice_id):
 			#"last_name": customer.get("customer_name"),
 			"first_name": customer.get("customer_name"),
 			"phone": phone,
+			"email_to": email_to,
+			"digital_signature":True,
+			"send_mail":True,
 			"price_include_vat": False,
 			"currency_id":1,
 			"items": items,
