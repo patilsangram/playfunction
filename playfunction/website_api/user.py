@@ -55,7 +55,8 @@ def get_last_quote():
 		if customer:
 			quotations = frappe.get_all("Quotation", filters={
 					"party_name": customer,
-					"workflow_state": ["not in", ["Proposal"]],
+					"workflow_state": ["not in", ["Proposal Received", "Proposal Processing", 
+						"Proposal Ready", "Approved", "Rejected"]],
 					"docstatus": 0
 				}, order_by="creation desc", limit=1)
 			if len(quotations):
@@ -63,7 +64,7 @@ def get_last_quote():
 
 			proposal_id = frappe.db.get_value("Quotation", {
 				"party_name": customer,
-				"workflow_state": "Proposal",
+				"workflow_state": ["in", ["Proposal Received", "Proposal Processing", "Proposal Ready"]],
 				"docstatus": 0
 			}, "name", order_by="creation desc")
 	return quote_id, proposal_id

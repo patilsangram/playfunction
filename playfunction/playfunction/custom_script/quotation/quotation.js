@@ -14,12 +14,16 @@ frappe.ui.form.on("Quotation",{
 		playfunction.selling.set_field_permissions();
 		var proposal_states = ["Proposal Received", "Proposal Processing", "Proposal Ready"]
 		if (frm.doc.docstatus == 0 &&
-				!(has_common([frm.doc.workflow_state],["Rejected"].concat(proposal_states)))) {
+				!(has_common([frm.doc.workflow_state],["Approved","Rejected"].concat(proposal_states)))) {
 			frm.events.approval_flow(frm);
 		}
 
 		else if(has_common([frm.doc.workflow_state], proposal_states)) {
 			frm.events.proposal_flow(frm);
+		}
+
+		else if(frm.doc.workflow_state == "Rejected") {
+			frm.disable_save()
 		}
 		frm.trigger("set_status_intro");
 	},
@@ -88,22 +92,28 @@ frappe.ui.form.on("Quotation",{
 	},
 
 	before_submit:function(frm){
-		if(frm.doc.workflow_state != "Approved"){
-			frappe.throw(__("Quotation must be approved by Admin"))
+		if(!in_list(["Approved", "Proposal Ready"], frm.doc.workflow_state)){
+			frappe.throw(__("Quotation/Proposal must be approved by Admin"))
 		}
 	},
 
 	proposal_flow: function(frm) {
 		if (frm.doc.workflow_state == "Proposal Processing" && frappe.user.has_role("PlayFunction Admin")) {
 			frm.add_custom_button("Approve Proposal", function() {
-				frm.doc.workflow_state = "Proposal Ready"
-				frm.save()
-			})
-		}
+				if(!frm.doc.client_approval) {
+					frappe.msgprint(__("Quotation must be Client Approved. Please check <b>Client Approval</b> checkbox first."))
+				}
+				else {
+					frm.doc.workflow_state = "Proposal Ready"
+					//frm.doc.workflow_state = "Approved"
+					frm.save()
+				}
+			}, "Action")
 
-		// admin can not edit proposal ready
-		if(frm.doc.workflow_state == "Proposal Ready") {
-			frm.disable_save();
+			frm.add_custom_button("Reject Proposal", function() {
+				frm.trigger('reject_qutotation');
+			}, "Action")
+			frm.page.set_inner_btn_group_as_primary(__("Action"));
 		}
 	}
 })
