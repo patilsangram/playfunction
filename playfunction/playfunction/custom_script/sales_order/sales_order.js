@@ -2,6 +2,7 @@ frappe.ui.form.on("Sales Order",{
 	refresh: function(frm) {
 		// from public - playfunction_selling.js
 		playfunction.selling.set_field_permissions();
+		playfunction.export.export_excel();
 		if (frm.doc.docstatus == 0 && frm.doc.workflow_state != "Rejected") {
 			frm.events.init_approval_flow(frm);
 		}
